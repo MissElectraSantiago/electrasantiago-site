@@ -1,0 +1,19 @@
+---
+title: "Pegging Obedience Training: A Femdom Guide to Mental Surrender"
+date: 2025-11-15
+description: "Experience a brutal pegging domination scenario where control, humiliation, and psychological obedience blend into total surrender under an unshakeable femdom authority."
+draft: false
+---
+[image: Electra Santiago in black latex reclining beside a submissive in a full black latex suit, against a dark teal backdrop]
+
+I buckle the harness tight around my hips, the thick strap-on jutting forward like a weapon of your undoing. I slick the head with warm, dripping lube, watching your eyes widen in anticipation and fear. You’re bent over the edge of the bed, ass up high, cheeks spread wide, your tight hole twitching desperately under my gaze. I circle you first, teasing the tip along your crack, letting you feel the unyielding girth that will soon claim you. "Beg for it, pet," I command softly, my voice a velvet whip. You whimper, but I make you wait, building the ache until you're trembling.
+
+Finally, I press against you, firm and unyielding, the broad head nudging your ring with deliberate pressure. The tip pushes in slow, stretching that virgin-tight entrance, and you groan deep from your chest, a raw sound of surrender. You squeeze down instinctively, trying to fight the invasion, muscles clenching like a futile barrier, but I don’t stop—oh no, I revel in your resistance. Slowly, steadily, inch by throbbing inch, I force my cock inside until you’re stretched wide around me, stuffed full to the hilt, your body yielding as you whimper for more, your prostate already pulsing against the invasion.
+
+My hands grip your hips like iron vices, nails digging into your skin to mark my territory, and I start to move. Slow at first, a teasing rhythm that lets you feel every ridge and vein of the silicone shaft dragging through your walls, then harder, deeper, faster, my curvy body slamming forward with goddess force. Every thrust makes you moan like the desperate slut you are, every wet slap of my hips against your ass reminds you who owns this hole, who dictates your pleasure. Your neglected cock leaks steadily below, dripping thick strings of pre-cum onto the sheets without a single touch, your body betraying how utterly you crave this violation, how your submission runs deeper than words.
+
+I lean over your back, my full breasts pressing against your sweat-slick skin, and whisper filth in your ear while I fuck you harder, my breath hot and commanding. "That's it, take my cock like the hole you were born to be—feel it owning your ass, milking your prostate dry." My strap-on pounds your depths relentlessly, merciless, the rhythm turning brutal as your composure crumbles. You try to hold on, but you can’t; you're babbling incoherently, begging for mercy or more—I don't care which—your body shaking violently under the onslaught. You’re nothing but a hole now... open, used, utterly owned by your Goddess.
+
+I reach down suddenly and grab your throbbing cock, just once, my gloved hand squeezing the base in a cruel tease that sends fire through you. You lose it completely—cum spills everywhere in hot, thick ropes, your whole body shuddering in ruined ecstasy as I keep driving into you without pause. I don’t let up; I fuck you through the waves of your orgasm, hammering your oversensitive ass until you collapse forward, legs trembling like jelly, until you can’t take anymore and sob my name in broken devotion.
+
+When I finally pull out with a slick, obscene pop, your ass is raw and gaping, a slick, ruined rosebud winking empty in the air, your body wrecked and spent, your cock drained to the last drop. You’re utterly ruined, transformed into my perfect toy, and the best part? You’ll crawl back on your knees for more, because nothing else will ever satisfy after I’ve split you open on my cock, leaving you forever marked by my dominance.

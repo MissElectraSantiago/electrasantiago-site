@@ -1,0 +1,7 @@
+public/
+preview/
+_source/
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
