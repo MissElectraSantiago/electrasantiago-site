@@ -423,10 +423,19 @@ HTACCESS = r"""# Hostinger / Apache
 Options -MultiViews
 RewriteEngine On
 
-# One canonical address: https, no www
-RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTP_HOST} ^www\. [NC]
+# One canonical address: https, no www (only on the real domain, so a
+# test copy on a temporary address isn't sent to the live site)
+RewriteCond %{HTTP_HOST} ^www\.electrasantiago\.com$ [NC]
 RewriteRule ^ https://electrasantiago.com%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTP_HOST} ^electrasantiago\.com$ [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://electrasantiago.com%{REQUEST_URI} [L,R=301]
+
+# Keep any copy on another address (like a temporary test address) out of search results
+SetEnvIfNoCase Host "^(www\.)?electrasantiago\.com$" ES_LIVE
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow" env=!ES_LIVE
+</IfModule>
 
 # /page.html -> /page
 RewriteCond %{THE_REQUEST} \s/+([^\s?]+?)\.html[\s?]
