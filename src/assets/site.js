@@ -118,6 +118,27 @@
     }
   }
 
+  // Telegram buttons that copy a ready-made message first (Telegram links can't carry it)
+  document.querySelectorAll("[data-copy-msg]").forEach(function (a) {
+    a.addEventListener("click", function () {
+      var msg;
+      if (a.getAttribute("data-copy-msg") === "picks") {
+        var box = a.closest("[data-picks]");
+        var picked = Array.prototype.map.call(box.querySelectorAll("input:checked"), function (i) { return "- " + i.value; });
+        msg = picked.length ? "Hi Electra, I'd love some help. This sounds like me:\n" + picked.join("\n")
+                            : "Hi Electra, I'd love some help with my content business.";
+      } else {
+        msg = "Hi Electra, please add me to the Creator Lounge. A little about what I make: ";
+      }
+      var note = a.closest(".card").querySelector(".pick-note");
+      var done = function (ok) {
+        if (note) note.textContent = ok ? "Copied. Paste it into the chat on Telegram." : "Tell me what you ticked when the chat opens.";
+      };
+      try { navigator.clipboard.writeText(msg).then(function () { done(true); }, function () { done(false); }); }
+      catch (e) { done(false); }
+    });
+  });
+
   document.querySelectorAll("form[data-form]").forEach(function (f) {
     f.addEventListener("submit", function (ev) {
       ev.preventDefault();

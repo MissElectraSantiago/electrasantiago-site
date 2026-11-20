@@ -197,7 +197,7 @@ def expand(body, posts):
                   lambda m: '<div class="cards">' + "".join(post_card(p) for p in posts[:int(m.group(1))]) + "</div>",
                   body)
     body = body.replace("{{post_list}}", '<div class="cards">' + "".join(post_card(p) for p in posts) + "</div>")
-    body = body.replace("{{telegram}}", SITE["telegram"]).replace("{{email}}", esc(SITE["email"]))
+    body = body.replace("{{telegram_dm}}", SITE["telegram_dm"]).replace("{{telegram}}", SITE["telegram"]).replace("{{email}}", esc(SITE["email"]))
     body = body.replace("{{mentorship_endpoint}}", esc(SITE["forms"]["mentorship_endpoint"]))
     return body
 
