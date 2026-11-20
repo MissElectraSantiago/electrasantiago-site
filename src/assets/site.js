@@ -31,6 +31,20 @@
     }
   }
 
+  // Time-limited sale: shows only until the date in data-sale-until, then the
+  // page falls back to the regular prices on its own.
+  var saleOn = false;
+  document.querySelectorAll("[data-sale-until]").forEach(function (el) {
+    var until = Date.parse(el.getAttribute("data-sale-until"));
+    if (!isNaN(until) && Date.now() < until) { el.hidden = false; saleOn = true; }
+  });
+  if (saleOn) {
+    document.querySelectorAll("[data-sale]").forEach(function (td) {
+      var full = td.textContent.replace(/\s*USD\s*$/, "");
+      td.innerHTML = '<s class="was">' + full + '</s> ' + td.getAttribute("data-sale") + " USD";
+    });
+  }
+
   // Copy buttons on the creator resources page
   document.querySelectorAll("[data-copy]").forEach(function (b) {
     b.addEventListener("click", function () {
