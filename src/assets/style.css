@@ -392,3 +392,6 @@ html::after {
 
 /* Offer cards use full horizontal photos */
 .offer .frame.wide { aspect-ratio: 16 / 9; }
+
+.rates .popular td:first-child { font-weight: 700; }
+.rates .tag { display: inline-block; margin-left: 0.5rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--red); color: #fff; font: 600 0.68rem/1.4 var(--display); letter-spacing: 0.12em; text-transform: uppercase; vertical-align: middle; }
