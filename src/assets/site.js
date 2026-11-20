@@ -65,6 +65,59 @@
 
   // Forms. Each form posts to the address in data-endpoint (a form service such as
   // Formspree). Until an endpoint is set, the form says so instead of failing silently.
+  // Opening slideshow: crossfade every few seconds, loading each photo just before it shows
+  var show = document.querySelector("[data-slides]");
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (show && !still) {
+    var phone = window.matchMedia("(max-width: 760px)");
+    var all = Array.prototype.slice.call(show.querySelectorAll(".slide"));
+    var pauseBtn = document.querySelector(".slides-pause");
+    var timer = null, paused = false;
+    var load = function (pic, done) {
+      var img = pic.querySelector("img");
+      if (img.hasAttribute("data-src")) {
+        pic.querySelectorAll("[data-srcset]").forEach(function (s) { s.srcset = s.getAttribute("data-srcset"); s.removeAttribute("data-srcset"); });
+        img.src = img.getAttribute("data-src");
+        img.removeAttribute("data-src");
+      }
+      if (!done) return;
+      if (img.complete && img.naturalWidth) done();
+      else { img.addEventListener("load", done, { once: true }); img.addEventListener("error", done, { once: true }); }
+    };
+    var usable = function () {
+      return all.filter(function (p) { return !(phone.matches && p.classList.contains("desk-only")); });
+    };
+    var next = function () {
+      var list = usable();
+      var cur = show.querySelector(".slide.is-on");
+      var i = list.indexOf(cur);
+      var nxt = list[(i + 1) % list.length];
+      if (!nxt || nxt === cur) return;
+      load(nxt, function () {
+        if (paused || document.hidden) return;
+        if (cur) cur.classList.remove("is-on");
+        nxt.classList.add("is-on");
+        load(list[(list.indexOf(nxt) + 1) % list.length]);
+      });
+    };
+    var start = function () { if (!timer && !paused) timer = setInterval(next, 6500); };
+    var stop = function () { clearInterval(timer); timer = null; };
+    if (all.length > 1) {
+      window.addEventListener("load", function () { load(usable()[1] || all[1]); });
+      start();
+      document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else start(); });
+      if (pauseBtn) {
+        pauseBtn.hidden = false;
+        pauseBtn.addEventListener("click", function () {
+          paused = !paused;
+          pauseBtn.setAttribute("aria-pressed", paused ? "true" : "false");
+          pauseBtn.setAttribute("aria-label", paused ? "Play the photos" : "Pause the photos");
+          if (paused) stop(); else start();
+        });
+      }
+    }
+  }
+
   document.querySelectorAll("form[data-form]").forEach(function (f) {
     f.addEventListener("submit", function (ev) {
       ev.preventDefault();

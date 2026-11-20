@@ -159,7 +159,32 @@ def hero_image(name, alt):
     return f'<picture><source media="(max-width: 760px)" srcset="{mobile}">{img}</picture>'
 
 
+BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+
+
+def hero_show(prefix, alt):
+    """Opening slideshow: <prefix>01, <prefix>02 ... each with an optional -mobile crop.
+    A slide with no phone crop is shown on wide screens only. Only the first loads up front."""
+    slides, n = [], 1
+    while find_image(f"{prefix}{n:02d}"):
+        slides.append(f"{prefix}{n:02d}"); n += 1
+    if not slides:
+        return f'<div class="neon" role="img" aria-label="{esc(alt)}"></div>'
+    out = []
+    for i, name in enumerate(slides):
+        desk, mob = find_image(name), find_image(f"{name}-mobile")
+        if i == 0:
+            src = f'<source media="(max-width: 760px)" srcset="{mob}">' if mob else ""
+            out.append(f'<picture class="slide is-on">{src}<img src="{desk}" alt="{esc(alt)}" fetchpriority="high" decoding="async"></picture>')
+        else:
+            src = f'<source media="(max-width: 760px)" data-srcset="{mob}">' if mob else ""
+            cls = "slide" if mob else "slide desk-only"
+            out.append(f'<picture class="{cls}">{src}<img src="{BLANK}" data-src="{desk}" alt="" decoding="async"></picture>')
+    return f'<div class="slides" data-slides>{"".join(out)}</div>'
+
+
 def expand(body, posts):
+    body = re.sub(r"\{\{heroshow:([\w-]+)\|(.*?)\}\}", lambda m: hero_show(m.group(1), m.group(2)), body)
     body = re.sub(r"\{\{hero:([\w-]+)\|(.*?)\}\}",
                   lambda m: hero_image(m.group(1), m.group(2)) if find_image(m.group(1))
                   else f'<div class="neon" role="img" aria-label="{esc(m.group(2))}"></div>', body)
