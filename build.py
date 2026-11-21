@@ -369,6 +369,34 @@ CSS = (SRC / "assets" / "style.css").read_text(encoding="utf-8")
 JS = (SRC / "assets" / "site.js").read_text(encoding="utf-8")
 
 
+PHONE_TOOL = """<div id="pv-tool">
+<style>
+#pv-open{position:fixed;left:16px;bottom:16px;z-index:9998;font:600 13px/1 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  background:#fff;color:#000;border:0;border-radius:999px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#pv-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:grid;place-items:center;gap:12px;align-content:center}
+#pv-overlay[hidden]{display:none}
+#pv-phone{width:390px;height:844px;border:10px solid #222;border-radius:44px;overflow:hidden;background:#000;transform-origin:top center}
+#pv-phone iframe{width:390px;height:844px;border:0;display:block}
+#pv-close{font:600 13px/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em;background:#fff;color:#000;border:0;border-radius:999px;padding:10px 16px;cursor:pointer}
+@media (max-width:600px){#pv-open{display:none}}
+</style>
+<button id="pv-open" type="button">Phone view</button>
+<div id="pv-overlay" hidden><div id="pv-phone"><iframe name="pv-phone-frame" title="This page on a phone"></iframe></div>
+<button id="pv-close" type="button">Close phone view</button></div>
+<script>
+(function(){
+  if (window.name === "pv-phone-frame") { document.getElementById("pv-tool").remove(); return; }
+  var o = document.getElementById("pv-overlay"), ph = document.getElementById("pv-phone"), f = ph.querySelector("iframe");
+  var fit = function(){ var sc = Math.min(1, (window.innerHeight - 90) / 864); ph.style.transform = "scale(" + sc + ")";
+    ph.style.marginBottom = (-(1 - sc) * 864) + "px"; };
+  document.getElementById("pv-open").onclick = function(){ f.src = location.href; o.hidden = false; fit(); };
+  document.getElementById("pv-close").onclick = function(){ o.hidden = true; f.src = "about:blank"; };
+  window.addEventListener("resize", fit);
+})();
+</script>
+</div>"""
+
+
 def to_preview_links(doc):
     def fix(m):
         target = m.group(1)
@@ -384,7 +412,7 @@ def page_doc(meta, body, posts, post=None, og_type="website", is_home=False):
     main = f'{header(meta["path"] if not post else "/blog-list")}\n<main id="main">\n{body}\n</main>\n{footer()}\n{action_bar()}\n{age_gate()}'
     if PREVIEW:
         head = (head_tags(meta, posts, post, og_type) + f"\n<style>{CSS}</style>")
-        tail = f"<script>{JS}</script>"
+        tail = f"<script>{JS}</script>\n{PHONE_TOOL}"
         if is_home:  # the published page gets its own document skeleton
             doc = (f'<meta name="claude:viewport-fit-sides" content="cover">\n{head}\n{main}\n{tail}\n')
         else:
