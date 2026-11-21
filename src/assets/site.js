@@ -139,6 +139,23 @@
     });
   });
 
+  // Countdown timers: "3d 07h 12m 05s left", hidden once the time is up
+  document.querySelectorAll("[data-countdown]").forEach(function (el) {
+    var end = Date.parse(el.getAttribute("data-countdown"));
+    if (isNaN(end)) return;
+    var box = el.closest("[data-sale-until]") || el;
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    var tick = function () {
+      var left = Math.floor((end - Date.now()) / 1000);
+      if (left <= 0) { box.hidden = true; clearInterval(t); return; }
+      var d = Math.floor(left / 86400), h = Math.floor(left % 86400 / 3600), m = Math.floor(left % 3600 / 60), sec = left % 60;
+      el.innerHTML = '<span>' + d + '<small>d</small></span><span>' + pad(h) + '<small>h</small></span><span>' + pad(m) +
+        '<small>m</small></span><span>' + pad(sec) + '<small>s</small></span> <em>left</em>';
+    };
+    var t = setInterval(tick, 1000);
+    tick();
+  });
+
   document.querySelectorAll("form[data-form]").forEach(function (f) {
     f.addEventListener("submit", function (ev) {
       ev.preventDefault();

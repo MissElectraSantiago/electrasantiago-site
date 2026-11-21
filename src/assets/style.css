@@ -434,3 +434,18 @@ html::after {
 .picks label:has(input:checked) { border-color: var(--red); background: color-mix(in srgb, var(--red) 10%, transparent); }
 .picks input { width: 1.15rem; height: 1.15rem; accent-color: var(--red); flex: none; }
 .sr-hide { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Clips.com sale: a red band above the opening shot, with a live countdown */
+.sale-band[hidden], .sale-inline[hidden] { display: none; }
+.sale-band { background: var(--red); color: #fff; }
+.sale-band-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.4rem; padding-block: .85rem; }
+.sale-band p { margin: 0; }
+.sale-band-text { font: 500 clamp(1.05rem, 2.6vw, 1.4rem)/1.15 var(--display); text-transform: uppercase; letter-spacing: .04em; }
+.sale-band-text strong { font-weight: 700; }
+.sale-band-tag { display: inline-block; background: #000; color: #fff; padding: .2rem .55rem; border-radius: 999px; font-size: .7em; letter-spacing: .14em; vertical-align: .15em; margin-right: .3rem; }
+.countdown { display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem; font: 600 clamp(1.3rem, 3.6vw, 1.8rem)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .03em; }
+.countdown small { font-size: .55em; margin-left: .1em; opacity: .75; text-transform: uppercase; }
+.countdown em { font-style: normal; font-size: .6em; opacity: .75; text-transform: uppercase; letter-spacing: .12em; }
+.btn-light { background: #fff; color: #000; border-color: #fff; }
+.btn-light:hover { background: #000; color: #fff; border-color: #000; }
+.sale-inline { color: var(--text); }
