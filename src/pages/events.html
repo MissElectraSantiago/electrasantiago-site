@@ -1,0 +1,32 @@
+<!--meta {
+  "path": "/events",
+  "title": "Kink & Fetish Events Around the World | Electra Santiago",
+  "description": "Fetish balls, leather weekends, femdom conventions, kink cruises and fetish fairs worldwide, on one interactive globe with dates and links.",
+  "schema": ["breadcrumb"],
+  "crumb": "Events",
+  "priority": "0.6"
+} -->
+<div class="events-globe">
+{{embed:events-globe}}
+</div>
+<style>
+/* The globe was built on white; on this site it takes the site's dark colours. */
+.events-globe .esg {
+  --paper: #0b0a0d;
+  --ink: #f4eff1;
+  --ink-soft: #aaa0a9;
+  --line: #2c2631;
+  --wash: #16131a;
+  --ocean-hi: #1b1720;
+  --ocean-lo: #0f0d12;
+  --land: #3b3441;
+  --land-edge: #4b4352;
+  --grid: rgba(244, 239, 241, 0.07);
+  --red: #e3141c;
+  --red-ink: #ffffff;
+  --pin-ring: #0b0a0d;
+  --shadow: rgba(0, 0, 0, 0.55);
+}
+.events-globe .esg-dot.esg-soft { background: var(--ink); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink); }
+.events-globe .esg-wrap { padding-top: clamp(32px, 6vw, 64px); }
+</style>

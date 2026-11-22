@@ -191,6 +191,7 @@ def expand(body, posts):
     body = re.sub(r"<p>\{\{pimg:([\w-]+)\|(.*?)\}\}</p>",
                   lambda m: (f'<figure class="frame post-photo">{image(m.group(1), m.group(2))}</figure>'
                              if find_image(m.group(1)) else ""), body)
+    body = re.sub(r"\{\{embed:([\w-]+)\}\}", lambda m: (SRC / "embeds" / f"{m.group(1)}.html").read_text(encoding="utf-8"), body)
     body = re.sub(r"\{\{img:([\w-]+)\|(.*?)\}\}", lambda m: image(m.group(1), m.group(2)), body)
     body = re.sub(r"\{\{jotform:(\w+)\|(.*?)\}\}", lambda m: jotform(m.group(1), m.group(2)), body)
     body = re.sub(r"\{\{latest_posts:(\d+)\}\}",
@@ -214,8 +215,8 @@ def person():
 
 SERVICES = {
     "session": ("Online fetish domination video session", "/online-fetish-domination",
-                [("10 minutes", "200"), ("20 minutes", "300"), ("30 minutes", "400"), ("One hour", "500")]),
-    "custom": ("Custom femdom video", "/custom-femdom-video", []),
+                [("10 minutes", "200"), ("20 minutes", "300"), ("30 minutes", "400"), ("One hour", "600")]),
+    "custom": ("Custom femdom video", "/online-fetish-domination#custom", []),
     "mentorship": ("Mentorship for adult content creators", "/mentorship-for-creators",
                    [("One-time 60-minute call", "149"), ("3-call strategy package", "399")]),
 }
@@ -304,7 +305,7 @@ def footer():
     </div>
     <div class="legal">
       <p>© {year} Electra Santiago. All performers are 18 or older. Adults only.</p>
-      <p><a href="/creator-resources">Creator resources</a> · <a href="/mentorship-for-creators">Mentorship</a></p>
+      <p class="foot-links"><a href="/press">Press</a> · <a href="/gallery">Gallery</a> · <a href="/creator-resources">Creator resources</a> · <a href="/mentorship-for-creators">Mentorship</a></p>
     </div>
   </div>
 </footer>'''
@@ -443,7 +444,7 @@ def post_body(p, posts):
     <div class="prose post-body">{p["html"]}</div>
     <div class="card">
       <p class="eyebrow">Go deeper</p>
-      <p>Book a <a href="/online-fetish-domination">private video session</a>, request a <a href="/custom-femdom-video">custom video</a>, or join my <a href="{SITE["telegram"]}" rel="noopener">Telegram</a> for updates.</p>
+      <p>Book a <a href="/online-fetish-domination">private video session</a>, request a <a href="/online-fetish-domination#custom">custom video</a>, or join my <a href="{SITE["telegram"]}" rel="noopener">Telegram</a> for updates.</p>
     </div>
   </div>
 </article>
@@ -489,6 +490,9 @@ SetEnvIfNoCase Host "^(www\.)?electrasantiago\.com$" ES_LIVE
 <IfModule mod_headers.c>
   Header set X-Robots-Tag "noindex, nofollow" env=!ES_LIVE
 </IfModule>
+
+# Pages that were merged into others
+RewriteRule ^custom-femdom-video/?$ /online-fetish-domination#custom [NE,R=301,L]
 
 # /page.html -> /page
 RewriteCond %{THE_REQUEST} \s/+([^\s?]+?)\.html[\s?]
