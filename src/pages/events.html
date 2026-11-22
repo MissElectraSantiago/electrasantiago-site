@@ -11,7 +11,7 @@
 </div>
 <style>
 /* The globe was built on white; on this site it takes the site's dark colours. */
-.events-globe .esg {
+.events-globe #esg {
   --paper: #0b0a0d;
   --ink: #f4eff1;
   --ink-soft: #aaa0a9;
@@ -28,5 +28,7 @@
   --shadow: rgba(0, 0, 0, 0.55);
 }
 .events-globe .esg-dot.esg-soft { background: var(--ink); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink); }
+/* The globe sets its own page background; keep the site's. */
+body:not(#_) { background: var(--ink); }
 .events-globe .esg-wrap { padding-top: clamp(32px, 6vw, 64px); }
 </style>
