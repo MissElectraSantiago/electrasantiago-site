@@ -32,7 +32,7 @@
   }
 
   // Community Resources: a $5 coffee ask after 30 seconds on the page.
-  // "Maybe later" hides it for a week; "Send $5" hides it for 60 days.
+  // "Maybe later" hides it for a week; Cash App or Throne hides it for 60 days.
   var tip = document.getElementById("tip-pop");
   if (tip) {
     var TIP = "es-tip-until", until = 0;
@@ -50,7 +50,10 @@
       };
       setTimeout(showTip, 30000);
       document.getElementById("tip-later").addEventListener("click", function () { hideFor(7); });
-      document.getElementById("tip-give").addEventListener("click", function () { hideFor(60); });
+      ["tip-give", "tip-throne"].forEach(function (id) {
+        var b = document.getElementById(id);
+        if (b) b.addEventListener("click", function () { hideFor(60); });
+      });
       tip.addEventListener("click", function (e) { if (e.target === tip) hideFor(7); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !tip.hidden) hideFor(7); });
     }
