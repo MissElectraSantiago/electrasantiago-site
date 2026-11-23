@@ -13,6 +13,9 @@ SETTINGS = {
     "holiday-giving-guide": [
         ('var PAGE_URL = "https://electrasantiago.com/";', 'var PAGE_URL = "https://electrasantiago.com/holiday-giving-guide";'),
     ],
+    "getting-started-in-kink": [
+        ('"name": "Black Rose", "url": "https://br.org/br/about-black-rose/"', '"name": "Black Rose", "url": "https://br.org/"'),  # M, 23 Nov 2026
+    ],
     "fetish-shopping-guide": [
         ('var EVENTS_PAGE_URL = "";', 'var EVENTS_PAGE_URL = "https://electrasantiago.com/community-resources";'),
     ],
