@@ -17,6 +17,9 @@ SETTINGS = {
     "getting-started-in-kink": [
         ('"name": "Black Rose", "url": "https://br.org/br/about-black-rose/"', '"name": "Black Rose", "url": "https://br.org/"'),  # M, 23 Nov 2026
         ('"url": "https://clawinfo.org/claw-26-registration-information"', '"url": "https://clawinfo.org/"'),  # M, 23 Nov 2026
+        # M, 23 Nov 2026: make the titles red so they're easier to see
+        ('.krd-name a { color: var(--ink);', '.krd-name a { color: var(--red);'),
+        ('.krd-sec-title { margin: 0;', '.krd-sec-title { margin: 0; color: var(--red);'),
     ],
     "fetish-shopping-guide": [
         ('var EVENTS_PAGE_URL = "";', 'var EVENTS_PAGE_URL = "https://electrasantiago.com/community-resources";'),
