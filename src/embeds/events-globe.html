@@ -42,10 +42,14 @@ body { background: var(--page); }
 /* Header */
 .esg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .esg-head-text { min-width: 0; max-width: 640px; }
-.esg-mode { display: inline-flex; border: 1px solid var(--ink); border-radius: 999px; overflow: hidden; }
-.esg-mode button { height: 44px; padding: 0 22px; border: 0; background: transparent; color: var(--ink); font-family: var(--display); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
-.esg-mode button + button { border-left: 1px solid var(--ink); }
-.esg-mode button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.esg-switch { display: grid; gap: 8px; justify-items: start; }
+.esg-switch-label { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
+.esg-mode { display: inline-flex; border: 2px solid var(--red); border-radius: 999px; overflow: hidden; box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 18%, transparent); }
+.esg-mode button { height: 52px; padding: 0 30px; border: 0; background: transparent; color: var(--ink); font-family: var(--display); font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background .15s ease; }
+.esg-mode button + button { border-left: 2px solid var(--red); }
+.esg-mode button:hover { background: color-mix(in srgb, var(--red) 14%, transparent); }
+.esg-mode button[aria-pressed="true"] { background: var(--red); color: var(--red-ink); }
+@media (max-width: 560px) { .esg-switch, .esg-mode { width: 100%; } .esg-mode button { flex: 1; padding: 0 12px; } }
 .esg [hidden] { display: none !important; }
 .esg-badge.esg-badge-ink { border-color: var(--ink); color: var(--ink); font-weight: 500; }
 .esg-count .esg-badge { display: inline-block; margin: 0 0 6px; white-space: nowrap; }
@@ -158,9 +162,12 @@ body { background: var(--page); }
         <h2 class="esg-title" id="esg-title">Kink &amp; Fetish Events Around the World</h2>
         <p class="esg-today" id="esg-today">Every upcoming ball, convention, cruise and femdom gathering, on one globe.</p>
       </div>
-      <div class="esg-mode" role="group" aria-label="Show events or fashion">
-        <button type="button" data-mode="events" aria-pressed="true">Events</button>
-        <button type="button" data-mode="fashion" aria-pressed="false">Fashion</button>
+      <div class="esg-switch">
+        <p class="esg-switch-label" id="esg-switch-label">Switch the map</p>
+        <div class="esg-mode" role="group" aria-labelledby="esg-switch-label">
+          <button type="button" data-mode="events" aria-pressed="true">Events</button>
+          <button type="button" data-mode="fashion" aria-pressed="false">Fashion</button>
+        </div>
       </div>
     </header>
 
