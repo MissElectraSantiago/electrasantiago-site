@@ -62,6 +62,11 @@ body { background: var(--page); }
 .ess-sort { display: inline-flex; gap: 14px; font-size: 14px; }
 .ess-sort button { border: 0; background: none; padding: 4px 0; color: var(--ink-soft); font: inherit; cursor: pointer; border-bottom: 1px solid transparent; }
 .ess-sort button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.ess-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ess-pick { position: relative; display: block; max-width: 420px; }
+.ess-pick select { width: 100%; height: 48px; padding: 0 44px 0 18px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); font-family: var(--display); font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.ess-pick::after { content: ""; position: absolute; right: 20px; top: 50%; width: 8px; height: 8px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.ess-pick select:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 .ess-cities { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; padding: 0; list-style: none; }
 .ess-cities a { font-family: var(--display); font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
 .ess-cities a:hover { color: var(--red); }
@@ -70,7 +75,7 @@ body { background: var(--page); }
 /* City bands */
 .ess-city { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 20px 48px; padding: 36px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 12px; }
 .ess-city-side { min-width: 0; }
-.ess-city-name { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(28px, 3.6vw, 38px); line-height: 1.05; letter-spacing: 0.02em; text-transform: uppercase; overflow-wrap: anywhere; }
+.ess-city-name { color: var(--red); margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(28px, 3.6vw, 38px); line-height: 1.05; letter-spacing: 0.02em; text-transform: uppercase; overflow-wrap: anywhere; }
 .ess-country { margin: 6px 0 0; font-size: 14px; color: var(--ink-soft); }
 .ess-evs { margin: 18px 0 0; padding: 14px 0 0; border-top: 1px solid var(--ink); list-style: none; display: grid; gap: 10px; }
 .ess-evs-title { font-family: var(--display); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 2px; }
@@ -92,10 +97,17 @@ body { background: var(--page); }
 .ess-tag { padding: 1px 9px; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
 .ess-tag.ess-hit { border-color: var(--ink); color: var(--ink); }
 .ess-check { color: var(--red); font-weight: 600; }
-.ess-map { margin-top: auto; padding-top: 6px; align-self: flex-start; font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
-.ess-map:hover { text-decoration-color: var(--ink); }
+.ess-map { align-self: flex-start; display: inline-flex; align-items: center; min-height: 40px; margin: 4px 0 2px; padding: 0 18px; border-radius: 999px; background: var(--red); color: var(--red-ink); font-size: 14px; font-weight: 600; text-decoration: none; }
+.ess-map:hover { filter: brightness(0.92); }
+.ess-map:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .ess-none { grid-column: 1 / -1; margin: 0; padding: 14px 18px; background: var(--wash); font-size: 14px; color: var(--ink-soft); }
 .ess-empty { padding: 40px 0; color: var(--ink-soft); }
+.ess-pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 0 4px; }
+.ess-pager[hidden] { display: none; }
+.ess-pg { min-height: 44px; padding: 0 18px; border: 1px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.ess-pg:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+.ess-pg:disabled { opacity: .35; cursor: default; }
+.ess-pg-n { font-size: 14px; color: var(--ink-soft); font-variant-numeric: tabular-nums; text-align: center; }
 .ess-empty button { border: 0; background: none; padding: 0; color: var(--ink); text-decoration: underline; font: inherit; cursor: pointer; }
 
 /* Bottom band */
@@ -146,10 +158,11 @@ body { background: var(--page); }
           <button type="button" data-sort="az" aria-pressed="false">A to Z</button>
         </span>
       </div>
-      <ul class="ess-cities" id="ess-cities"></ul>
+      <label class="ess-pick" for="ess-city-pick"><span class="ess-sr">City</span><select id="ess-city-pick" aria-label="Choose a city"></select></label>
     </nav>
 
     <div id="ess-list"></div>
+    <nav class="ess-pager" id="ess-pager" aria-label="Pages" hidden></nav>
 
     <div class="ess-band" id="ess-band" hidden>
       <div class="ess-band-text">
@@ -258,7 +271,8 @@ body { background: var(--page); }
   });
 
   /* ---------- State ---------- */
-  var state = { q: "", region: "all", sells: new Set(), sort: "soon", open: {} };
+  var PER_PAGE = 6; // cities per page
+  var state = { q: "", city: "", page: 1, region: "all", sells: new Set(), sort: "soon", open: {} };
   function words() { return fold(state.q).split(/\s+/).filter(Boolean); }
   function shopMatches(s, h, ws) {
     if (state.sells.size && !s.sells.some(function (x) { return state.sells.has(x); })) return false;
@@ -323,14 +337,16 @@ body { background: var(--page); }
   var qEl = $("ess-q"), qClear = $("ess-q-clear");
   qEl.addEventListener("input", function () { state.q = qEl.value.trim(); qClear.hidden = !qEl.value; render(); });
   qClear.addEventListener("click", function () { qEl.value = ""; state.q = ""; qClear.hidden = true; render(); qEl.focus(); });
-  $("ess-cities").addEventListener("click", function (ev) {
-    var a = ev.target.closest("a"); if (!a) return;
-    ev.preventDefault();
-    var el = document.getElementById(a.getAttribute("data-to"));
-    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  $("ess-city-pick").addEventListener("change", function () { state.city = this.value; render(); });
+  $("ess-pager").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-pg]"); if (!b || b.disabled) return;
+    state.page += +b.getAttribute("data-pg");
+    render(true);
+    var top = document.querySelector("#ess .ess-index");
+    if (top) top.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
   function resetAll() {
-    state.q = ""; qEl.value = ""; qClear.hidden = true; state.sells.clear(); state.region = "all";
+    state.q = ""; qEl.value = ""; qClear.hidden = true; state.sells.clear(); state.region = "all"; state.city = "";
     document.querySelectorAll("#ess-sells .ess-chip").forEach(function (x) { x.setAttribute("aria-pressed", String(!x.getAttribute("data-sell"))); });
     document.querySelectorAll("#ess-region button").forEach(function (x) { x.setAttribute("aria-pressed", String(x.getAttribute("data-region") === "all")); });
     render();
@@ -349,10 +365,10 @@ body { background: var(--page); }
     return '<article class="ess-shop">' +
       '<h3 class="ess-shop-name">' + esc(s.name) + "</h3>" +
       (s.area ? '<p class="ess-shop-area">' + esc(s.area) + "</p>" : "") +
+      '<a class="ess-map" href="' + esc(mapUrl(s, h)) + '" target="_blank" rel="noopener">Map, hours and website ↗</a>' +
       '<p class="ess-shop-about">' + esc(s.about) + "</p>" +
       (s.note || s.status === "unsure" ? '<p class="ess-shop-note">' + (s.status === "unsure" ? '<span class="ess-check">Check it’s open before you go.</span> ' : "") + esc(s.note || "") + "</p>" : "") +
       (tags ? '<div class="ess-tags">' + tags + "</div>" : "") +
-      '<a class="ess-map" href="' + esc(mapUrl(s, h)) + '" target="_blank" rel="noopener">Map, hours and website ↗</a>' +
       "</article>";
   }
   function eventsHtml(h) {
@@ -367,17 +383,30 @@ body { background: var(--page); }
     if (h.events.length > 3) html += '<li><button type="button" class="ess-more" data-hub="' + esc(h.name) + '" aria-expanded="' + !!open + '">' + (open ? "Show fewer" : "Show all " + h.events.length + " events") + "</button></li>";
     return html + "</ul>";
   }
-  function render() {
+  function render(keepPage) {
+    if (!keepPage) state.page = 1;
     var vis = visible(), nShops = 0, nCities = 0;
+    if (state.city && !vis.some(function (v) { return v.h.id === state.city; })) state.city = "";
+    $("ess-city-pick").innerHTML = '<option value="">All cities (' + vis.length + ')</option>' + vis.map(function (v) {
+      var soon = v.h.events.some(function (e) { return e.live || (e.s && e.days <= 30); });
+      return '<option value="' + v.h.id + '"' + (v.h.id === state.city ? " selected" : "") + ">" + esc(v.h.name) + (soon ? " · event soon" : "") + "</option>";
+    }).join("");
+    if (state.city) vis = vis.filter(function (v) { return v.h.id === state.city; });
     vis.forEach(function (v) { nShops += v.shops.length; if (v.shops.length) nCities++; });
-    var filtered = state.q || state.sells.size || state.region !== "all";
+    var filtered = state.q || state.city || state.sells.size || state.region !== "all";
     $("ess-status").innerHTML = (nShops ? nShops + " shop" + (nShops === 1 ? "" : "s") + " in " + nCities + " cit" + (nCities === 1 ? "y" : "ies") : (vis.length ? "No shops here yet" : "No shops match")) +
       (filtered ? '<button type="button" class="ess-reset">Clear filters</button>' : "");
-    $("ess-cities").innerHTML = vis.map(function (v) {
-      var soon = v.h.events.some(function (e) { return e.live || (e.s && e.days <= 30); });
-      return '<li><a href="#' + v.h.id + '" data-to="' + v.h.id + '">' + esc(v.h.name) + (soon ? '<span class="ess-mark" aria-label="event in the next 30 days"></span>' : "") + "</a></li>";
-    }).join("");
-    if (!vis.length) { $("ess-list").innerHTML = '<p class="ess-empty">No shops match that yet. Try another city or <button type="button" class="ess-reset">clear the filters</button>.</p>'; return; }
+
+    if (!vis.length) { $("ess-pager").hidden = true; $("ess-list").innerHTML = '<p class="ess-empty">No shops match that yet. Try another city or <button type="button" class="ess-reset">clear the filters</button>.</p>'; return; }
+    var pages = Math.max(1, Math.ceil(vis.length / PER_PAGE)), pg = $("ess-pager");
+    if (state.page > pages) state.page = pages;
+    if (pages > 1) {
+      pg.innerHTML = '<button type="button" class="ess-pg" data-pg="-1"' + (state.page === 1 ? " disabled" : "") + '>← Previous</button>' +
+        '<span class="ess-pg-n">Page ' + state.page + " of " + pages + "</span>" +
+        '<button type="button" class="ess-pg" data-pg="1"' + (state.page === pages ? " disabled" : "") + ">Next →</button>";
+      pg.hidden = false;
+    } else { pg.hidden = true; pg.innerHTML = ""; }
+    vis = vis.slice((state.page - 1) * PER_PAGE, state.page * PER_PAGE);
     $("ess-list").innerHTML = vis.map(function (v) {
       var h = v.h;
       var shops = v.shops.length ? v.shops.map(function (s) { return shopHtml(s, h); }).join("")

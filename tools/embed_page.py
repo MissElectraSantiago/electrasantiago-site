@@ -49,6 +49,11 @@ html = src[src.index("\n<style>\n") + 1: src.rindex("</script>") + len("</script
 for old, new in SETTINGS.get(name, []):
     assert old in html, f"setting not found: {old}"
     html = html.replace(old, new)
+if name == "fetish-shopping-guide":
+    # 23 Nov 2026: city dropdown, highlighted map button under the area, red city names
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import guide_tweaks
+    html = guide_tweaks.apply(html)
 out = Path(__file__).resolve().parent.parent / "src" / "embeds" / f"{name}.html"
 out.write_text(html + "\n", encoding="utf-8")
 print("wrote", out, len(html), "bytes")
