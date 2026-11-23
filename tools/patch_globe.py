@@ -6,7 +6,7 @@ Keeps the globe's own style, section and script blocks (drops the host wrapper a
 font links), then applies the site's changes:
 - the globe's title becomes an h2 (the page has its own h1)
 - labels M asked to remove are dropped
-- the mouse wheel zooms the globe once she has grabbed or clicked it
+- the mouse wheel zooms the globe whenever the pointer is over it
 """
 import re, sys
 from pathlib import Path
@@ -29,19 +29,11 @@ old_wheel = '''    // trackpad pinch (arrives as ctrl + wheel); plain scrolling 
       if (!ev.ctrlKey) return;
       ev.preventDefault(); pauseSpin(); setZoom(zoom * Math.exp(-ev.deltaY * 0.01));
     }, { passive: false });'''
-new_wheel = '''    // Plain mouse wheel zooms once the globe has been grabbed or clicked, until the pointer
-    // moves off it; at full zoom in or out the wheel scrolls the page as usual.
-    var engagedUntil = 0;
-    function engage() { engagedUntil = Infinity; }
-    canvas.addEventListener("pointerdown", engage);
-    canvas.addEventListener("pointerup", engage);
-    canvas.addEventListener("pointerleave", function () { if (!drag) engagedUntil = 0; });
+new_wheel = '''    // Mouse wheel or trackpad pinch over the globe zooms it (M, 23 Nov 2026).
     canvas.addEventListener("wheel", function (ev) {
       var dy = ev.deltaY * (ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? 400 : 1);
-      if (ev.ctrlKey) { ev.preventDefault(); pauseSpin(); setZoom(zoom * Math.exp(-dy * 0.01)); return; }
-      if (!drag && performance.now() > engagedUntil) return;
-      if ((dy > 0 && zoom <= 1) || (dy < 0 && zoom >= 3.2)) return;
-      ev.preventDefault(); pauseSpin(); engage(); setZoom(zoom * Math.exp(-dy * 0.0015));
+      ev.preventDefault(); pauseSpin();
+      setZoom(zoom * Math.exp(-dy * (ev.ctrlKey ? 0.01 : 0.0015)));
     }, { passive: false });'''
 assert old_wheel in html, "wheel handler changed upstream; patch by hand"
 html = html.replace(old_wheel, new_wheel)
