@@ -78,6 +78,9 @@ html = html.replace('var SUGGEST_URL = "PASTE_YOUR_SUGGESTIONS_FORM_LINK_HERE";'
 # M, 23 Nov 2026: let people zoom in 20% further
 html = html.replace('function setZoom(z) { zoom = Math.max(1, Math.min(3.2, z)); }',
                     'function setZoom(z) { zoom = Math.max(1, Math.min(3.84, z)); }')
+# M, 23 Nov: Charmskool is women owned and operated
+html = html.replace('''"tags": ["Latex", "Couture", "Lingerie", "Accessories"], "url": "https://charmskoolshop.com/", "about": "East London showroom and online shop selling handmade latex from independent makers worldwide."}''',
+                    '''"tags": ["Women owned", "Latex", "Couture", "Lingerie", "Accessories"], "url": "https://charmskoolshop.com/", "about": "East London showroom and online shop selling handmade latex from independent makers worldwide.", "women": true}''')
 # M, 23 Nov: zoom in much closer so the clustered European pins can be tapped one by one on a phone
 for a, b in [('function setZoom(z) { zoom = Math.max(1, Math.min(4, z)); }',
               'function setZoom(z) { zoom = Math.max(1, Math.min(16, z)); }'),
