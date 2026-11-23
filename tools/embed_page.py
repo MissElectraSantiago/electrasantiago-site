@@ -12,6 +12,7 @@ from pathlib import Path
 SETTINGS = {
     "holiday-giving-guide": [
         ('var PAGE_URL = "https://electrasantiago.com/";', 'var PAGE_URL = "https://electrasantiago.com/holiday-giving-guide";'),
+        ('"donate_url": "https://marshap.org/donate/"', '"donate_url": "https://www.marshap.org/"'),  # M, 23 Nov 2026
     ],
     "getting-started-in-kink": [
         ('"name": "Black Rose", "url": "https://br.org/br/about-black-rose/"', '"name": "Black Rose", "url": "https://br.org/"'),  # M, 23 Nov 2026
