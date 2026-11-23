@@ -353,7 +353,10 @@ html::after {
 .offer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
 .offer { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: grid; align-content: start; }
 .offer .frame { border: 0; border-radius: 0; box-shadow: none; }
-.offer-body { padding: 1.5rem; }
+/* the buttons sit along the bottom of each card, so they line up side by side */
+.offer { display: flex; flex-direction: column; }
+.offer-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 1.1rem; }
+.offer-body .btn-row { margin-top: auto; }
 @media (max-width: 760px) { .offer-grid { grid-template-columns: 1fr; } }
 
 /* Header call to action */
