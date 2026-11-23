@@ -71,6 +71,10 @@ html = html.replace(old_wheel, new_wheel)
 html = html.replace("<span>Drag to turn · pinch to zoom · tap a pin</span>",
                     "<span>Drag to turn · scroll or pinch to zoom · tap a pin</span>")
 
+# 23 Nov 2026: notes go to Electra through the site's own send-note script
+html = html.replace('var SUGGEST_URL = "PASTE_YOUR_SUGGESTIONS_FORM_LINK_HERE";',
+                    'var SUGGEST_URL = "https://electrasantiago.com/send-note.php";')
+
 out = Path(__file__).resolve().parent.parent / "src" / "embeds" / "events-globe.html"
 out.write_text(html + "\n", encoding="utf-8")
 print("wrote", out, len(html), "bytes")

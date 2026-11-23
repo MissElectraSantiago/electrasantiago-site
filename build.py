@@ -591,6 +591,10 @@ def main():
         (OUT / "robots.txt").write_text(ROBOTS, encoding="utf-8")
         (OUT / "feed.xml").write_text(feed(posts), encoding="utf-8")
         (OUT / ".htaccess").write_text(HTACCESS, encoding="utf-8")
+        # small server scripts, like the one that emails notes from the "Send a note" boxes
+        if (SRC / "static").exists():
+            for f in (SRC / "static").iterdir():
+                shutil.copy(f, OUT / f.name)
 
     print(f"Built {len(pages)} pages and {len(posts)} posts into {OUT.relative_to(ROOT)}/")
 

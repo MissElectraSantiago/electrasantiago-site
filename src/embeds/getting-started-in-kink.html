@@ -166,7 +166,7 @@ body { background: var(--page); }
         <h2>Send a note to Electra</h2>
         <p>Know a great resource that's missing, or found a link that's broken or out of date? Your note goes straight to me, Electra, and I read every one before anything changes on the page.</p>
       </div>
-      <form class="krd-form" id="krd-form" method="post" novalidate>
+      <form class="krd-form" id="krd-form" novalidate>
         <label for="krd-msg">Your note to Electra
           <textarea id="krd-msg" name="message" required maxlength="2000" placeholder="e.g. Add the Chicago munch, or the rope safety link is broken"></textarea>
         </label>
@@ -197,7 +197,7 @@ body { background: var(--page); }
   // (a Formspree link, or your Jotform form's submit address). The box sends
   // three fields: "message", "email" and "page". Leave it empty and the box
   // shows a note instead of sending.
-  var SUGGEST_URL = "PASTE_YOUR_FORM_LINK_HERE";
+  var SUGGEST_URL = "https://electrasantiago.com/send-note.php";
 
   // When the links were last checked.
   var CHECKED = "November 2026";
@@ -436,16 +436,18 @@ body { background: var(--page); }
   // Suggestions box
   (function () {
     var form = $("krd-form"), note = $("krd-form-note"), msg = $("krd-msg");
-    var ready = /^https:\/\//.test(SUGGEST_URL);
-    if (ready) { form.action = SUGGEST_URL; form.target = "_blank"; }
+    var ready = /^https:\/\//.test(SUGGEST_URL), send = $("krd-send");
     form.addEventListener("submit", function (e) {
+      e.preventDefault();
       note.classList.remove("krd-ok");
-      if (!msg.value.trim()) { e.preventDefault(); note.textContent = "Write a note first, then send it."; msg.focus(); return; }
-      if ($("krd-website").value) { e.preventDefault(); return; }
-      if (!ready) { e.preventDefault(); note.textContent = "The suggestions box goes live once its form link is added."; return; }
-      note.textContent = "Thanks, your note is on its way to Electra.";
-      note.classList.add("krd-ok");
-      setTimeout(function () { form.reset(); }, 400);
+      if (!msg.value.trim()) { note.textContent = "Write a note first, then send it."; msg.focus(); return; }
+      if ($("krd-website").value) return;
+      if (!ready) { note.textContent = "The suggestions box goes live once its form link is added."; return; }
+      send.disabled = true; note.textContent = "Sending...";
+      fetch(SUGGEST_URL, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); note.textContent = "Thanks, your note is on its way to Electra."; note.classList.add("krd-ok"); })
+        .catch(function () { note.textContent = "That didn't send. Please try again in a moment."; })
+        .then(function () { send.disabled = false; });
     });
   })();
 

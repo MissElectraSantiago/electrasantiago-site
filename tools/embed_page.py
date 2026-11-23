@@ -11,10 +11,16 @@ from pathlib import Path
 
 SETTINGS = {
     "holiday-giving-guide": [
+        # 23 Nov 2026: notes go to Electra through the site's own send-note script
+        ('var SUGGEST_ENDPOINT = "PASTE_FORM_ENDPOINT_HERE";', 'var SUGGEST_ENDPOINT = "https://electrasantiago.com/send-note.php";'),
         ('var PAGE_URL = "https://electrasantiago.com/";', 'var PAGE_URL = "https://electrasantiago.com/holiday-giving-guide";'),
         ('"donate_url": "https://marshap.org/donate/"', '"donate_url": "https://www.marshap.org/"'),  # M, 23 Nov 2026
     ],
     "getting-started-in-kink": [
+        # 23 Nov 2026: notes go to Electra through the site's own send-note script
+        ('var SUGGEST_URL = "PASTE_YOUR_FORM_LINK_HERE";', 'var SUGGEST_URL = "https://electrasantiago.com/send-note.php";'),
+        ('    var ready = /^https:\\/\\//.test(SUGGEST_URL);\n    if (ready) { form.action = SUGGEST_URL; form.target = "_blank"; }\n    form.addEventListener("submit", function (e) {\n      note.classList.remove("krd-ok");\n      if (!msg.value.trim()) { e.preventDefault(); note.textContent = "Write a note first, then send it."; msg.focus(); return; }\n      if ($("krd-website").value) { e.preventDefault(); return; }\n      if (!ready) { e.preventDefault(); note.textContent = "The suggestions box goes live once its form link is added."; return; }\n      note.textContent = "Thanks, your note is on its way to Electra.";\n      note.classList.add("krd-ok");\n      setTimeout(function () { form.reset(); }, 400);\n    });', '    var ready = /^https:\\/\\//.test(SUGGEST_URL), send = $("krd-send");\n    form.addEventListener("submit", function (e) {\n      e.preventDefault();\n      note.classList.remove("krd-ok");\n      if (!msg.value.trim()) { note.textContent = "Write a note first, then send it."; msg.focus(); return; }\n      if ($("krd-website").value) return;\n      if (!ready) { note.textContent = "The suggestions box goes live once its form link is added."; return; }\n      send.disabled = true; note.textContent = "Sending...";\n      fetch(SUGGEST_URL, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })\n        .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); note.textContent = "Thanks, your note is on its way to Electra."; note.classList.add("krd-ok"); })\n        .catch(function () { note.textContent = "That didn\'t send. Please try again in a moment."; })\n        .then(function () { send.disabled = false; });\n    });'),
+        ('<form class="krd-form" id="krd-form" method="post" novalidate>', '<form class="krd-form" id="krd-form" novalidate>'),
         ('"name": "Black Rose", "url": "https://br.org/br/about-black-rose/"', '"name": "Black Rose", "url": "https://br.org/"'),  # M, 23 Nov 2026
         ('"url": "https://clawinfo.org/claw-26-registration-information"', '"url": "https://clawinfo.org/"'),  # M, 23 Nov 2026
         # M, 23 Nov 2026: make the titles red so they're easier to see
