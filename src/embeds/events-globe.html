@@ -1232,7 +1232,7 @@ body { background: var(--page); }
 
     // dragging and pinching
     var drag = null, pinch = null, pts = new Map();
-    function setZoom(z) { zoom = Math.max(1, Math.min(4, z)); }
+    function setZoom(z) { zoom = Math.max(1, Math.min(16, z)); }
     function pinchDist() { var a = Array.from(pts.values()); return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; }
     canvas.addEventListener("pointerdown", function (ev) {
       pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
@@ -1303,8 +1303,8 @@ body { background: var(--page); }
       flight = { t: performance.now(), a: rot.slice(), d: [d0, target[1] - rot[1]] };
     }
 
-    $("esg-zin").addEventListener("click", function () { setZoom(zoom * 1.35); pauseSpin(); });
-    $("esg-zout").addEventListener("click", function () { setZoom(zoom / 1.35); });
+    $("esg-zin").addEventListener("click", function () { setZoom(zoom * 1.6); pauseSpin(); });
+    $("esg-zout").addEventListener("click", function () { setZoom(zoom / 1.6); });
 
     function setPins(list) {
       var byCity = {};
