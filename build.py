@@ -409,6 +409,18 @@ def to_preview_links(doc):
     return re.sub(r'href="(/[^"]*)"', fix, doc)
 
 
+PRIVATE = set()  # page paths with "private": true; left out of the live site for now
+
+
+def hide_private(doc):
+    for path in PRIVATE:
+        doc = re.sub(r' · <a href="' + re.escape(path) + r'">[^<]*</a>', '', doc)
+        doc = re.sub(r'<p[^>]*>(?:(?!</p>).)*href="' + re.escape(path) + r'[#"](?:(?!</p>).)*</p>\s*', '', doc, flags=re.S)
+        if f'href="{path}"' in doc or f'href="{path}#' in doc:
+            raise SystemExit(f"a link to private page {path} is still on a page")
+    return doc
+
+
 def page_doc(meta, body, posts, post=None, og_type="website", is_home=False):
     main = f'{header(meta["path"] if not post else "/blog-list")}\n<main id="main">\n{body}\n</main>\n{footer()}\n{action_bar()}\n{age_gate()}'
     if PREVIEW:
@@ -421,7 +433,7 @@ def page_doc(meta, body, posts, post=None, og_type="website", is_home=False):
                    f'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
                    f'{head}\n</head>\n<body>\n{main}\n{tail}\n</body>\n</html>\n')
         return to_preview_links(doc)
-    return (f'<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+    return hide_private(f'<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
             f'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
             f'{head_tags(meta, posts, post, og_type)}\n<link rel="stylesheet" href="/assets/style.css">\n'
             f'</head>\n<body>\n{main}\n<script src="/assets/site.js" defer></script>\n</body>\n</html>\n')
@@ -521,6 +533,9 @@ ErrorDocument 404 /404.html
 
 def main():
     pages = load_pages()
+    if not PREVIEW:
+        PRIVATE.update(m["path"] for m in pages if m.get("private"))
+        pages = [m for m in pages if not m.get("private")]
     posts = load_posts()
     if OUT.exists():
         shutil.rmtree(OUT)
