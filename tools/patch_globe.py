@@ -12,6 +12,9 @@ import re, sys
 from pathlib import Path
 
 REMOVE_NAMES = ["Latex 42"]          # M, 23 Nov 2026: "remove Latex 42"
+LINK_FIXES = [                        # links M corrected, 23 Nov 2026
+    ('"name": "CLAW", ', '"https://www.clawinfo.org/"', '"https://clawinfo.org/"'),
+]
 
 src = Path(sys.argv[1]).read_text(encoding="utf-8")
 start = src.index("\n<style>\n") + 1   # the globe's own styles, not the host wrapper's
@@ -23,6 +26,13 @@ assert n == 1, "title not found"
 
 for name in REMOVE_NAMES:
     html = re.sub(r'\n[ \t]*\{"name": "' + re.escape(name) + r'",[^\n]*', "", html)
+
+for name_key, old, new in LINK_FIXES:
+    lines = html.split("\n")
+    for i, line in enumerate(lines):
+        if name_key in line and old in line:
+            lines[i] = line.replace(old, new)
+    html = "\n".join(lines)
 
 old_wheel = '''    // trackpad pinch (arrives as ctrl + wheel); plain scrolling still scrolls the page
     canvas.addEventListener("wheel", function (ev) {
