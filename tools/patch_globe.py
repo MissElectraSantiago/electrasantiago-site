@@ -108,6 +108,9 @@ for old, new in SWITCH:
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import globe_submit_form
 html = globe_submit_form.apply(html)
+# 23 Nov 2026: on phones a tapped pin shows a preview under the globe instead of scrolling away
+import globe_phone_peek
+html = globe_phone_peek.apply(html)
 
 out = Path(__file__).resolve().parent.parent / "src" / "embeds" / "events-globe.html"
 out.write_text(html + "\n", encoding="utf-8")

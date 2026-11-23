@@ -91,6 +91,20 @@ body { background: var(--page); }
 .esg-zoom button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px var(--shadow); }
 .esg-tip { position: absolute; pointer-events: none; transform: translate(-50%, calc(-100% - 14px)); background: var(--ink); color: var(--paper); padding: 6px 10px; font-size: 13px; white-space: nowrap; opacity: 0; transition: opacity .12s; }
 .esg-tip.esg-on { opacity: 1; }
+.esg-peek { display: none; }
+@media (max-width: 860px) {
+  .esg-peek:not([hidden]) { display: block; max-width: 420px; margin: 12px auto 0; padding: 12px 14px 14px; border: 1px solid var(--ink); border-radius: 18px; background: var(--paper); font-size: 14px; }
+}
+.esg-peek-head { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
+.esg-peek-head b { font-family: var(--display); font-weight: 400; font-size: 18px; line-height: 1.1; }
+.esg-peek-head span { color: var(--ink-soft); font-size: 13px; }
+.esg-peek-x { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; }
+.esg-peek ul { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
+.esg-peek li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.esg-peek-name { font-weight: 600; min-width: 0; }
+.esg-peek-when { color: var(--ink-soft); font-size: 13px; }
+.esg-peek li a { margin-left: auto; color: var(--red); font-size: 13px; white-space: nowrap; }
+.esg-peek-more { width: 100%; height: 42px; border: 0; border-radius: 999px; background: var(--red); color: var(--red-ink); font: inherit; font-weight: 600; cursor: pointer; }
 .esg-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 14px; font-size: 13px; color: var(--ink-soft); }
 .esg-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--red); margin-right: 7px; vertical-align: 1px; }
 .esg-dot.esg-soft { background: var(--land); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--land); }
@@ -216,6 +230,7 @@ body { background: var(--page); }
             <button type="button" id="esg-zout" aria-label="Zoom out">&minus;</button>
           </div>
         </div>
+        <div class="esg-peek" id="esg-peek" aria-live="polite" hidden></div>
         <div class="esg-legend">
           <span><i class="esg-dot"></i><span id="esg-leg1">In the next 30 days</span></span>
           <span><i class="esg-dot esg-soft"></i><span id="esg-leg2">Later, or dates to come</span></span>
@@ -1094,6 +1109,21 @@ body { background: var(--page); }
       : "<span>" + st + "</span>";
     var px = $("esg-place-x"); if (px) px.addEventListener("click", function () { state.place = null; render(); });
 
+    var pk = $("esg-peek");
+    if (state.place && shown.length) {
+      var items = mode === "fashion" ? shown : dated.concat(venues, tba);
+      var ph = '<div class="esg-peek-head"><b>' + esc(state.place) + "</b><span>" + st + '</span><button type="button" class="esg-peek-x" aria-label="Close preview">×</button></div><ul>';
+      items.slice(0, 3).forEach(function (o) {
+        var w = mode === "fashion" ? (o.women ? "Women owned" : o.online ? "Online only" : "") : o.venue ? "Open year-round" : o.s ? dateRange(o) : "Dates TBA";
+        ph += '<li><span class="esg-peek-name">' + esc(o.name) + "</span>" + (w ? '<span class="esg-peek-when">' + w + "</span>" : "") +
+          (o.url ? '<a href="' + esc(o.url) + '" target="_blank" rel="noopener nofollow">' + (mode === "fashion" ? "Shop" : "Website") + "</a>" : "") + "</li>";
+      });
+      ph += '</ul><button type="button" class="esg-peek-more">' + (items.length > 3 ? "See all " + items.length + " in the list" : "See the details below") + "</button>";
+      pk.innerHTML = ph; pk.hidden = false;
+      pk.querySelector(".esg-peek-x").addEventListener("click", function () { state.place = null; render(); });
+      pk.querySelector(".esg-peek-more").addEventListener("click", function () { $("esg-status").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); });
+    } else { pk.hidden = true; pk.innerHTML = ""; }
+
     if (!shown.length) {
       listEl.innerHTML = mode === "fashion"
         ? '<p class="esg-empty">No labels match that yet. <button type="button" id="esg-reset">Show all labels</button></p>'
@@ -1339,7 +1369,6 @@ body { background: var(--page); }
       state.place = state.place === p.city ? null : p.city;
       render();
       if (state.place) flyTo(p.lng, p.lat);
-      if (window.matchMedia("(max-width: 860px)").matches && state.place) $("esg-status").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     }
 
     function flyTo(lng, lat) {
