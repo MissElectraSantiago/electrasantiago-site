@@ -139,6 +139,109 @@
     });
   });
 
+  // My list: visitors save events and shops from the globe and the shopping guide,
+  // then email the list to themselves (M, 23 Nov 2026). Saved in this browser only.
+  (function () {
+    var lists = [
+      { box: "esg-list", row: ".esg-ev", name: ".esg-name", where: ".esg-meta", link: "a.esg-link", put: ".esg-tags" },
+      { box: "ess-list", row: ".ess-shop", name: ".ess-shop-name", where: ".ess-shop-area", city: ".ess-city-name", link: "a.ess-map", put: "a.ess-map" }
+    ].filter(function (l) { return document.getElementById(l.box); });
+    if (!lists.length) return;
+    var KEY = "es-my-list", items = [];
+    try { items = JSON.parse(localStorage.getItem(KEY) || "[]") || []; } catch (e) { items = []; }
+    var save = function () { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} };
+    var has = function (name) { return items.some(function (i) { return i.name === name; }); };
+    var txt = function (el) { return el ? el.textContent.replace(/\s+/g, " ").trim() : ""; };
+
+    var bar = document.createElement("div");
+    bar.className = "mylist"; bar.hidden = true;
+    bar.innerHTML =
+      '<div class="mylist-row"><button type="button" class="mylist-count" aria-expanded="false"></button>' +
+      '<button type="button" class="btn btn-red mylist-email">Email me my list</button>' +
+      '<button type="button" class="mylist-clear">Clear</button></div>' +
+      '<ul class="mylist-items" hidden></ul>' +
+      '<form class="mylist-form" hidden><label>Your email <input type="email" required autocomplete="email" placeholder="you@example.com"></label>' +
+      '<button type="submit" class="btn btn-red">Send</button>' +
+      '<p class="small muted">This opens your email app with the list ready to send to yourself.</p></form>';
+    document.body.appendChild(bar);
+    var countBtn = bar.querySelector(".mylist-count"), ul = bar.querySelector(".mylist-items"), form = bar.querySelector(".mylist-form");
+
+    function paint() {
+      bar.hidden = !items.length;
+      countBtn.textContent = "My list: " + items.length + " saved";
+      ul.innerHTML = items.map(function (i, n) {
+        var li = document.createElement("li"); li.textContent = i.name + (i.where ? " · " + i.where : "");
+        return "<li>" + li.innerHTML + ' <button type="button" data-rm="' + n + '" aria-label="Remove">×</button></li>';
+      }).join("");
+      if (!items.length) { ul.hidden = true; form.hidden = true; countBtn.setAttribute("aria-expanded", "false"); }
+      document.querySelectorAll(".save-pin").forEach(function (b) {
+        var on = has(b.getAttribute("data-name"));
+        var label = on ? "Saved" : "+ Save";
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        if (b.textContent !== label) b.textContent = label;   // only on change, or the observer below loops
+      });
+    }
+    function addButtons(l) {
+      document.getElementById(l.box).querySelectorAll(l.row).forEach(function (r) {
+        if (r.querySelector(".save-pin")) return;
+        var name = txt(r.querySelector(l.name)); if (!name) return;
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "save-pin"; b.setAttribute("data-name", name);
+        b.setAttribute("aria-label", "Save " + name + " to my list");
+        var spot = r.querySelector(l.put);
+        if (spot && spot.tagName === "A") spot.insertAdjacentElement("afterend", b);
+        else (spot || r).appendChild(b);
+      });
+    }
+    function toggle(b) {
+      var r = b.closest(".esg-ev, .ess-shop"), name = b.getAttribute("data-name");
+      if (has(name)) { items = items.filter(function (i) { return i.name !== name; }); }
+      else {
+        var l = r.classList.contains("ess-shop") ? lists.filter(function (x) { return x.box === "ess-list"; })[0] : lists[0];
+        var where = txt(r.querySelector(l.where));
+        if (l.city) { var c = txt(r.closest(".ess-city") && r.closest(".ess-city").querySelector(l.city)); where = [where, c].filter(Boolean).join(", "); }
+        var a = r.querySelector(l.link);
+        items.push({ name: name, where: where, url: a ? a.href : "" });
+      }
+      save(); paint();
+    }
+    // Capture phase, so a tap on Save doesn't also spin the globe to that city
+    document.addEventListener("click", function (ev) {
+      var b = ev.target.closest && ev.target.closest(".save-pin");
+      if (!b) return;
+      ev.stopPropagation(); toggle(b);
+    }, true);
+    document.addEventListener("keydown", function (ev) {
+      if (ev.target.closest && ev.target.closest(".save-pin") && (ev.key === "Enter" || ev.key === " ")) ev.stopPropagation();
+    }, true);
+    countBtn.addEventListener("click", function () {
+      ul.hidden = !ul.hidden; countBtn.setAttribute("aria-expanded", ul.hidden ? "false" : "true");
+    });
+    ul.addEventListener("click", function (ev) {
+      var x = ev.target.closest("[data-rm]"); if (!x) return;
+      items.splice(+x.getAttribute("data-rm"), 1); save(); paint();
+    });
+    bar.querySelector(".mylist-clear").addEventListener("click", function () { items = []; save(); paint(); });
+    bar.querySelector(".mylist-email").addEventListener("click", function () {
+      form.hidden = !form.hidden; if (!form.hidden) form.querySelector("input").focus();
+    });
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var to = form.querySelector("input").value.trim();
+      var body = "My list from electrasantiago.com\n\n" + items.map(function (i) {
+        return i.name + (i.where ? "\n" + i.where : "") + (i.url ? "\n" + i.url : "");
+      }).join("\n\n") + "\n";
+      location.href = "mailto:" + to.replace(/[^\w.+@-]/g, "") + "?subject=" + encodeURIComponent("My kink events and shops") + "&body=" + encodeURIComponent(body);
+    });
+
+    lists.forEach(function (l) {
+      var box = document.getElementById(l.box);
+      addButtons(l);
+      new MutationObserver(function () { addButtons(l); paint(); }).observe(box, { childList: true, subtree: true });
+    });
+    paint();
+  })();
+
   // Countdown timers: "3d 07h 12m 05s left", hidden once the time is up
   document.querySelectorAll("[data-countdown]").forEach(function (el) {
     var end = Date.parse(el.getAttribute("data-countdown"));

@@ -11,6 +11,10 @@
     <p class="eyebrow">Community</p>
     <h1>Community Resources</h1>
     <p class="lede">Events, bars and fetish fashion for the kink community around the world.</p>
+    <div class="cr-jump">
+      <a class="cr-jump-card" href="/fetish-shopping-guide"><span class="cr-jump-q">Looking for something to wear?</span><span class="cr-jump-a">Fetish Shopping Guide →</span><span class="cr-jump-d">Walk-in latex, leather and fetish shops, city by city.</span></a>
+      <a class="cr-jump-card" href="/getting-started-in-kink"><span class="cr-jump-q">New to kink?</span><span class="cr-jump-a">Getting Started in Kink →</span><span class="cr-jump-d">Where to learn, meet people and play safely.</span></a>
+    </div>
   </div>
 </section>
 
@@ -29,6 +33,12 @@
 </section>
 
 <style>
+.cr-jump { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+.cr-jump-card { display: grid; gap: 0.2rem; padding: 1rem 1.1rem; border: 1px solid var(--red); border-radius: var(--radius); background: var(--panel); color: var(--text); text-decoration: none; }
+.cr-jump-card:hover { background: color-mix(in srgb, var(--red) 14%, var(--panel)); }
+.cr-jump-q { color: var(--muted); font-size: 0.9rem; }
+.cr-jump-a { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.03em; font-size: 1.3rem; color: #fff; }
+.cr-jump-d { color: var(--muted); font-size: 0.85rem; }
 /* The globe was built on white; on this site it takes the site's dark colours. */
 .events-globe #esg {
   --paper: #0b0a0d;

@@ -449,3 +449,22 @@ html::after {
 .btn-light { background: #fff; color: #000; border-color: #fff; }
 .btn-light:hover { background: #000; color: #fff; border-color: #000; }
 .sale-inline { color: var(--text); }
+
+/* My list: saved events and shops (globe + shopping guide) */
+.save-pin { font: inherit; font-size: 0.78rem; letter-spacing: 0.04em; padding: 0.2rem 0.6rem; border-radius: 999px;
+  border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; margin-left: 0.4rem; }
+.save-pin:hover { border-color: var(--red); }
+.save-pin[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #fff; }
+.mylist { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 70; width: min(560px, calc(100% - 32px));
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 1rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+.mylist-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.mylist-count { font: inherit; font-weight: 600; background: none; border: 0; color: var(--text); cursor: pointer; padding: 0; margin-right: auto; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
+.mylist-clear { font: inherit; background: none; border: 0; color: var(--muted); cursor: pointer; }
+.mylist-items { list-style: none; margin: 0.75rem 0 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+.mylist-items li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid var(--line); font-size: 0.9rem; }
+.mylist-items button { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+.mylist-form { margin-top: 0.75rem; display: grid; gap: 0.5rem; }
+.mylist-form label { display: grid; gap: 0.25rem; font-size: 0.9rem; }
+.mylist-form input { font: inherit; padding: 0.6rem 0.7rem; border-radius: var(--radius); border: 1px solid var(--line); background: var(--ink); color: var(--text); }
+.mylist-form p { margin: 0; }
