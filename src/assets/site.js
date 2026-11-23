@@ -174,7 +174,7 @@
   (function () {
     var lists = [
       { box: "esg-list", row: ".esg-ev", name: ".esg-name", where: ".esg-meta", link: "a.esg-link", put: ".esg-tags" },
-      { box: "ess-list", row: ".ess-shop", name: ".ess-shop-name", where: ".ess-shop-area", city: ".ess-city-name", link: "a.ess-map", put: "a.ess-map" }
+      { box: "ess-list", row: ".ess-shop", name: ".ess-shop-name", where: ".ess-shop-area", city: ".ess-city-name", link: "a.ess-map", put: "" }  // Save goes at the end of the shop, since the map button now sits under the area
     ].filter(function (l) { return document.getElementById(l.box); });
     if (!lists.length) return;
     var KEY = "es-my-list", items = [];
@@ -218,7 +218,7 @@
         var b = document.createElement("button");
         b.type = "button"; b.className = "save-pin"; b.setAttribute("data-name", name);
         b.setAttribute("aria-label", "Save " + name + " to my list");
-        var spot = r.querySelector(l.put);
+        var spot = l.put ? r.querySelector(l.put) : null;
         if (spot && spot.tagName === "A") spot.insertAdjacentElement("afterend", b);
         else (spot || r).appendChild(b);
       });
