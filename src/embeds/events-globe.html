@@ -100,7 +100,7 @@ body { background: var(--page); }
 .esg-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 8px; font-size: 14px; color: var(--ink-soft); }
 .esg-place { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 6px 0 12px; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 13px; }
 .esg-place button { width: 22px; height: 22px; border-radius: 50%; border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 15px; }
-.esg-list { max-height: 720px; overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; }
+.esg-list { max-height: 720px; overflow-y: auto; overscroll-behavior: auto; padding-right: 6px; touch-action: pan-y; }
 .esg-month { position: sticky; top: 0; z-index: 1; margin: 0; padding: 18px 0 8px; background: var(--paper); font-family: var(--display); font-weight: 400; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); border-bottom: 1px solid var(--line); }
 .esg-ev { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 4px 16px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
 .esg-ev:hover .esg-name, .esg-ev:focus-visible .esg-name { text-decoration: underline; text-underline-offset: 3px; }
@@ -141,7 +141,18 @@ body { background: var(--page); }
   .esg-main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .esg-globe-col { position: static; }
   .esg-stage { max-width: 420px; }
-  .esg-list { max-height: 620px; }
+  /* On phones the list flows with the page, so a drag anywhere on it scrolls the page. */
+  .esg-list { max-height: none; overflow: visible; padding-right: 0; }
+  /* On phones the globe comes straight after the switch; search and filters sit under it. */
+  .esg-wrap { display: flex; flex-direction: column; }
+  .esg-main { display: contents; }
+  .esg-head { order: 0; }
+  .esg-globe-col { order: 1; margin-top: 22px; }
+  .esg-controls { order: 2; }
+  .esg-list-col { order: 3; }
+  .esg-submit-band { order: 4; }
+  .esg-suggest { order: 5; }
+  .esg-foot { order: 6; }
 }
 @media (max-width: 520px) {
   .esg-wrap { padding-block: 32px 40px; }
@@ -603,7 +614,6 @@ body { background: var(--page); }
   {"name": "Breathless", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "http://www.breathless.uk.com/", "about": "London latex couture house making dresses, suits, uniforms and catsuits, with made-to-measure service.", "women": true},
   {"name": "Dark Garden", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Corsetry", "Bridal", "Accessories"], "url": "https://darkgarden.com", "about": "Famed corsetry house making bespoke and standard-fit corsets, with boutiques in San Francisco and New Orleans."},
   {"name": "Garo Sparo", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Corsetry", "Bridal"], "url": "https://garosparo.com", "about": "NYC corsetier known for crystal-embellished stage corsets worn by pop stars and drag performers."},
-  {"name": "Mr S Leather", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Couture", "Made to measure", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.mr-s-leather.com", "about": "Landmark SoMa leather house since 1979, designing and making leather and neoprene fetish gear in-house."},
   {"name": "The Leather Man", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.theleatherman.com", "about": "Historic Christopher Street leather shop with its own house harnesses, chaps and fetish gear."},
   {"name": "Nasty Pig", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.nastypig.com", "about": "NYC fetish-leaning menswear label making harnesses, jocks and club gear, with a Fall/Winter '26 line."},
   {"name": "The Blonds", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry"], "url": "https://www.theblondsny.com", "about": "NYFW label famed for crystal-encrusted corsets and showgirl couture worn by pop royalty."},
@@ -656,6 +666,15 @@ body { background: var(--page); }
   {"name": "Latexcrazy", "city": "Zwickau", "country": "Germany", "lat": 50.73, "lng": 12.49, "tags": ["Online only", "Latex", "Made to measure", "Ready to wear", "Catsuits", "Accessories"], "url": "https://en.latexcrazy.com", "about": "Online-only latex shop: mostly own handmade catsuits with free tailoring, plus gloves from other labels.", "online": true, "check": true},
   {"name": "Beserk", "city": "Brisbane", "country": "Australia", "lat": -27.47, "lng": 153.03, "tags": ["Online only", "Ready to wear", "Lingerie", "PVC", "Accessories"], "url": "https://www.beserk.com.au/collections/fetish", "about": "Big Australian alt-fashion e-shop with a fetish section of PVC-look pieces and fetish boots.", "online": true},
   {"name": "Tragic Beautiful", "city": "Australia", "country": "Australia", "lat": -25.27, "lng": 133.78, "tags": ["Online only", "Ready to wear", "Lingerie", "PVC", "Accessories"], "url": "https://www.tragicbeautiful.com/en-us/collections/fetish", "about": "Australian online alt-fashion store with a fetish collection of glossy lingerie and harness pieces.", "online": true},
+  {"name": "Charmskool", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Lingerie", "Accessories"], "url": "https://charmskoolshop.com/", "about": "East London showroom and online shop selling handmade latex from independent makers worldwide."},
+  {"name": "Fetish Factory", "city": "Fort Lauderdale, FL", "country": "USA", "lat": 26.12, "lng": -80.14, "tags": ["Stores & showrooms", "Latex", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Leather", "PVC", "Accessories"], "url": "https://store.fetishfactory.com", "about": "Walk-in showroom open 7 days with big latex rails; listed by House of Harlot as its US stockist.", "store": true},
+  {"name": "The Stockroom", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Stores & showrooms", "Latex", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Leather", "Accessories"], "url": "https://www.stockroom.com", "about": "Walk-in fetish store, home of in-house Syren Latex, plus Stormy Leather and other BDSM brands.", "store": true},
+  {"name": "Purple Passion / DV8", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Stores & showrooms", "Latex", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Leather", "PVC", "Accessories"], "url": "https://purplepassion.com", "about": "Two-floor walk-in Chelsea fetish store, open daily; latex for women and men including Polymorphe.", "store": true},
+  {"name": "Mr. S Leather", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Stores & showrooms", "Latex", "Made to measure", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.mr-s-leather.com", "about": "Walk-in SoMa gear store open daily; own-label rubber with made-to-measure, plus many gear brands.", "store": true},
+  {"name": "Bondesque", "city": "Minneapolis, MN", "country": "USA", "lat": 44.98, "lng": -93.26, "tags": ["Stores & showrooms", "Latex", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Leather", "PVC", "Accessories"], "url": "https://www.bondesque.com", "about": "Walk-in BDSM boutique; latex from Vex, Honour, Polymorphe, Latex101, MKL and Peter Domenie.", "store": true},
+  {"name": "Passional Boutique", "city": "Philadelphia, PA", "country": "USA", "lat": 39.95, "lng": -75.16, "tags": ["Stores & showrooms", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Leather", "Accessories"], "url": "https://passionalboutique.com", "about": "Walk-in South Street fetish boutique with a 170-plus piece latex range; latex labels not named.", "store": true},
+  {"name": "Vanilla Kink", "city": "Denver, CO", "country": "USA", "lat": 39.74, "lng": -104.98, "tags": ["Stores & showrooms", "Latex", "Ready to wear", "Lingerie", "Leather", "Accessories"], "url": "http://www.vanillakinkdenver.com/", "about": "Walk-in kink boutique with a Rubber Room latex section; latex brands could not be checked.", "store": true},
+  {"name": "Gear Leather & Fetish", "city": "Palm Springs, CA", "country": "USA", "lat": 33.83, "lng": -116.55, "tags": ["Stores & showrooms", "Latex", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.gearleather.com/", "about": "Men's gear stores in Palm Springs and San Diego, open daily; rubber from Mr. S, plus Nasty Pig.", "store": true},
   {"name": "A-D-Atelier", "city": "Newcastle, NSW", "country": "Australia", "lat": -32.93, "lng": 151.78, "tags": ["Latex", "Couture", "Catsuits", "Lingerie", "Accessories"], "url": "https://a-d-atelier.com.au", "about": "Art-led latex label making bodysuits, leggings, tops, skirts and collars, mostly to order."},
   {"name": "Alecto Latex", "city": "Sydney", "country": "Australia", "lat": -33.87, "lng": 151.21, "tags": ["Latex", "Made to measure", "Catsuits"], "url": "https://alectolatex.carrd.co", "about": "Small Sydney studio taking made-to-measure catsuit and top commissions, plus repairs and appliqué.", "check": true},
   {"name": "Debauch Latex", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Women owned", "Latex", "Made to measure", "Ready to wear", "Lingerie", "Accessories"], "url": "https://www.debauchlatex.com.au", "about": "Small studio hand-making femme-leaning latex tops, knickers, bras and pigtailed hoods, made to order or ready to ship.", "women": true},
@@ -872,7 +891,7 @@ body { background: var(--page); }
     o.hay = [f.name, f.city, f.country, o.tags.join(" "), f.about].join(" ").toLowerCase();
     return o;
   });
-  var FASHION_ORDER = ["Women owned", "Online only", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Corsetry", "Leather", "PVC", "Bridal", "Accessories"];
+  var FASHION_ORDER = ["Women owned", "Online only", "Stores & showrooms", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Corsetry", "Leather", "PVC", "Bridal", "Accessories"];
   var mode = "events", events = evData;
 
   function countdown(o) {
@@ -917,8 +936,8 @@ body { background: var(--page); }
     if (mode === "fashion") {
       var countries = {}; faData.forEach(function (o) { countries[o.country] = 1; });
       var women = faData.filter(function (o) { return o.women; }).length;
-      var online = faData.filter(function (o) { return o.online; }).length;
-      $("esg-today").innerHTML = day + (faData.length - online) + " latex and couture labels and " + online + " online shops in " + Object.keys(countries).length + " countries. " + women + " labels are women owned.";
+      var online = faData.filter(function (o) { return o.online || o.store; }).length;
+      $("esg-today").innerHTML = day + (faData.length - online) + " latex and couture labels and " + online + " shops in " + Object.keys(countries).length + " countries. " + women + " labels are women owned.";
     } else {
       var soon = evData.filter(function (o) { return o.hot; }).length;
       $("esg-today").innerHTML = day + evData.length + " events worldwide, " + soon + " of them in the next 30 days.";
@@ -1059,7 +1078,7 @@ body { background: var(--page); }
   function rowF(o) {
     var cc = o.country === "United Kingdom" ? "UK" : o.country === "USA" ? "USA" : o.country.slice(0, 3).toUpperCase();
     var shown = o.tags.filter(function (t) { return t !== "Women owned" && t !== "Online only"; });
-    return '<article class="esg-ev" tabindex="0" data-id="' + o.id + '"><div class="esg-date esg-tba esg-cc"><b>' + esc(cc) + '</b><span>' + (o.online ? "Online" : "Label") + '</span></div>' +
+    return '<article class="esg-ev" tabindex="0" data-id="' + o.id + '"><div class="esg-date esg-tba esg-cc"><b>' + esc(cc) + '</b><span>' + (o.online ? "Online" : o.store ? "Store" : "Label") + '</span></div>' +
       '<div class="esg-body"><p class="esg-name">' + esc(o.name) + '</p>' +
       '<p class="esg-meta">' + esc(o.city === o.country ? o.country : o.city + ", " + o.country) + (o.check ? " · check it's still trading" : "") + "</p>" +
       (o.about ? '<p class="esg-about">' + esc(o.about) + "</p>" : "") +
@@ -1213,7 +1232,7 @@ body { background: var(--page); }
 
     // dragging and pinching
     var drag = null, pinch = null, pts = new Map();
-    function setZoom(z) { zoom = Math.max(1, Math.min(3.84, z)); }
+    function setZoom(z) { zoom = Math.max(1, Math.min(4, z)); }
     function pinchDist() { var a = Array.from(pts.values()); return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; }
     canvas.addEventListener("pointerdown", function (ev) {
       pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
