@@ -1206,7 +1206,7 @@ body { background: var(--page); }
 
     // dragging and pinching
     var drag = null, pinch = null, pts = new Map();
-    function setZoom(z) { zoom = Math.max(1, Math.min(3.2, z)); }
+    function setZoom(z) { zoom = Math.max(1, Math.min(3.84, z)); }
     function pinchDist() { var a = Array.from(pts.values()); return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; }
     canvas.addEventListener("pointerdown", function (ev) {
       pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });

@@ -75,6 +75,10 @@ html = html.replace("<span>Drag to turn · pinch to zoom · tap a pin</span>",
 html = html.replace('var SUGGEST_URL = "PASTE_YOUR_SUGGESTIONS_FORM_LINK_HERE";',
                     'var SUGGEST_URL = "https://electrasantiago.com/send-note.php";')
 
+# M, 23 Nov 2026: let people zoom in 20% further
+html = html.replace('function setZoom(z) { zoom = Math.max(1, Math.min(3.2, z)); }',
+                    'function setZoom(z) { zoom = Math.max(1, Math.min(3.84, z)); }')
+
 out = Path(__file__).resolve().parent.parent / "src" / "embeds" / "events-globe.html"
 out.write_text(html + "\n", encoding="utf-8")
 print("wrote", out, len(html), "bytes")
