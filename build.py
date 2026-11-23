@@ -117,8 +117,12 @@ def nice_date(iso):
 
 def find_image(name):
     for ext in ("webp", "jpg", "jpeg", "png"):
-        if (SRC / "images" / f"{name}.{ext}").exists():
-            return ("images/" if PREVIEW else "/images/") + f"{name}.{ext}"
+        f = SRC / "images" / f"{name}.{ext}"
+        if f.exists():
+            if PREVIEW:
+                return f"images/{name}.{ext}"
+            # a version tag from the file's contents, so a replaced photo is never served from an old cache
+            return f"/images/{name}.{ext}?v={hashlib.sha1(f.read_bytes()).hexdigest()[:8]}"
     return None
 
 
