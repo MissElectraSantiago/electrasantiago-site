@@ -17,6 +17,8 @@ LINK_FIXES = [                        # links M corrected, 23 Nov 2026
     ('"name": "Lesbenfrühlingstreffen (LFT)", ', '"https://lesbenfruehling.de/de/"', '"https://www.lesbenfruehling.de/de/"'),
     # Bar Ajari's Instagram is gone; link its write-up instead
     ('"name": "Bar Ajari", ', '"https://www.instagram.com/bar_ajari/"', '"https://everyqueer.com/the-very-best-queer-lesbian-bars-in-tokyo/"'),
+    # Sapphic Riot has no site of its own listed; use Time Out's page on the bar, not the world roundup
+    ('"name": "Sapphic Riot", ', '"https://www.timeout.com/pt/rio-de-janeiro/noticias/quais-sao-os-melhores-espacos-queer-do-mundo-de-acordo-com-os-editores-da-time-out-072026"', '"https://www.timeout.com/chiang-mai/bars-and-pubs/sapphic-riot"'),
 ]
 
 src = Path(sys.argv[1]).read_text(encoding="utf-8")
