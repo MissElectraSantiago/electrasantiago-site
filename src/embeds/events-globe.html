@@ -131,6 +131,14 @@ body { background: var(--page); }
 .esg-suggest-form ::placeholder { color: var(--ink-soft); }
 .esg-suggest-form .esg-cta { justify-self: start; }
 .esg-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.esg-sub-form { flex: 1 1 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; padding-top: 8px; }
+.esg-sub-form[hidden], .esg-sub-field[hidden] { display: none; }
+.esg-sub-field { display: grid; gap: 6px; min-width: 0; font-size: 14px; color: var(--ink-soft); }
+.esg-sub-field input, .esg-sub-field textarea { width: 100%; box-sizing: border-box; height: 44px; padding: 0 16px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; }
+.esg-sub-field textarea { height: auto; min-height: 100px; padding: 12px 16px; border-radius: 18px; resize: vertical; }
+.esg-sub-field ::placeholder { color: var(--ink-soft); }
+.esg-sub-wide { grid-column: 1 / -1; }
+@media (max-width: 560px) { .esg-sub-form { grid-template-columns: 1fr; } .esg-sub-form .esg-cta { width: 100%; } }
 @media (max-width: 860px) { .esg-suggest { grid-template-columns: 1fr; } .esg-suggest-form .esg-cta { justify-self: stretch; } }
 .esg-submit-title { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.1; }
 .esg-submit-text p { margin: 0; color: var(--ink-soft); }
@@ -227,9 +235,19 @@ body { background: var(--page); }
         <p id="esg-submit-text">Send in the details. Each one is reviewed before it goes on the globe.</p>
       </div>
       <div>
-        <a class="esg-cta" id="esg-submit" href="#" target="_blank" rel="noopener">Submit your event</a>
+        <a class="esg-cta" id="esg-submit" href="#" target="_blank" rel="noopener" aria-controls="esg-sub-form" aria-expanded="false">Submit your event</a>
         <p class="esg-cta-note" id="esg-submit-note" hidden></p>
       </div>
+      <form class="esg-sub-form" id="esg-sub-form" novalidate hidden>
+        <label class="esg-sub-field"><span id="esg-sf-name-l">Event name</span><input id="esg-sf-name" maxlength="120" required></label>
+        <label class="esg-sub-field"><span>City and country</span><input id="esg-sf-city" maxlength="120" required></label>
+        <label class="esg-sub-field" id="esg-sf-dates-w"><span>Dates</span><input id="esg-sf-dates" maxlength="120" placeholder="For example 14 to 16 May 2027"></label>
+        <label class="esg-sub-field"><span>Website or social link</span><input id="esg-sf-url" type="url" maxlength="300" placeholder="https://"></label>
+        <label class="esg-sub-field esg-sub-wide"><span id="esg-sf-about-l">About it</span><textarea id="esg-sf-about" maxlength="1000"></textarea></label>
+        <label class="esg-sub-field esg-sub-wide"><span>Your email, so Electra can reply</span><input id="esg-sf-email" type="email" autocomplete="email" maxlength="200" required></label>
+        <input class="esg-hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="esg-sub-wide"><button class="esg-cta" type="submit" id="esg-sf-send">Send for review</button><p class="esg-cta-note" id="esg-sf-note" role="status" hidden></p></div>
+      </form>
     </div>
 
     <div class="esg-suggest">
@@ -947,16 +965,38 @@ body { background: var(--page); }
 
   /* ---------- Submit button ---------- */
   (function () {
-    var a = $("esg-submit");
+    var a = $("esg-submit"), form = $("esg-sub-form"), note = $("esg-sf-note"), send = $("esg-sf-send");
+    function f(id) { return $("esg-sf-" + id); }
+    function say(t) { note.textContent = t; note.hidden = false; }
     a.addEventListener("click", function (ev) {
       var url = mode === "fashion" ? SUBMIT_URL_FASHION : SUBMIT_URL;
       if (/^https:\/\//.test(url)) { a.href = url; return; }
-      {
-        ev.preventDefault();
-        var n = $("esg-submit-note");
-        n.textContent = "Your Jotform form opens here once its link is added.";
-        n.hidden = false;
-      }
+      ev.preventDefault();
+      form.hidden = !form.hidden;
+      a.setAttribute("aria-expanded", String(!form.hidden));
+      if (!form.hidden) f("name").focus();
+    });
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (form.elements._gotcha.value) return;
+      var fashion = mode === "fashion";
+      var name = f("name").value.trim(), city = f("city").value.trim(), mail = f("email").value.trim();
+      var dates = f("dates").value.trim(), link = f("url").value.trim(), about = f("about").value.trim();
+      if (!name) { say(fashion ? "Add your label's name." : "Add the event's name."); f("name").focus(); return; }
+      if (!city) { say("Add the city and country."); f("city").focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { say("Add your email so Electra can reply."); f("email").focus(); return; }
+      var lines = [(fashion ? "Label: " : "Event: ") + name, "Where: " + city];
+      if (!fashion && dates) lines.push("Dates: " + dates);
+      if (link) lines.push("Link: " + link);
+      if (about) lines.push("", about);
+      var fd = new FormData();
+      fd.append("message", lines.join("\n")); fd.append("email", mail); fd.append("view", mode);
+      fd.append("page", (fashion ? "Label submission: " : "Event submission: ") + name);
+      send.disabled = true; say("Sending...");
+      fetch(SUGGEST_URL, { method: "POST", body: fd, headers: { Accept: "application/json" } })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); say("Thank you. Your " + (fashion ? "label" : "event") + " is on its way to Electra for review."); })
+        .catch(function () { say("That didn't send. Please try again in a moment."); })
+        .then(function () { send.disabled = false; });
     });
   })();
 
@@ -1125,7 +1165,10 @@ body { background: var(--page); }
     var t = TEXT[m];
     $("esg-eyebrow").innerHTML = t.eyebrow; $("esg-title").innerHTML = t.title; qEl.placeholder = t.q; qEl.setAttribute("aria-label", t.q);
     $("esg-leg1").textContent = t.leg1; $("esg-leg2").textContent = t.leg2; $("esg-submit-title").textContent = t.st; $("esg-submit-text").textContent = t.sx;
-    $("esg-submit").textContent = t.cta; $("esg-foot-text").textContent = t.foot; $("esg-submit-note").hidden = true;
+    $("esg-submit").textContent = t.cta; $("esg-foot-text").textContent = t.foot; $("esg-submit-note").hidden = true; $("esg-sf-note").hidden = true;
+    $("esg-sf-name-l").textContent = m === "fashion" ? "Label name" : "Event name";
+    $("esg-sf-about-l").textContent = m === "fashion" ? "What you make" : "About it";
+    $("esg-sf-dates-w").hidden = m === "fashion";
     $("esg-when").hidden = m === "fashion";
     document.querySelectorAll("#esg .esg-mode button").forEach(function (x) { x.setAttribute("aria-pressed", String(x.getAttribute("data-mode") === m)); });
     updateHeader(); buildChips(); resetAll();

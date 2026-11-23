@@ -99,6 +99,11 @@ for old, new in SWITCH:
     assert old in html, 'switch changed upstream; patch by hand'
     html = html.replace(old, new)
 
+# 23 Nov 2026: the Submit button opens a form that sends through send-note.php
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import globe_submit_form
+html = globe_submit_form.apply(html)
+
 out = Path(__file__).resolve().parent.parent / "src" / "embeds" / "events-globe.html"
 out.write_text(html + "\n", encoding="utf-8")
 print("wrote", out, len(html), "bytes")
