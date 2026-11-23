@@ -14,6 +14,9 @@ from pathlib import Path
 REMOVE_NAMES = ["Latex 42"]          # M, 23 Nov 2026: "remove Latex 42"
 LINK_FIXES = [                        # links M corrected, 23 Nov 2026
     ('"name": "CLAW", ', '"https://www.clawinfo.org/"', '"https://clawinfo.org/"'),
+    ('"name": "Lesbenfrühlingstreffen (LFT)", ', '"https://lesbenfruehling.de/de/"', '"https://www.lesbenfruehling.de/de/"'),
+    # Bar Ajari's Instagram is gone; link its write-up instead
+    ('"name": "Bar Ajari", ', '"https://www.instagram.com/bar_ajari/"', '"https://everyqueer.com/the-very-best-queer-lesbian-bars-in-tokyo/"'),
 ]
 
 src = Path(sys.argv[1]).read_text(encoding="utf-8")
