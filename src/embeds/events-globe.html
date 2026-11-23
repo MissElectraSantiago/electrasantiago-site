@@ -42,6 +42,15 @@ body { background: var(--page); }
 /* Header */
 .esg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .esg-head-text { min-width: 0; max-width: 640px; }
+.esg-mode { display: inline-flex; border: 1px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.esg-mode button { height: 44px; padding: 0 22px; border: 0; background: transparent; color: var(--ink); font-family: var(--display); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.esg-mode button + button { border-left: 1px solid var(--ink); }
+.esg-mode button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.esg [hidden] { display: none !important; }
+.esg-badge.esg-badge-ink { border-color: var(--ink); color: var(--ink); font-weight: 500; }
+.esg-count .esg-badge { display: inline-block; margin: 0 0 6px; white-space: nowrap; }
+.esg-badge { padding: 2px 10px; border: 1px solid var(--red); border-radius: 999px; color: var(--red); font-weight: 600; }
+.esg-date.esg-cc b { font-size: 20px; letter-spacing: 0.06em; }
 .esg-eyebrow { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.02em; color: var(--ink-soft); }
 .esg-title { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 54px); line-height: 1.06; letter-spacing: 0.005em; text-wrap: balance; }
 .esg-today { margin: 12px 0 0; color: var(--ink-soft); }
@@ -110,6 +119,15 @@ body { background: var(--page); }
 .esg-empty button { border: 0; background: none; padding: 0; color: var(--ink); text-decoration: underline; font: inherit; cursor: pointer; }
 .esg-submit-band { margin-top: 48px; padding: 32px 0; border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; }
 .esg-submit-text { min-width: 0; max-width: 560px; }
+.esg-suggest { padding: 32px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px 32px; align-items: start; }
+.esg-suggest-form { display: grid; gap: 10px; min-width: 0; }
+.esg-suggest-form textarea, .esg-suggest-form input[type="email"] { width: 100%; box-sizing: border-box; padding: 12px 16px; border: 1px solid var(--ink); border-radius: 18px; background: var(--paper); color: var(--ink); font: inherit; }
+.esg-suggest-form textarea { min-height: 110px; resize: vertical; }
+.esg-suggest-form input[type="email"] { height: 44px; border-radius: 999px; }
+.esg-suggest-form ::placeholder { color: var(--ink-soft); }
+.esg-suggest-form .esg-cta { justify-self: start; }
+.esg-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+@media (max-width: 860px) { .esg-suggest { grid-template-columns: 1fr; } .esg-suggest-form .esg-cta { justify-self: stretch; } }
 .esg-submit-title { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.1; }
 .esg-submit-text p { margin: 0; color: var(--ink-soft); }
 .esg-foot { margin-top: 0; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--ink-soft); }
@@ -136,9 +154,13 @@ body { background: var(--page); }
   <div class="esg-wrap">
     <header class="esg-head">
       <div class="esg-head-text">
-        <p class="esg-eyebrow">The fetish calendar</p>
-        <h2 class="esg-title">Kink &amp; Fetish Events Around the World</h2>
+        <p class="esg-eyebrow" id="esg-eyebrow">The fetish calendar</p>
+        <h2 class="esg-title" id="esg-title">Kink &amp; Fetish Events Around the World</h2>
         <p class="esg-today" id="esg-today">Every upcoming ball, convention, cruise and femdom gathering, on one globe.</p>
+      </div>
+      <div class="esg-mode" role="group" aria-label="Show events or fashion">
+        <button type="button" data-mode="events" aria-pressed="true">Events</button>
+        <button type="button" data-mode="fashion" aria-pressed="false">Fashion</button>
       </div>
     </header>
 
@@ -148,7 +170,7 @@ body { background: var(--page); }
           <input id="esg-q" type="search" autocomplete="off" placeholder="Search a city, country or event" aria-label="Search by city, country or event">
           <button class="esg-clear" id="esg-q-clear" type="button" aria-label="Clear search" hidden>×</button>
         </label>
-        <div class="esg-when" role="group" aria-label="When">
+        <div class="esg-when" id="esg-when" role="group" aria-label="When">
           <button type="button" data-when="all" aria-pressed="true">All</button>
           <button type="button" data-when="30">30 days</button>
           <button type="button" data-when="90">3 months</button>
@@ -169,8 +191,8 @@ body { background: var(--page); }
           </div>
         </div>
         <div class="esg-legend">
-          <span><i class="esg-dot"></i>In the next 30 days</span>
-          <span><i class="esg-dot esg-soft"></i>Later, or dates to come</span>
+          <span><i class="esg-dot"></i><span id="esg-leg1">In the next 30 days</span></span>
+          <span><i class="esg-dot esg-soft"></i><span id="esg-leg2">Later, or dates to come</span></span>
           <span>Drag to turn · pinch to zoom · tap a pin</span>
         </div>
       </div>
@@ -183,8 +205,8 @@ body { background: var(--page); }
 
     <div class="esg-submit-band">
       <div class="esg-submit-text">
-        <h2 class="esg-submit-title">Hosting an event?</h2>
-        <p>Send in the details. Each one is reviewed before it goes on the globe.</p>
+        <h2 class="esg-submit-title" id="esg-submit-title">Hosting an event?</h2>
+        <p id="esg-submit-text">Send in the details. Each one is reviewed before it goes on the globe.</p>
       </div>
       <div>
         <a class="esg-cta" id="esg-submit" href="#" target="_blank" rel="noopener">Submit your event</a>
@@ -192,8 +214,22 @@ body { background: var(--page); }
       </div>
     </div>
 
+    <div class="esg-suggest">
+      <div class="esg-submit-text">
+        <h2 class="esg-submit-title">Send a note to Electra</h2>
+        <p>Spotted a missing event or label, a date that's changed, or something else about this page? Your note goes straight to me, Electra.</p>
+      </div>
+      <form class="esg-suggest-form" id="esg-suggest" novalidate>
+        <textarea id="esg-sg-msg" name="message" maxlength="2000" placeholder="Your note to Electra" aria-label="Your note to Electra"></textarea>
+        <input id="esg-sg-email" name="email" type="email" autocomplete="email" placeholder="Your email, if you'd like a reply" aria-label="Your email, optional">
+        <input class="esg-hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="esg-cta" type="submit">Send to Electra</button>
+        <p class="esg-cta-note" id="esg-sg-note" role="status" hidden></p>
+      </form>
+    </div>
+
     <footer class="esg-foot">
-      <span>Dates move. Check each event's own site before you book travel.</span>
+      <span id="esg-foot-text">Dates move. Check each event's own site before you book travel.</span>
     </footer>
   </div>
 </section>
@@ -208,6 +244,16 @@ body { background: var(--page); }
 
   // 1. Paste your Jotform form link between the quotes.
   var SUBMIT_URL = "PASTE_YOUR_JOTFORM_LINK_HERE";
+  // 1b. Optional second form for labels and designers (Fashion view).
+  var SUBMIT_URL_FASHION = "PASTE_YOUR_JOTFORM_LINK_HERE";
+
+  // 1c. Suggestions box. Paste one of these between the quotes:
+  //     - a form endpoint that accepts posts (for example a Formspree link
+  //       like https://formspree.io/f/xxxxxxx). Notes are sent in place and
+  //       arrive with the fields "message", "email" and "view".
+  //     - or a Jotform form link. "Send note" then opens that form with the
+  //       note filled into a field whose unique name is "message".
+  var SUGGEST_URL = "PASTE_YOUR_SUGGESTIONS_FORM_LINK_HERE";
 
   // 2. The events. One line per event. To add an approved submission, copy a
   //    line, change the details and keep the commas. Dates are YYYY-MM-DD.
@@ -531,6 +577,227 @@ body { background: var(--page); }
     {"name": "Lezsmeeting Girls Party", "category": "Lesbian and queer women", "city": "Taipei", "country": "Taiwan", "lat": 25.03, "lng": 121.56, "start": "", "end": "", "usually": "periodic", "url": "https://magdalene.co/story/taiwans-lifestyle-group-lezs-mainstreams-queer-acceptance-and-representation/", "about": "Taiwanese lesbian lifestyle group's big girls' parties, billed as Asia's largest lesbian party.", "check": true}
   ];
 
+  // 3. The fashion labels for the Fashion view. "tags" are the filters it
+  //    appears under; "women": true adds the Women owned badge.
+  var FASHION = [
+  {"name": "Limit Latex", "city": "Utrecht", "country": "Netherlands", "lat": 52.09, "lng": 5.12, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Accessories"], "url": "https://www.limitlatex.com/", "about": "Utrecht atelier making made-to-measure latex catsuits, dresses, corsets and hoods, plus a webshop.", "women": true},
+  {"name": "Latex Nemesis", "city": "Montreal", "country": "Canada", "lat": 45.51, "lng": -73.59, "tags": ["Women owned", "Latex", "Made to measure", "Ready to wear", "Catsuits", "Accessories"], "url": "https://latexnemesis.com", "about": "Latex hoods, masks and bondage gear, with build-your-own hoods and made-to-measure clothing.", "women": true},
+  {"name": "Kink Engineering", "city": "Toronto", "country": "Canada", "lat": 43.71, "lng": -79.4, "tags": ["Women owned", "Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://kinkengineering.com/", "about": "Made-to-measure latex catsuits, laser-cut hoods, vacbeds and latex sheeting.", "women": true},
+  {"name": "UniqDsn", "city": "San Diego, CA", "country": "USA", "lat": 32.72, "lng": -117.16, "tags": ["Women owned", "Latex", "Ready to wear", "Accessories"], "url": "https://uniqdsn.com/", "about": "Ready-to-wear latex gloves and toe socks, plus latex care products.", "women": true},
+  {"name": "Cathedral Latex", "city": "Australia", "country": "Australia", "lat": -25.27, "lng": 133.78, "tags": ["Women owned", "Latex"], "url": "", "about": "Australian latex label; no website or shop could be found to confirm it.", "women": true, "check": true},
+  {"name": "Rubber Eva", "city": "Gorron", "country": "France", "lat": 48.41, "lng": -0.81, "tags": ["Women owned", "Latex", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://www.rubberevashop.com/", "about": "Handmade, made-to-order latex and PVC clothing for women and men, plus in-stock pieces.", "women": true},
+  {"name": "Naughty Touches", "city": "Canada", "country": "Canada", "lat": 56.13, "lng": -106.35, "tags": ["Women owned", "Latex"], "url": "", "about": "Canadian latex label; no website or shop could be found to confirm it.", "women": true, "check": true},
+  {"name": "Kitty Loves Latex", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Lingerie", "Accessories"], "url": "https://www.kittyloveslatex.com/", "about": "Handmade latex leotards, corsets, swimwear and hoods, in standard sizes or made to measure.", "women": true},
+  {"name": "MKL Latex Couture", "city": "Montreal", "country": "Canada", "lat": 45.51, "lng": -73.59, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Accessories"], "url": "https://mkllatex.com/pages/about-mkl-latex-couture", "about": "Handcrafted latex hoods and masks, plus gloves, gauntlets and chokers.", "women": true},
+  {"name": "Serendipity Latex", "city": "Brighton", "country": "United Kingdom", "lat": 50.83, "lng": -0.14, "tags": ["Women owned", "Latex", "Made to measure", "Ready to wear", "Accessories"], "url": "https://www.etsy.com/shop/SerendipityLatex", "about": "Handmade latex harnesses and accessories, sold through an Etsy shop.", "women": true, "check": true},
+  {"name": "Soft Skin Latex", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Lingerie", "Accessories"], "url": "https://softskinlatex.com/", "about": "Gemma Pickerill's London studio making latex hoods, frilled underwear, outerwear and corsets to order.", "women": true},
+  {"name": "Breathless", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "http://www.breathless.uk.com/", "about": "London latex couture house making dresses, suits, uniforms and catsuits, with made-to-measure service.", "women": true},
+  {"name": "Dark Garden", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Corsetry", "Bridal", "Accessories"], "url": "https://darkgarden.com", "about": "Famed corsetry house making bespoke and standard-fit corsets, with boutiques in San Francisco and New Orleans."},
+  {"name": "Garo Sparo", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Corsetry", "Bridal"], "url": "https://garosparo.com", "about": "NYC corsetier known for crystal-embellished stage corsets worn by pop stars and drag performers."},
+  {"name": "Mr S Leather", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Couture", "Made to measure", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.mr-s-leather.com", "about": "Landmark SoMa leather house since 1979, designing and making leather and neoprene fetish gear in-house."},
+  {"name": "The Leather Man", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.theleatherman.com", "about": "Historic Christopher Street leather shop with its own house harnesses, chaps and fetish gear."},
+  {"name": "Nasty Pig", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.nastypig.com", "about": "NYC fetish-leaning menswear label making harnesses, jocks and club gear, with a Fall/Winter '26 line."},
+  {"name": "The Blonds", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry"], "url": "https://www.theblondsny.com", "about": "NYFW label famed for crystal-encrusted corsets and showgirl couture worn by pop royalty."},
+  {"name": "Kiki de Montparnasse", "city": "USA", "country": "USA", "lat": 39.5, "lng": -98.35, "tags": ["Couture", "Ready to wear", "Lingerie", "Corsetry", "Leather", "Accessories"], "url": "https://www.kikidm.com", "about": "Luxury erotic house of lingerie, corsetry and refined bondage accessories, with a Fall/Winter 2026 collection."},
+  {"name": "Zana Bayne", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Couture", "Made to measure", "Ready to wear", "Leather", "Accessories"], "url": "https://shop.zanabayne.com", "about": "Post-fetish leather label behind studded harnesses and armour worn by Beyonce's dancers and Chappell Roan."},
+  {"name": "House of SXN", "city": "Palm Beach, FL", "country": "USA", "lat": 26.71, "lng": -80.04, "tags": ["Couture", "Ready to wear", "Lingerie", "Leather", "Accessories"], "url": "https://houseofsxn.com", "about": "Luxury leather lingerie and bondage accessories with a runway couture line; Paris Fetish Week 2025 exhibitor."},
+  {"name": "Pop Antique", "city": "San Francisco, CA", "country": "USA", "lat": 37.77, "lng": -122.42, "tags": ["Couture", "Ready to wear", "Corsetry", "Accessories"], "url": "https://www.popantique.com", "about": "Handmade San Francisco corsetry, from knit and evening corsets to tightlacing styles.", "check": true},
+  {"name": "Puimond", "city": "USA", "country": "USA", "lat": 39.5, "lng": -98.35, "tags": ["Couture", "Made to measure", "Corsetry"], "url": "https://www.puimond.com", "about": "Celebrated corsetier taking select bespoke corset commissions by enquiry.", "check": true},
+  {"name": "Fleet Ilya", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry", "Leather", "Accessories"], "url": "https://www.fleetilya.com", "about": "Luxury London leather house known for bondage-inspired harnesses, corset belts and accessories since 2000."},
+  {"name": "Poster Girl", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Ready to wear", "Catsuits"], "url": "https://poster-girl.com", "about": "London label mixing latex, shapewear and chainmail into celebrity-loved bodycon looks."},
+  {"name": "HARRI", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Menswear"], "url": "https://harri.store", "about": "London designer famous for sculptural inflatable latex, including Sam Smith's Brits suit; SS26 shown at LFW."},
+  {"name": "Jivomir Domoustchiev", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Made to measure", "PVC", "Accessories"], "url": "https://www.jivomirdomoustchiev.com", "about": "East London maker of sculptural vegan vinyl and PVC couture, studded harnesses, all made to order."},
+  {"name": "Bordelle", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Ready to wear", "Lingerie", "Accessories"], "url": "https://www.bordelle.co.uk", "about": "Luxury bondage-inspired lingerie with gold hardware and strapping, launched at Selfridges in 2009."},
+  {"name": "Broke Boutique", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Ready to wear", "Lingerie", "Accessories"], "url": "https://brokeboutique.com", "about": "North London maker of harnesses, lingerie and bags cut from reclaimed tractor inner tubes and rubber."},
+  {"name": "Identity by Renata", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Made to measure", "Leather", "Accessories"], "url": "https://www.identitybyrenata.com", "about": "Bespoke moulded-leather bodywear and metal-hardware pieces handmade in a London studio by Renata Brenha.", "check": true},
+  {"name": "Leather Artefact (E.L.F. Zhou)", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Couture", "Leather", "PVC", "Accessories"], "url": "https://www.leatherartefact.com", "about": "London maker of leather cuffs and harnesses plus vegan PVC wear and handbags.", "check": true},
+  {"name": "Dayne Henderson", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Accessories"], "url": "https://www.daynehenderson.com", "about": "London latex designer best known for sculptural latex hoods.", "check": true},
+  {"name": "Anoeses", "city": "Ukraine", "country": "Ukraine", "lat": 50.45, "lng": 30.52, "tags": ["Latex", "Couture", "Ready to wear", "Lingerie", "Menswear", "Corsetry", "Leather"], "url": "https://anoeses.com", "about": "Ukrainian label making premium latex clothing, corsets, lingerie and leather accessories, shipped worldwide."},
+  {"name": "Cadolle", "city": "Paris", "country": "France", "lat": 48.85, "lng": 2.35, "tags": ["Couture", "Made to measure", "Ready to wear", "Lingerie", "Corsetry"], "url": "https://www.cadolle.com", "about": "Historic Paris house on rue Cambon, handmaking couture corsets and lingerie with a made-to-measure service."},
+  {"name": "Maison Catanzaro (Patrice Catanzaro)", "city": "France", "country": "France", "lat": 46.6, "lng": 2.4, "tags": ["Couture", "Ready to wear", "Lingerie", "Menswear", "PVC"], "url": "https://maisoncatanzaro.com", "about": "French fetish-couture house of Patrice Catanzaro: wetlook, vinyl and mesh lines plus the Impudique lingerie."},
+  {"name": "TEO+NG", "city": "Paris", "country": "France", "lat": 48.85, "lng": 2.35, "tags": ["Couture", "Ready to wear", "Leather", "Accessories"], "url": "https://teoplusng.fr", "about": "Paris avant-garde leather accessories brand: harnesses, chokers, cuffs and bags handmade in France."},
+  {"name": "WeirdBrain", "city": "Paris", "country": "France", "lat": 48.85, "lng": 2.35, "tags": ["Couture", "Ready to wear", "PVC", "Accessories"], "url": "https://weirdbraincreation.com", "about": "Paris DIY clubwear label using PVC, biothane and recycled leather; Paris Fetish Week 2025 exhibitor."},
+  {"name": "Ninamounah", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry", "Leather"], "url": "https://ninamounah.com", "about": "Amsterdam runway label blending leather motor suits, French corsetry and tailoring with a kinky edge."},
+  {"name": "RoB Amsterdam", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Couture", "Made to measure", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.rob.eu", "about": "Legendary leather shop making handmade fetish leather clothing, with stores in Amsterdam and Berlin."},
+  {"name": "Mister B", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.misterb.com", "about": "Amsterdam fetish house with its own leather, rubber and neoprene gear lines and stores in Amsterdam and Berlin.", "check": true},
+  {"name": "Bizarre Design", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Couture", "Made to measure", "Corsetry", "Leather"], "url": "https://bizarredesign.nl", "about": "Jeroen van der Klis's Amsterdam workshop for custom corsets, including bondage, leather and hood styles.", "check": true},
+  {"name": "Cyberesque", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Couture", "Ready to wear", "Menswear", "Corsetry", "Accessories"], "url": "https://cyberesque.de", "about": "Berlin dark clubwear label of faux-leather corsets, harnesses and headdresses, nearing its 20th year."},
+  {"name": "Amoreze", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Couture", "Made to measure", "Ready to wear", "Lingerie", "Leather", "Accessories"], "url": "https://www.amoreze.com", "about": "Berlin atelier handcrafting lace lingerie and leather body harnesses, with private fittings and custom orders."},
+  {"name": "0770", "city": "Rome", "country": "Italy", "lat": 41.89, "lng": 12.51, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry", "Leather", "Accessories"], "url": "https://0770store.com", "about": "Italian sculptural leather corsets and corset-belts, made to order, with a FW26-27 collection."},
+  {"name": "Bibian Blue", "city": "Barcelona", "country": "Spain", "lat": 41.39, "lng": 2.16, "tags": ["Couture", "Made to measure", "Ready to wear", "Corsetry", "Bridal"], "url": "https://www.bibianblue.com", "about": "Barcelona atelier marking 25 years of gothic couture corsets, gowns and bridal, all made to measure."},
+  {"name": "Royal Black Couture & Corsetry", "city": "Vienna", "country": "Austria", "lat": 48.21, "lng": 16.37, "tags": ["Couture", "Made to measure", "Corsetry"], "url": "https://royalblack.at", "about": "Vienna couture corsetry studio offering commissions, rentals and corset-making classes.", "check": true},
+  {"name": "Vanadis Couture", "city": "Finland", "country": "Finland", "lat": 60.17, "lng": 24.94, "tags": ["Couture", "Made to measure", "Ready to wear", "Lingerie", "Corsetry"], "url": "https://www.vanadiscouture.com", "about": "Finnish maker of handcrafted made-to-order corsets and lingerie; Paris Fetish Week 2025 exhibitor."},
+  {"name": "L'Attachant", "city": "Switzerland", "country": "Switzerland", "lat": 47.38, "lng": 8.54, "tags": ["Couture", "Made to measure", "Leather", "Accessories"], "url": "https://lattachant.com", "about": "Swiss maker of custom leather harnesses, cuffs and collars; Paris Fetish Week 2025 exhibitor."},
+  {"name": "Abara", "city": "Belgium", "country": "Belgium", "lat": 50.85, "lng": 4.35, "tags": ["Couture", "Made to measure", "Ready to wear", "Leather", "Accessories"], "url": "https://abara.eu", "about": "Belgian leather house making silhouette-shaping harnesses and accessories, with made-to-measure options."},
+  {"name": "Lace Embrace Atelier", "city": "Vancouver", "country": "Canada", "lat": 49.25, "lng": -123.12, "tags": ["Couture", "Made to measure", "Ready to wear", "Lingerie", "Corsetry", "Bridal"], "url": "https://www.laceembrace.com", "about": "Vancouver atelier hand-crafting ready-to-wear, custom and bridal couture corsets in Canada."},
+  {"name": "Northbound Leather", "city": "Toronto", "country": "Canada", "lat": 43.71, "lng": -79.4, "tags": ["Couture", "Menswear", "Corsetry", "Leather", "Accessories"], "url": "https://northbound.com", "about": "Toronto's veteran kink leather house on Yonge Street, known for bustiers, corsets and fetish shows.", "check": true},
+  {"name": "Eagle Leather", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Latex", "Couture", "Ready to wear", "Menswear", "Leather", "Accessories"], "url": "https://www.eagleleather.com.au", "about": "Melbourne fetish institution since 1994, making its own leather harnesses alongside latex and gear."},
+  {"name": "Pussy Pour Homme", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Couture", "Leather", "Accessories"], "url": "https://www.pussypourhomme.com", "about": "Naarm label making gender-euphoric garments and leather goods, made locally.", "check": true},
+  {"name": "alicetek", "city": "Tokyo", "country": "Japan", "lat": 35.69, "lng": 139.69, "tags": ["Latex", "Couture", "Ready to wear", "Catsuits", "Corsetry", "PVC", "Accessories"], "url": "https://alicetek.com", "about": "Tokyo cyber-futurist label of PVC and faux-leather catsuits, corsets, gloves and stockings."},
+  {"name": "Bold Strap", "city": "São Paulo", "country": "Brazil", "lat": -23.55, "lng": -46.64, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Menswear", "Accessories"], "url": "https://www.boldstrap.com", "about": "São Paulo clubwear label of latex, harnesses and jocks, shown at São Paulo Fashion Week in Oct 2025."},
+  {"name": "Yandy", "city": "Phoenix, AZ", "country": "USA", "lat": 33.45, "lng": -112.07, "tags": ["Online only", "Latex", "Ready to wear", "Lingerie", "PVC"], "url": "https://www.yandy.com/", "about": "Big online lingerie and costume shop with a vinyl and latex lingerie section, mostly under its own labels.", "online": true},
+  {"name": "Spicy Lingerie", "city": "Ontario, CA", "country": "USA", "lat": 34.06, "lng": -117.65, "tags": ["Online only", "Ready to wear", "Lingerie", "Menswear", "PVC"], "url": "https://www.spicylingerie.com/", "about": "Online lingerie shop with a large vinyl and leather-look section for women and men, plus fetish lingerie.", "online": true},
+  {"name": "Foxy Lingerie", "city": "North Grafton, MA", "country": "USA", "lat": 42.23, "lng": -71.7, "tags": ["Online only", "Latex", "Ready to wear", "Lingerie", "PVC"], "url": "https://foxylingerie.com/collections/vinyl-latex-lingerie", "about": "Online lingerie shop with a vinyl and latex lingerie collection of about 75 pieces: teddies, bustiers, sets.", "online": true},
+  {"name": "Twist My Rubber Arm", "city": "South Burlington, VT", "country": "USA", "lat": 44.47, "lng": -73.17, "tags": ["Online only", "Latex", "Ready to wear", "Catsuits", "Accessories"], "url": "https://twistmyrubberarm.com/", "about": "Online latex and fetish wear shop since 2002 with chlorinated latex, clearance stock and a chlorination service.", "online": true, "check": true},
+  {"name": "Lovehoney", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Online only", "Latex", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "PVC", "Accessories"], "url": "https://www.lovehoney.co.uk/", "about": "The UK's biggest online sex shop, with wet look lingerie and fetish clothing incl. catsuits, hoods, menswear.", "online": true},
+  {"name": "VOCLA", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Online only", "Latex", "Ready to wear", "Menswear", "PVC", "Accessories"], "url": "https://vocla.com/collections/latex-menswear", "about": "Online men's fetishwear stockist since 2012: wet look, vinyl and latex-look gear from European labels.", "online": true},
+  {"name": "BlackLevel", "city": "Zwolle", "country": "Netherlands", "lat": 52.51, "lng": 6.09, "tags": ["Online only", "Latex", "Ready to wear", "Lingerie", "Menswear", "PVC"], "url": "https://www.blacklevel.nl/andere-merken/late-x", "about": "Dutch webshop for latex and wet look clothing for him and her from several fetish labels.", "online": true},
+  {"name": "AMORELIE", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Online only", "Latex", "Ready to wear", "Lingerie", "Menswear", "PVC"], "url": "https://www.amorelie.de/", "about": "Large Berlin online erotic store with women's and men's latex clothing and men's wetlook sections.", "online": true},
+  {"name": "RubberShop", "city": "Bitterfeld-Wolfen", "country": "Germany", "lat": 51.62, "lng": 12.32, "tags": ["Online only", "Latex", "Ready to wear", "Accessories"], "url": "https://rubbershop.net/en/", "about": "German online rubber shop with 1,000+ latex variants, hoods and masks incl. third-party fetish masks.", "online": true, "check": true},
+  {"name": "Latexcrazy", "city": "Zwickau", "country": "Germany", "lat": 50.73, "lng": 12.49, "tags": ["Online only", "Latex", "Made to measure", "Ready to wear", "Catsuits", "Accessories"], "url": "https://en.latexcrazy.com", "about": "Online-only latex shop: mostly own handmade catsuits with free tailoring, plus gloves from other labels.", "online": true, "check": true},
+  {"name": "Beserk", "city": "Brisbane", "country": "Australia", "lat": -27.47, "lng": 153.03, "tags": ["Online only", "Ready to wear", "Lingerie", "PVC", "Accessories"], "url": "https://www.beserk.com.au/collections/fetish", "about": "Big Australian alt-fashion e-shop with a fetish section of PVC-look pieces and fetish boots.", "online": true},
+  {"name": "Tragic Beautiful", "city": "Australia", "country": "Australia", "lat": -25.27, "lng": 133.78, "tags": ["Online only", "Ready to wear", "Lingerie", "PVC", "Accessories"], "url": "https://www.tragicbeautiful.com/en-us/collections/fetish", "about": "Australian online alt-fashion store with a fetish collection of glossy lingerie and harness pieces.", "online": true},
+  {"name": "A-D-Atelier", "city": "Newcastle, NSW", "country": "Australia", "lat": -32.93, "lng": 151.78, "tags": ["Latex", "Couture", "Catsuits", "Lingerie", "Accessories"], "url": "https://a-d-atelier.com.au", "about": "Art-led latex label making bodysuits, leggings, tops, skirts and collars, mostly to order."},
+  {"name": "Alecto Latex", "city": "Sydney", "country": "Australia", "lat": -33.87, "lng": 151.21, "tags": ["Latex", "Made to measure", "Catsuits"], "url": "https://alectolatex.carrd.co", "about": "Small Sydney studio taking made-to-measure catsuit and top commissions, plus repairs and appliqué.", "check": true},
+  {"name": "Debauch Latex", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Women owned", "Latex", "Made to measure", "Ready to wear", "Lingerie", "Accessories"], "url": "https://www.debauchlatex.com.au", "about": "Small studio hand-making femme-leaning latex tops, knickers, bras and pigtailed hoods, made to order or ready to ship.", "women": true},
+  {"name": "Latex 42", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://latex42.com.au", "about": "Melbourne studio and shopfront cutting latex to measurements taken in person, plus heavy-rubber collars, cuffs, belts, gloves and bags."},
+  {"name": "Molly Younger", "city": "Melbourne", "country": "Australia", "lat": -37.81, "lng": 144.96, "tags": ["Latex", "Accessories"], "url": "https://mollyyounger.com", "about": "Artist-maker casting sculptural latex bags, totes and wallets."},
+  {"name": "Affordable Latex", "city": "Hampshire", "country": "United Kingdom", "lat": 51.06, "lng": -1.31, "tags": ["Latex", "Catsuits", "Menswear", "Accessories"], "url": "https://affordablelatex.com", "about": "Latex basics for women and men in many sizes and colours at entry-level prices."},
+  {"name": "Amentium", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Women owned", "Latex", "Couture", "Catsuits", "Lingerie", "Menswear"], "url": "https://www.amentium.co.uk", "about": "Handcrafted latex with laser-cut prints drawing on Renaissance and Roman motifs.", "women": true},
+  {"name": "Antidote London Latex", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://antidotelondonlatex.co.uk", "about": "Theatrical, custom-fitted fantasy latex made in London and Manchester.", "check": true},
+  {"name": "Atsuko Kudo", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Accessories"], "url": "https://www.atsukokudo.com", "about": "London couture rubber house making gowns, lingerie, stockings and gloves, ready-to-wear and bespoke.", "women": true},
+  {"name": "Beth Parkin (Latex Beth)", "city": "Derby", "country": "United Kingdom", "lat": 52.92, "lng": -1.48, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.latexbeth.com", "about": "Pattern-cutter and maker taking a few fully bespoke commissions a year and teaching the craft.", "check": true},
+  {"name": "Black Sheep Latex", "city": "Laceby", "country": "United Kingdom", "lat": 53.54, "lng": -0.17, "tags": ["Latex", "Made to measure", "Lingerie", "Menswear", "Accessories"], "url": "https://blacksheeplatex.com", "about": "Rubber clothing made to order and to measure, shaped for the feminine figure and mostly chlorinated."},
+  {"name": "Bondinage", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie"], "url": "https://bondinage.com", "about": "Long-running London studio hand-making sculpted latex catsuits, corsetry and dresses, with made-to-measure."},
+  {"name": "Catalyst Latex", "city": "Rugby", "country": "United Kingdom", "lat": 52.37, "lng": -1.26, "tags": ["Women owned", "Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://www.catalystlatex.com", "about": "Made-to-order latex from a UK studio, from everyday to cosplay and menswear.", "women": true},
+  {"name": "Craig Morrison Studio", "city": "Wales", "country": "United Kingdom", "lat": 51.48, "lng": -3.18, "tags": ["Latex", "Couture", "Accessories"], "url": "https://craigmorrison.studio", "about": "Relaunched studio of the designer behind the original 1980s spiked-rubber bags and clothing.", "check": true},
+  {"name": "Dark Virtue Designs", "city": "Edinburgh", "country": "United Kingdom", "lat": 55.95, "lng": -3.2, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Accessories"], "url": "https://darkvirtuedesigns.com", "about": "Small studio handmaking latex corsetry, lingerie and gowns, much of it fitted to the wearer."},
+  {"name": "Darker Desires", "city": "Derbyshire", "country": "United Kingdom", "lat": 53.1, "lng": -1.6, "tags": ["Latex", "Menswear", "Accessories"], "url": "https://darkerdesires.co.uk", "about": "Handmade latex clothing and accessories for feminine and masculine wardrobes."},
+  {"name": "Dead Lotus Couture", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Menswear", "Accessories"], "url": "https://www.deadlotuscouture.com", "about": "Ready-to-wear and bespoke latex plus latex-and-fabric pieces, with made-to-measure."},
+  {"name": "Debauchee Designs", "city": "Manchester", "country": "United Kingdom", "lat": 53.48, "lng": -2.24, "tags": ["Latex", "Couture", "Made to measure", "Accessories"], "url": "https://www.debaucheelatex.co.uk", "about": "Maker of playful latex accessories and one-off bespoke pieces, plus expert repairs.", "check": true},
+  {"name": "Ectomorph", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://ectomorph.com", "about": "Label founded 1985 mixing fetish and fashion, sizes XS to 6XL."},
+  {"name": "Elissa Poppy", "city": "Stevenage", "country": "United Kingdom", "lat": 51.9, "lng": -0.2, "tags": ["Latex", "Lingerie", "Accessories"], "url": "https://www.elissapoppy.com", "about": "Handmade lingerie-led latex: bras, bodysuits, corsets and dresses."},
+  {"name": "Eustratia", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Latex", "Made to measure", "Lingerie", "Accessories"], "url": "https://eustratia.com", "about": "Hand-cut, hand-finished latex wardrobe pieces with bespoke and made-to-measure commissions."},
+  {"name": "Fetasia Latex", "city": "Leeds", "country": "United Kingdom", "lat": 53.8, "lng": -1.55, "tags": ["Latex", "Made to measure", "Ready to wear", "Lingerie", "Menswear", "Accessories"], "url": "https://fetasialatex.com", "about": "UK-handmade latex from pin-up to heavy rubber, off the peg or bespoke."},
+  {"name": "House of Harlot", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Made to measure", "Lingerie", "Accessories"], "url": "https://www.houseofharlot.com", "about": "Luxury London latex with statement catsuits and dresses and a custom design service."},
+  {"name": "House of Hemlock", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Lingerie", "Menswear", "Accessories"], "url": "https://houseofhemlocklatex.com", "about": "Studio-made statement latex with laser-cut detail, made for queer and kink nightlife."},
+  {"name": "Insatiable", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Latex", "Couture"], "url": "https://www.studioinsatiable.com", "about": "Young luxury label making latex dresses and separates with metal-hardware details.", "check": true},
+  {"name": "Into LateX", "city": "Manchester", "country": "United Kingdom", "lat": 53.48, "lng": -2.24, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://www.into-latex.co.uk", "about": "Made-to-order rubber suits, jeans and basics for the men's scene, plus screen and stage work."},
+  {"name": "Invincible Rubber", "city": "Nottingham", "country": "United Kingdom", "lat": 52.95, "lng": -1.15, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.invinciblerubber.com", "about": "British men's rubberwear: suits, uniforms, sportswear and bondage gear, with made-to-measure."},
+  {"name": "Kastley", "city": "Oswaldtwistle", "country": "United Kingdom", "lat": 53.74, "lng": -2.39, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://www.kastley.com", "about": "Broad catalogue of latex from lingerie to full suits, tailored to measure on request."},
+  {"name": "Kraken Counter Couture", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Made to measure", "Catsuits"], "url": "https://krakencountercouture.co.uk", "about": "Hackney costume atelier making bespoke latex for stage and private clients."},
+  {"name": "Lady Lucie Latex", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Couture", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://ladylucie.com", "about": "Polished latex for clothing, lingerie, corsetry and costume.", "women": true},
+  {"name": "Latex & Lovers", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear"], "url": "https://www.latexandlovers.co.uk", "about": "London workshop making a wide range of chlorinated latex, standard sizes or made to measure."},
+  {"name": "Latex Capital", "city": "Poole", "country": "United Kingdom", "lat": 50.71, "lng": -1.98, "tags": ["Latex", "Made to measure", "Ready to wear", "Catsuits", "Menswear", "Accessories"], "url": "https://www.latex-capital.co.uk", "about": "Style-led latex for men and women, standard sizes or to measure."},
+  {"name": "Libidex", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://libidex.com", "about": "Long-running label with over 1,000 styles made to order in any size and 60 colours, plus a ready-made express range and Covent Garden boutique.", "check": true},
+  {"name": "Mico Couture", "city": "Huddersfield", "country": "United Kingdom", "lat": 53.65, "lng": -1.78, "tags": ["Latex", "Made to measure", "Lingerie", "Accessories"], "url": "https://micocouture.com", "about": "Made-to-measure latex clothing, lingerie and custom appliqué since 2005.", "check": true},
+  {"name": "Pandora Deluxe", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Women owned", "Latex", "Made to measure", "Lingerie", "Accessories"], "url": "https://www.pandoradeluxe.com", "about": "High-end latex with print and lace effects, standard or made to measure.", "women": true},
+  {"name": "Recoil.557", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://www.dirtybastards.com", "about": "Rubber gear for men, from jocks and jeans to made-to-measure body suits.", "check": true},
+  {"name": "Regulation", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.regulation.co.uk", "about": "Soho gear shop with its own rubber label, made-to-measure and an online catsuit designer."},
+  {"name": "Rose Noir Designs", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure"], "url": "https://rosenoirdesigns.com", "about": "Inclusive latex handmade to order and to measure for every body, plus latex-making courses.", "check": true},
+  {"name": "Rubber55", "city": "Bourne", "country": "United Kingdom", "lat": 52.77, "lng": -0.38, "tags": ["Latex", "Ready to wear", "Accessories"], "url": "https://rubber55.co.uk", "about": "Specialist in latex hoods, gloves and masks, in stock or made to order."},
+  {"name": "Shhh! Couture", "city": "Mildenhall", "country": "United Kingdom", "lat": 52.34, "lng": 0.51, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.shhhcouturelatex.co.uk", "about": "English-made latex known for geek-inspired, cosplay and gown pieces.", "check": true},
+  {"name": "Signature Latex", "city": "Prestwick", "country": "United Kingdom", "lat": 55.48, "lng": -4.62, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.signaturelatex.com", "about": "Scottish-made latex for women and men, uniforms and pet play, with custom outfits."},
+  {"name": "Skin Two Clothing", "city": "Watford", "country": "United Kingdom", "lat": 51.66, "lng": -0.4, "tags": ["Latex", "Accessories"], "url": "https://www.skintwo.com", "about": "Fetishwear company with its own Skin Two latex line alongside other brands."},
+  {"name": "Slaughter House Couture", "city": "United Kingdom", "country": "United Kingdom", "lat": 54.0, "lng": -2.5, "tags": ["Latex", "Couture", "Made to measure", "Catsuits"], "url": "https://www.slaughterhousecouture.co.uk", "about": "Bespoke-only latex tailored to each client's brief.", "check": true},
+  {"name": "Tainted Love", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Menswear"], "url": "https://www.tainted-love.com", "about": "One-maker rubber label making tailored latex menswear including jeans, kilts and suits."},
+  {"name": "The Scarlett Society Label", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Made to measure", "Lingerie", "Accessories"], "url": "https://www.thescarlettsociety.com", "about": "Latex womenswear label of dresses, skirts and lingerie sets.", "check": true},
+  {"name": "Torture Garden Latex", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Couture", "Lingerie", "Menswear", "Accessories"], "url": "https://torturegardenlatex.com", "about": "Latex label born from the Torture Garden club, handmade in London."},
+  {"name": "Westward Bound", "city": "Plymouth", "country": "United Kingdom", "lat": 50.37, "lng": -4.14, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://www.westwardbound.com", "about": "Pattern-cut and handmade in England, in eleven standard sizes or bespoke to measure."},
+  {"name": "William Wilde", "city": "London", "country": "United Kingdom", "lat": 51.51, "lng": -0.13, "tags": ["Latex", "Lingerie", "Accessories"], "url": "https://www.williamwilde.com", "about": "Glamour and showgirl-inspired latex lingerie and dresses, made to order by hand."},
+  {"name": "Epic Couture", "city": "Vienna", "country": "Austria", "lat": 48.21, "lng": 16.37, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.epic-couture.com", "about": "Viennese studio putting latex into high-fashion shapes: trench coats, gowns and tailored skirts."},
+  {"name": "GlanzGlück", "city": "Vienna", "country": "Austria", "lat": 48.21, "lng": 16.37, "tags": ["Latex", "Accessories"], "url": "https://www.glanzglueck.at", "about": "Playful Austrian latex fashion, including latex-and-denim upcycled pieces."},
+  {"name": "HW Design", "city": "Vienna", "country": "Austria", "lat": 48.21, "lng": 16.37, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Accessories"], "url": "https://www.hwdesignshop.com", "about": "Vienna house making latex since 1999, known for corsetry, hoods and dramatic made-to-order gowns."},
+  {"name": "Rubberik", "city": "Vienna", "country": "Austria", "lat": 48.21, "lng": 16.37, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.rubberik.at", "about": "Vienna latex workshop offering made-to-measure catsuits plus masks, gloves and sheeting."},
+  {"name": "Simon O", "city": "Hollabrunn", "country": "Austria", "lat": 48.55, "lng": 16.08, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie"], "url": "https://www.simon-o.com", "about": "Configurable catsuits, leggings and everyday latex, made in Austria since 1996."},
+  {"name": "The Ardore", "city": "Münichsthal", "country": "Austria", "lat": 48.45, "lng": 16.43, "tags": ["Latex", "Made to measure", "Menswear", "Accessories"], "url": "https://theardore.com", "about": "Bold contemporary latex and leather clothing, all made in-house in Austria."},
+  {"name": "Lottie Latex", "city": "Belgium", "country": "Belgium", "lat": 50.85, "lng": 4.35, "tags": ["Women owned", "Latex", "Lingerie", "Menswear", "Accessories"], "url": "https://www.lottielatex.com", "about": "Belgian label handmaking latex dresses, bodysuits, harnesses and a men's line, made to order.", "women": true},
+  {"name": "Ducky Ducky", "city": "France", "country": "France", "lat": 46.6, "lng": 2.4, "tags": ["Latex", "Made to measure", "Catsuits"], "url": "https://duckyducky.net", "about": "French maker focused on handmade made-to-measure latex catsuits for women and men.", "check": true},
+  {"name": "Mademoiselle Ilo", "city": "Paris", "country": "France", "lat": 48.85, "lng": 2.35, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Accessories"], "url": "https://mademoiselle-ilo.fr", "about": "Paris studio designing latex gowns, lingerie and catsuits since 2005, with a custom design service.", "women": true},
+  {"name": "Sigrid Latex", "city": "Puy-de-Dôme", "country": "France", "lat": 45.78, "lng": 3.08, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Menswear", "Accessories"], "url": "https://www.sigridlatex.com", "about": "Atelier making latex corsetry, evening dresses and unisex pieces to order.", "women": true},
+  {"name": "aïo", "city": "Berchtesgaden", "country": "Germany", "lat": 47.63, "lng": 13.0, "tags": ["Latex", "Catsuits"], "url": "https://aio-latex.com", "about": "Its own designs of latex dresses, tops and catsuits, each made to order."},
+  {"name": "Butcherei Lindinger", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Latex", "Made to measure", "Menswear", "Accessories"], "url": "https://www.butcherei.com", "about": "Berlin label where fashion meets fetish in leather and latex, much of it made to measure."},
+  {"name": "Chronomatic", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Accessories"], "url": "https://chronomaticlatex.com", "about": "Polished, fashion-forward latex from a Berlin atelier, from opera gloves to sculpted dresses."},
+  {"name": "CL Design Latex", "city": "Mainz", "country": "Germany", "lat": 49.98, "lng": 8.28, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://www.cldesign-latex.de", "about": "Small workshop with hand-drafted patterns making latex for women and men."},
+  {"name": "GUWI", "city": "Stuhr-Brinkum", "country": "Germany", "lat": 53.03, "lng": 8.79, "tags": ["Latex", "Made to measure"], "url": "https://guwi.de", "about": "Long-running maker of made-to-measure rubber rainwear, anoraks and full outfits."},
+  {"name": "HighGlossDolls", "city": "Mutterstadt", "country": "Germany", "lat": 49.44, "lng": 8.36, "tags": ["Latex", "Made to measure", "Lingerie", "Menswear", "Accessories"], "url": "https://highglossdolls.com", "about": "Delicate, glamorous latex lingerie and separates designed by its founder."},
+  {"name": "Inner Sanctum", "city": "Hamburg", "country": "Germany", "lat": 53.55, "lng": 9.99, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Menswear"], "url": "https://www.innersanctumonline.com", "about": "Hamburg label making every garment by hand, in themed collections, with designs to customer wishes."},
+  {"name": "KALI.LATEX (Kaliversum)", "city": "Weiden in der Oberpfalz", "country": "Germany", "lat": 49.68, "lng": 12.16, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://kaliversum.com", "about": "Handmade bodysuits, catsuits and separates for women and men, with made-to-measure."},
+  {"name": "Kunzmann", "city": "Pforzheim", "country": "Germany", "lat": 48.88, "lng": 8.7, "tags": ["Latex", "Menswear", "Accessories"], "url": "https://www.kunzmann.com", "about": "Atelier with over 76 years in leather and latex, known for stockings, hoods and gloves."},
+  {"name": "Latex Fashion Design", "city": "Wiesbaden", "country": "Germany", "lat": 50.09, "lng": 8.24, "tags": ["Latex", "Made to measure", "Lingerie", "Menswear", "Accessories"], "url": "https://latex-fashion-design.de", "about": "Wiesbaden atelier making corsetry, dresses and separates, largely to measure."},
+  {"name": "LLdeSaxe", "city": "Dresden", "country": "Germany", "lat": 51.05, "lng": 13.74, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://lldesaxe-fashion.de", "about": "Broad custom-cut latex range for women and men, with studio fittings in Dresden.", "check": true},
+  {"name": "LUPAE", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Latex", "Lingerie"], "url": "https://www.lupaeberlin.com", "about": "Colourful, feminine latex pieces handmade in Berlin."},
+  {"name": "Lüllepop (LaTextil Couture)", "city": "Crinitz", "country": "Germany", "lat": 51.73, "lng": 13.77, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie"], "url": "https://www.luellepop-design.de", "about": "Couture latex and pioneering knitted latex, tailored to each wearer."},
+  {"name": "Maniac Latex", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Latex", "Couture", "Made to measure", "Menswear"], "url": "https://www.maniaclatex.com", "about": "Prenzlauer Berg atelier where the designer hand-makes each piece, to measure on request."},
+  {"name": "Raction Rubber", "city": "Offenbach am Main", "country": "Germany", "lat": 50.1, "lng": 8.77, "tags": ["Latex", "Couture", "Made to measure", "Menswear", "Accessories"], "url": "https://www.raction.de", "about": "Self-designed, handmade rubber clothing and bedding, including a high-tech couture line."},
+  {"name": "Rimo Fashion", "city": "Solingen", "country": "Germany", "lat": 51.17, "lng": 7.08, "tags": ["Latex", "Made to measure"], "url": "https://rimo.fashion", "about": "Solingen atelier making rainwear, streetwear and partywear, with latex among its materials."},
+  {"name": "Rub Addiction", "city": "Berlin", "country": "Germany", "lat": 52.52, "lng": 13.41, "tags": ["Latex", "Made to measure", "Menswear", "Accessories"], "url": "https://www.rubaddiction.com", "about": "Berlin rubber-scene gear, from sport-cut bodies to chaps, standard or to measure."},
+  {"name": "Rubbermagic", "city": "Dresden", "country": "Germany", "lat": 51.05, "lng": 13.74, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.rubbermagic.de", "about": "Dresden workshop making latex clothing, hoods, sacks, inflatables and custom pieces."},
+  {"name": "Se'tyo", "city": "Leipzig", "country": "Germany", "lat": 51.34, "lng": 12.37, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear"], "url": "https://setyo.design", "about": "Independent Leipzig atelier making its own latex sheets as well as ready-to-wear and one-off couture."},
+  {"name": "Tarza and Jane", "city": "Aachen", "country": "Germany", "lat": 50.78, "lng": 6.08, "tags": ["Latex", "Made to measure", "Lingerie", "Menswear", "Accessories"], "url": "https://tarza-and-jane.com", "about": "Clean-lined, retro-leaning latex wardrobe staples cut to measure in an Aachen studio."},
+  {"name": "XRubber", "city": "Velten", "country": "Germany", "lat": 52.69, "lng": 13.18, "tags": ["Latex", "Menswear"], "url": "https://www.xrubber.de", "about": "German shop of natural-latex dresses, catsuits and men's overalls."},
+  {"name": "Cherry Latex", "city": "Italy", "country": "Italy", "lat": 45.46, "lng": 9.19, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.cherrylatex.com", "about": "Italian atelier making womenswear latex from everyday cuts to themed costume pieces.", "check": true},
+  {"name": "FBLD", "city": "Vigevano", "country": "Italy", "lat": 45.31, "lng": 8.85, "tags": ["Latex", "Lingerie", "Menswear", "Accessories"], "url": "https://fbld.eu", "about": "Independent artisan label handmaking latex garments and accessories in Vigevano."},
+  {"name": "VinNoir", "city": "Milan", "country": "Italy", "lat": 45.46, "lng": 9.19, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Catsuits"], "url": "https://www.vinnoirlatex.com", "about": "Italian couture latex house cutting gowns, catsuits and bodysuits by hand, focused on custom work.", "women": true},
+  {"name": "Black Body", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Menswear"], "url": "https://www.blackbody.nl", "about": "Amsterdam men's fetish store with its own Black Body rubber collection."},
+  {"name": "Demask", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://www.demask.com", "about": "Long-running Amsterdam fetish house with handmade ready-to-wear and custom rubber for women and men, including hoods and corsetry."},
+  {"name": "FILTH", "city": "Netherlands", "country": "Netherlands", "lat": 52.37, "lng": 4.9, "tags": ["Latex", "Catsuits", "Menswear"], "url": "https://www.filth-latex.com", "about": "Dutch label hand-crafting its own latex for women, men and genderless wear."},
+  {"name": "Lady Oops", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Lingerie"], "url": "https://ladyoops.com", "about": "Long-running Dutch label since 1995 making latex corsetry, tailoring and fetish lingerie.", "check": true},
+  {"name": "Latex Peach", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Women owned", "Latex", "Lingerie", "Accessories"], "url": "https://www.latexpeach.com", "about": "Independent Amsterdam designer of laser-cut latex lace lingerie, gloves and hoods, made to order.", "women": true},
+  {"name": "Liquid Disco", "city": "Netherlands", "country": "Netherlands", "lat": 52.37, "lng": 4.9, "tags": ["Latex", "Menswear"], "url": "https://www.liquiddiscolatex.com", "about": "Young Dutch label making each piece by hand to order: skirts, harness bralettes, kimonos and sets."},
+  {"name": "Peter Domenie", "city": "Rotterdam", "country": "Netherlands", "lat": 51.92, "lng": 4.48, "tags": ["Latex", "Lingerie", "Menswear"], "url": "https://www.peterdomenie.com", "about": "Rotterdam designer working in his own self-made textured latex, for women and men."},
+  {"name": "Rubbella", "city": "Feanwâlden", "country": "Netherlands", "lat": 53.24, "lng": 5.99, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://www.rubbella.nl", "about": "Dutch maker of an exclusive line from catsuits and corsetry to masks, shown by appointment."},
+  {"name": "RubberDutch", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://www.rubberdutch.com", "about": "Amsterdam rubber maker of catsuits, jackets and club and street pieces, tailoring by appointment."},
+  {"name": "Sebastian Cauchos", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Accessories"], "url": "https://sebastiancauchos.bigcartel.com", "about": "Designer's own small line of latex tops, coats, skirts and headscarves."},
+  {"name": "Tove Rain", "city": "Netherlands", "country": "Netherlands", "lat": 52.37, "lng": 4.9, "tags": ["Latex", "Menswear", "Accessories"], "url": "https://www.toverain.com", "about": "Dutch label with festival latex hotpants, bras and men's harnesses.", "check": true},
+  {"name": "UNTITLED Rubber", "city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lng": 4.89, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://www.untitledrubber.com", "about": "Own-label men's rubber line with Signature and Core collections; custom fittings at events."},
+  {"name": "Coco-Latex", "city": "Madrid", "country": "Spain", "lat": 40.42, "lng": -3.7, "tags": ["Latex", "Menswear", "Accessories"], "url": "https://www.coco-latex.com", "about": "Madrid maker of handmade latex accessories, tops and shorts for men and women."},
+  {"name": "Fetish Flamingo", "city": "Barcelona", "country": "Spain", "lat": 41.39, "lng": 2.16, "tags": ["Latex", "Lingerie", "Accessories"], "url": "https://www.fetishflamingo.com", "about": "Barcelona latex label with tops, dresses, bodysuits, lingerie and accessories.", "check": true},
+  {"name": "LOVNBLACK", "city": "Plovdiv", "country": "Bulgaria", "lat": 42.15, "lng": 24.75, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear"], "url": "https://lovnblack.com", "about": "Plovdiv workshop making original latex designs, made to measure as standard."},
+  {"name": "Maskinx", "city": "Zagreb", "country": "Croatia", "lat": 45.81, "lng": 15.98, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://maskinx.com", "about": "Croatian latex label known for its hoods, also making catsuits and menswear."},
+  {"name": "Adrienne Latex Design", "city": "Brno", "country": "Czech Republic", "lat": 49.2, "lng": 16.61, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.adriennelatexdesign.com", "about": "Czech label making tailor-made latex fetish fashion fitted to the wearer.", "check": true},
+  {"name": "Alice's Atelier", "city": "Prague", "country": "Czech Republic", "lat": 50.09, "lng": 14.42, "tags": ["Latex", "Couture", "Made to measure", "Menswear"], "url": "https://alicesatelier.com", "about": "Prague atelier hand-making sculptural latex separates for women and men, with commissions to measure."},
+  {"name": "Kirsten Vaams Latex Couture", "city": "Prague", "country": "Czech Republic", "lat": 50.09, "lng": 14.42, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://kirstenvaams.com", "about": "Made-to-order latex label with studios in Prague and Berlin; patterns drafted to each client, from streetwear and office pieces to black-tie gowns and men's tailoring."},
+  {"name": "LatexVogue", "city": "Czech Republic", "country": "Czech Republic", "lat": 50.08, "lng": 14.44, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.latexvogue.com", "about": "Czech duo making latex and heavy-rubber fetish wear since 2010: jackets, tops, hoods, capes and basics, plus custom work and repairs."},
+  {"name": "ODDIA (formerly Hugo Mode)", "city": "Prague", "country": "Czech Republic", "lat": 50.09, "lng": 14.42, "tags": ["Latex", "Accessories"], "url": "https://weareoddia.com", "about": "Prague label for latex clothing and BDSM gear.", "check": true},
+  {"name": "Kriszta Latex", "city": "Hungary", "country": "Hungary", "lat": 47.5, "lng": 19.04, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://rubber.hu", "about": "Hungarian maker of hand-built latex pieces cut to each client, priced by quote.", "check": true},
+  {"name": "Latex Műhely (Rubberkiss)", "city": "Kaposvár", "country": "Hungary", "lat": 46.37, "lng": 17.8, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://latexmuhely.hu", "about": "Hungarian studio for made-to-measure latex garments, masks and vacbed covers, plus repairs and chlorination."},
+  {"name": "Gabi Latex", "city": "Poland", "country": "Poland", "lat": 52.23, "lng": 21.01, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Accessories"], "url": "https://gabi-latex.com", "about": "Polish studio hand-making latex dresses, lingerie, hoods and catsuits to measure since 2016."},
+  {"name": "LatexIrime", "city": "Poland", "country": "Poland", "lat": 52.23, "lng": 21.01, "tags": ["Latex", "Made to measure", "Catsuits"], "url": "https://latexirime.com", "about": "Made-to-measure latex catsuit specialist, with cuts for many body types and for men."},
+  {"name": "Latexskin", "city": "Konin", "country": "Poland", "lat": 52.22, "lng": 18.25, "tags": ["Latex", "Made to measure", "Ready to wear", "Catsuits", "Menswear"], "url": "https://www.latexskin.pl", "about": "Polish maker of latex suits and catsuits for men and women, standard sizes or made to measure."},
+  {"name": "Andromeda Latex", "city": "Russia", "country": "Russia", "lat": 55.75, "lng": 37.62, "tags": ["Latex", "Made to measure", "Catsuits"], "url": "https://andromeda-latex.com", "about": "Solo designer making one-off latex cosplay catsuits and costumes to order.", "check": true},
+  {"name": "Evolatex", "city": "Russia", "country": "Russia", "lat": 55.75, "lng": 37.62, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://evolatex.ru", "about": "Russian workshop hand-making latex catsuits, dresses and lingerie to each client's measurements."},
+  {"name": "Kinkside", "city": "Russia", "country": "Russia", "lat": 55.75, "lng": 37.62, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://kinkside.com", "about": "Built-to-order latex catsuits, dresses, collars, sleepsacks and heavy-rubber corsets."},
+  {"name": "Magic Latex", "city": "Russia", "country": "Russia", "lat": 55.75, "lng": 37.62, "tags": ["Latex", "Catsuits", "Menswear", "Accessories"], "url": "https://magiclatex.ru", "about": "Russian-language latex label with catsuits, masks and separates for women and men.", "check": true},
+  {"name": "RuBeaR / Latex.Moscow", "city": "Moscow", "country": "Russia", "lat": 55.75, "lng": 37.62, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://rubear.moscow", "about": "Moscow workshop making latex since 2005, almost all in-house, with online configurators for catsuits, masks and stockings."},
+  {"name": "Bright&Shiny", "city": "Kyiv", "country": "Ukraine", "lat": 50.45, "lng": 30.52, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.brightandshinystore.com", "about": "Kyiv workshop since 2008 making latex and shiny garments to order from measurements or sketches."},
+  {"name": "Elin Harness", "city": "Kyiv", "country": "Ukraine", "lat": 50.45, "lng": 30.52, "tags": ["Latex", "Lingerie", "Menswear"], "url": "https://elinharness.com.ua", "about": "Kyiv label with hand-made latex pieces in English sheet alongside harnesswear."},
+  {"name": "Elin Latex", "city": "Kyiv", "country": "Ukraine", "lat": 50.45, "lng": 30.52, "tags": ["Latex", "Catsuits", "Lingerie", "Menswear"], "url": "https://elinlatex.com", "about": "Ukrainian brand founded 2022 with its own studio: latex dresses, catsuits, outerwear and lingerie."},
+  {"name": "Deadly Couture (Deadly Fetish)", "city": "Vancouver", "country": "Canada", "lat": 49.25, "lng": -123.12, "tags": ["Women owned", "Latex", "Menswear", "Accessories"], "url": "https://www.deadlyfetish.com", "about": "Vancouver fetish house with its own handmade latex line alongside stocked brands.", "women": true},
+  {"name": "Exo Latex", "city": "Montréal", "country": "Canada", "lat": 45.51, "lng": -73.59, "tags": ["Latex", "Made to measure", "Accessories"], "url": "https://exolatex.com", "about": "Montréal design studio making handmade latex garments and accessories, with custom sizing.", "check": true},
+  {"name": "HEVEA", "city": "Canada", "country": "Canada", "lat": 56.13, "lng": -106.35, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Menswear"], "url": "https://www.hevealatex.com", "about": "Latex label built on Western and rodeo themes, ready-to-wear and made-to-measure."},
+  {"name": "House of Etiquette", "city": "Toronto", "country": "Canada", "lat": 43.71, "lng": -79.4, "tags": ["Latex", "Lingerie", "Accessories"], "url": "https://www.houseofetiquette.com", "about": "Toronto label handmaking polished latex lingerie, dresses, stockings and heavy rubber."},
+  {"name": "Polymorphe", "city": "St-Basile-le-Grand, Quebec", "country": "Canada", "lat": 45.53, "lng": -73.28, "tags": ["Latex", "Ready to wear", "Catsuits", "Menswear", "Accessories"], "url": "https://www.polymorphe.com", "about": "Quebec workshop that makes its own latex sheeting as well as ready-to-wear garments and cosplay pieces."},
+  {"name": "Tox Latex", "city": "Ontario", "country": "Canada", "lat": 43.65, "lng": -79.38, "tags": ["Latex", "Made to measure", "Lingerie", "Accessories"], "url": "https://www.toxlatex.com", "about": "Canadian designer-led atelier making each piece to order in the client's colour and size."},
+  {"name": "Abigail Greydanus", "city": "North Hollywood, CA", "country": "USA", "lat": 34.17, "lng": -118.38, "tags": ["Latex", "Couture", "Lingerie", "Accessories"], "url": "https://www.abigailgreydanus.com", "about": "Small studio selling latex dresses and costume pieces alongside the maker's ceramics.", "check": true},
+  {"name": "Allure Bound", "city": "Baltimore, MD", "country": "USA", "lat": 39.29, "lng": -76.61, "tags": ["Latex", "Lingerie", "Accessories"], "url": "https://www.allurebound.com", "about": "Plus-size-focused latex label covering laser-cut pieces, swimwear and fitness wear."},
+  {"name": "Blacklickorish", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Lingerie", "Menswear"], "url": "https://www.blacklickorish.com", "about": "Melrose Avenue atelier making latex couture inspired by film, vintage and fantasy.", "women": true},
+  {"name": "Busted Brand", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Latex", "Couture", "Made to measure", "Lingerie"], "url": "https://bustedbrand.com", "about": "Los Angeles label with numbered collections of handcrafted latex; dressed Beyoncé for the Cowboy Carter cover."},
+  {"name": "Dawnamatrix", "city": "Atlanta, GA", "country": "USA", "lat": 33.75, "lng": -84.39, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://dawnamatrix.com", "about": "Bespoke rubber couture studio known for textured, themed collections from bridal to steampunk."},
+  {"name": "Deathstetics", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Latex", "Couture", "Made to measure", "Accessories"], "url": "https://www.deathstetics.com", "about": "Victorian-inspired luxury latex handmade in Los Angeles, with fully custom commissions."},
+  {"name": "Jane Doe Latex", "city": "Burbank, CA", "country": "USA", "lat": 34.18, "lng": -118.31, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Accessories"], "url": "https://shop.janedoelatex.com", "about": "Latex label begun in London in 2005, now in California, making neo-classical gowns, lingerie and catsuits.", "women": true},
+  {"name": "Kirsten Li Designs", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Latex", "Couture", "Made to measure", "Ready to wear", "Menswear"], "url": "https://kirstenli.com", "about": "Gender- and size-inclusive latex, bespoke and ready-to-wear, plus repairs."},
+  {"name": "MaggieDelena", "city": "Miami, FL", "country": "USA", "lat": 25.77, "lng": -80.19, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://www.maggiedelena.com", "about": "Miami designer of handmade couture latex tailored to the wearer.", "check": true},
+  {"name": "Nimue's Latex Fashions", "city": "California", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Latex", "Made to measure", "Catsuits", "Lingerie", "Menswear"], "url": "https://nimueslatex.com", "about": "Made-to-order latex fashion and costume, including made-to-measure catsuits."},
+  {"name": "Phoenix Latex", "city": "Maynard, MA", "country": "USA", "lat": 42.43, "lng": -71.45, "tags": ["Latex", "Made to measure"], "url": "https://www.phoenixlatex.com", "about": "Massachusetts maker of made-to-measure latex with a satin-like finish.", "check": true},
+  {"name": "Reneé Masoomian", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Latex", "Couture"], "url": "https://www.reneemasoomian.com", "about": "NYC designer working in high-fashion latex with vintage influences.", "check": true},
+  {"name": "SLYX Fashions", "city": "Washington, DC area", "country": "USA", "lat": 38.9, "lng": -77.04, "tags": ["Latex", "Made to measure", "Accessories"], "url": "https://www.slyx.com", "about": "Latex maker since 1996 making garments, helmet masks and vacuum beds, with custom clothing from CAD patterns."},
+  {"name": "Syren Latex", "city": "Los Angeles, CA", "country": "USA", "lat": 34.05, "lng": -118.24, "tags": ["Latex", "Couture", "Made to measure", "Lingerie", "Menswear"], "url": "https://stockroom.com/collections/syren-latex", "about": "Veteran Los Angeles label, now sold through Stockroom, spanning lingerie, dresses and military-styled menswear."},
+  {"name": "Tableaux Vivants", "city": "Brooklyn, NY", "country": "USA", "lat": 40.65, "lng": -73.95, "tags": ["Latex", "Couture", "Made to measure"], "url": "https://www.tableauxvivantslatex.com", "about": "Brooklyn latex label with archived collections and a custom service.", "check": true},
+  {"name": "Velvet Rose Latex", "city": "USA", "country": "USA", "lat": 39.5, "lng": -98.35, "tags": ["Latex", "Made to measure", "Lingerie"], "url": "https://velvet-rose-latex.myshopify.com", "about": "Small custom-made latex shop for lingerie, skirts and dresses.", "check": true},
+  {"name": "Vengeance Designs", "city": "New York, NY", "country": "USA", "lat": 40.71, "lng": -74.01, "tags": ["Latex", "Couture", "Made to measure", "Lingerie", "Accessories"], "url": "https://vengeancedesigns.net", "about": "Made-to-order latex in the client's colour and size, with gothic collections and cosplay."},
+  {"name": "Vex Clothing", "city": "Costa Mesa, CA", "country": "USA", "lat": 33.64, "lng": -117.92, "tags": ["Women owned", "Latex", "Couture", "Made to measure", "Catsuits", "Lingerie", "Menswear", "Accessories"], "url": "https://vexclothing.com", "about": "California house making handmade latex since 2000, full women's and men's ranges, made-to-measure in any colour, plus rentals and repairs.", "women": true},
+  {"name": "Fetisso", "city": "Japaratinga", "country": "Brazil", "lat": -9.09, "lng": -35.26, "tags": ["Latex", "Lingerie", "Menswear", "Accessories"], "url": "https://fetisso.com.br", "about": "Brazilian maker since 1992 producing its own natural latex hoods, gloves, underwear, corsets and dresses.", "check": true},
+  {"name": "Rubberist", "city": "Santiago", "country": "Chile", "lat": -33.46, "lng": -70.65, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://rubberist.cl", "about": "Santiago studio founded 2018 hand-making natural latex catsuits, boxers, hoods, bras and gloves."},
+  {"name": "Latex Discipline", "city": "Mexico City", "country": "Mexico", "lat": 19.43, "lng": -99.13, "tags": ["Latex", "Menswear", "Accessories"], "url": "https://www.latexdiscipline.com", "about": "Mexican latex brand selling women's and men's latex nationwide; own making not stated."},
+  {"name": "Kink Projects", "city": "Haikou", "country": "China", "lat": 24.78, "lng": 102.58, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://www.kinkprojects.com", "about": "Label grown from OEM manufacturing, offering made-to-order catsuits, uniforms, lingerie and heavy rubber at accessible prices."},
+  {"name": "Latex Catfish", "city": "Guangzhou", "country": "China", "lat": 23.12, "lng": 113.25, "tags": ["Latex", "Made to measure", "Catsuits", "Menswear", "Accessories"], "url": "https://www.latexcatfish.com", "about": "Guangzhou maker of made-to-measure catsuits, dresses, uniforms and heavy rubber, with designer collaboration lines."},
+  {"name": "Kurage", "city": "Tokyo", "country": "Japan", "lat": 35.69, "lng": 139.69, "tags": ["Latex", "Couture", "Made to measure", "Catsuits", "Accessories"], "url": "https://en.kurage.tokyo", "about": "Ikebukuro latex atelier since 2005 making made-to-order catsuits, hoods, gloves and couture, with repairs and workshops."},
+  {"name": "LlyaLatexWorks", "city": "Japan", "country": "Japan", "lat": 35.68, "lng": 139.69, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://llyalatex.fashionstore.jp", "about": "Independent Japanese maker hand-building latex suits, dresses, masks and gloves to measure."},
+  {"name": "FORFUN Bangkok", "city": "Bangkok", "country": "Thailand", "lat": 13.75, "lng": 100.5, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://www.forfun.store", "about": "Bangkok workshop hand-making natural latex masks, bodysuits, gloves and pet and drone suits."},
+  {"name": "Edenwear", "city": "Cape Town", "country": "South Africa", "lat": -33.93, "lng": 18.42, "tags": ["Latex", "Made to measure", "Catsuits", "Accessories"], "url": "https://edenwearlatex.co.za", "about": "Cape Town studio since 2008 making made-to-measure latex garments, hoods, sleepsacks and vacbeds.", "check": true}
+];
+
   // Categories that never show on the globe.
   var HIDE_CATEGORIES = /swing/i;
 
@@ -573,7 +840,7 @@ body { background: var(--page); }
   var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   // Work out each event's state relative to today.
-  var events = EVENTS.filter(function (e) { return !HIDE_CATEGORIES.test(e.category || ""); }).map(function (e, i) {
+  var evData = EVENTS.filter(function (e) { return !HIDE_CATEGORIES.test(e.category || ""); }).map(function (e, i) {
     var s = parseDate(e.start), en = parseDate(e.end) || s, o = Object.assign({ id: i }, e);
     // Clubs and venues run all year: no dates, no countdown.
     o.venue = e.yearRound === true || /\bclub|venue|\bbar\b/i.test(e.category || "") || /year[- ]?round/i.test(e.usually || "") || (!e.start && /^open /i.test(e.usually || ""));
@@ -587,8 +854,18 @@ body { background: var(--page); }
     o.days = s ? Math.round((s - today) / DAY) : Infinity;
     o.live = !!(s && s <= today && en >= today);
     o.hay = [e.name, e.city, e.country, label(e.category), e.category, e.about].join(" ").toLowerCase();
+    o.hot = !!(s && (o.live || o.days <= 30));
     return o;
   });
+  var faData = FASHION.map(function (f, i) {
+    var o = Object.assign({ id: i, category: "", venue: false, s: null, e: null, days: Infinity, live: false, fashion: true }, f);
+    o.tags = f.tags || [];
+    o.hot = !!f.women;
+    o.hay = [f.name, f.city, f.country, o.tags.join(" "), f.about].join(" ").toLowerCase();
+    return o;
+  });
+  var FASHION_ORDER = ["Women owned", "Online only", "Latex", "Couture", "Made to measure", "Ready to wear", "Catsuits", "Lingerie", "Menswear", "Corsetry", "Leather", "PVC", "Bridal", "Accessories"];
+  var mode = "events", events = evData;
 
   function countdown(o) {
     if (o.venue) return "Open year-round";
@@ -616,37 +893,82 @@ body { background: var(--page); }
   var state = { q: "", when: "all", cats: new Set(), place: null };
 
   function matches(o, ignorePlace) {
-    if (state.cats.size && !state.cats.has(o.category)) return false;
-    if (state.when !== "all" && !o.venue) { if (!o.s) return false; if (!o.live && o.days > +state.when) return false; }
+    if (state.cats.size) {
+      if (mode === "fashion") { var ok = true; state.cats.forEach(function (c) { if (o.tags.indexOf(c) < 0) ok = false; }); if (!ok) return false; }
+      else if (!state.cats.has(o.category)) return false;
+    }
+    if (mode === "events" && state.when !== "all" && !o.venue) { if (!o.s) return false; if (!o.live && o.days > +state.when) return false; }
     if (state.q) { var words = state.q.toLowerCase().split(/\s+/).filter(Boolean); for (var i = 0; i < words.length; i++) if (o.hay.indexOf(words[i]) < 0) return false; }
     if (!ignorePlace && state.place && o.city !== state.place) return false;
     return true;
   }
 
   /* ---------- Header text ---------- */
-  (function () {
-    var soon = events.filter(function (o) { return o.s && (o.live || o.days <= 30); }).length;
-    $("esg-today").innerHTML = "Today is <strong>" + DAYS[today.getDay()] + " " + today.getDate() + " " + MONTHS[today.getMonth()] + " " + today.getFullYear() + "</strong>. " +
-      events.length + " events worldwide, " + soon + " of them in the next 30 days.";
-  })();
+  function updateHeader() {
+    var day = "Today is <strong>" + DAYS[today.getDay()] + " " + today.getDate() + " " + MONTHS[today.getMonth()] + " " + today.getFullYear() + "</strong>. ";
+    if (mode === "fashion") {
+      var countries = {}; faData.forEach(function (o) { countries[o.country] = 1; });
+      var women = faData.filter(function (o) { return o.women; }).length;
+      var online = faData.filter(function (o) { return o.online; }).length;
+      $("esg-today").innerHTML = day + (faData.length - online) + " latex and couture labels and " + online + " online shops in " + Object.keys(countries).length + " countries. " + women + " labels are women owned.";
+    } else {
+      var soon = evData.filter(function (o) { return o.hot; }).length;
+      $("esg-today").innerHTML = day + evData.length + " events worldwide, " + soon + " of them in the next 30 days.";
+    }
+  }
+  updateHeader();
 
   /* ---------- Submit button ---------- */
   (function () {
-    var ready = /^https:\/\//.test(SUBMIT_URL);
-    [$("esg-submit")].forEach(function (a) {
-      if (ready) { a.href = SUBMIT_URL; return; }
-      a.addEventListener("click", function (ev) {
+    var a = $("esg-submit");
+    a.addEventListener("click", function (ev) {
+      var url = mode === "fashion" ? SUBMIT_URL_FASHION : SUBMIT_URL;
+      if (/^https:\/\//.test(url)) { a.href = url; return; }
+      {
         ev.preventDefault();
         var n = $("esg-submit-note");
         n.textContent = "Your Jotform form opens here once its link is added.";
         n.hidden = false;
-      });
+      }
+    });
+  })();
+
+  /* ---------- Suggestions box ---------- */
+  (function () {
+    var form = $("esg-suggest"), msg = $("esg-sg-msg"), mail = $("esg-sg-email"), note = $("esg-sg-note"), btn = form.querySelector("button");
+    function say(t) { note.textContent = t; note.hidden = false; }
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var text = msg.value.trim();
+      if (!text) { say("Write a note first."); msg.focus(); return; }
+      if (mail.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail.value)) { say("That email doesn't look right. Leave it empty if you'd rather not get a reply."); mail.focus(); return; }
+      if (form.elements._gotcha.value) return;
+      if (!/^https:\/\//.test(SUGGEST_URL)) { say("The suggestions box starts sending once its form link is added."); return; }
+      if (/jotform\./i.test(SUGGEST_URL)) {
+        var u = SUGGEST_URL + (SUGGEST_URL.indexOf("?") < 0 ? "?" : "&") + "message=" + encodeURIComponent(text) + (mail.value ? "&email=" + encodeURIComponent(mail.value) : "");
+        window.open(u, "_blank", "noopener"); say("Your note opens in a new tab. Press submit there to send it."); return;
+      }
+      var fd = new FormData(); fd.append("message", text); fd.append("email", mail.value); fd.append("view", mode);
+      btn.disabled = true; say("Sending...");
+      fetch(SUGGEST_URL, { method: "POST", body: fd, headers: { Accept: "application/json" } })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); msg.value = ""; mail.value = ""; say("Thank you. Your note is on its way to Electra."); })
+        .catch(function () { say("That didn't send. Please try again in a moment."); })
+        .then(function () { btn.disabled = false; });
     });
   })();
 
   /* ---------- Chips ---------- */
   var chipsEl = $("esg-chips");
   function buildChips() {
+    if (mode === "fashion") {
+      var fc = {};
+      faData.forEach(function (o) { o.tags.forEach(function (t) { fc[t] = (fc[t] || 0) + 1; }); });
+      var ft = Object.keys(fc).sort(function (a, b) { var ia = FASHION_ORDER.indexOf(a), ib = FASHION_ORDER.indexOf(b); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b); });
+      var fh = '<button type="button" class="esg-chip" data-cat="" aria-pressed="true">All labels and shops<span class="esg-n">' + faData.length + "</span></button>";
+      ft.forEach(function (c) { fh += '<button type="button" class="esg-chip" data-cat="' + esc(c) + '" aria-pressed="false">' + esc(c) + '<span class="esg-n">' + fc[c] + "</span></button>"; });
+      chipsEl.innerHTML = fh;
+      return;
+    }
     var counts = {};
     events.forEach(function (o) { counts[o.category] = (counts[o.category] || 0) + 1; });
     var cats = Object.keys(counts).sort(function (a, b) {
@@ -695,15 +1017,24 @@ body { background: var(--page); }
     var venues = shown.filter(function (o) { return o.venue; }).sort(function (a, b) { return a.city.localeCompare(b.city) || a.name.localeCompare(b.name); });
     var tba = shown.filter(function (o) { return !o.s && !o.venue; }).sort(function (a, b) { return a.name.localeCompare(b.name); });
 
-    var st = shown.length + (shown.length === 1 ? " event" : " events");
+    var st = shown.length + (mode === "fashion" ? (shown.length === 1 ? " label" : " labels") : (shown.length === 1 ? " event" : " events"));
     statusEl.innerHTML = state.place
       ? '<span class="esg-place">' + esc(state.place) + ' <button type="button" id="esg-place-x" aria-label="Show all places">×</button></span><span>' + st + "</span>"
       : "<span>" + st + "</span>";
     var px = $("esg-place-x"); if (px) px.addEventListener("click", function () { state.place = null; render(); });
 
     if (!shown.length) {
-      listEl.innerHTML = '<p class="esg-empty">No events match that yet. <button type="button" id="esg-reset">Show all events</button></p>';
+      listEl.innerHTML = mode === "fashion"
+        ? '<p class="esg-empty">No labels match that yet. <button type="button" id="esg-reset">Show all labels</button></p>'
+        : '<p class="esg-empty">No events match that yet. <button type="button" id="esg-reset">Show all events</button></p>';
       $("esg-reset").addEventListener("click", resetAll);
+    } else if (mode === "fashion") {
+      var fhtml = "", country = "";
+      shown.slice().sort(function (a, b) { return a.country.localeCompare(b.country) || a.city.localeCompare(b.city) || a.name.localeCompare(b.name); }).forEach(function (o) {
+        if (o.country !== country) { country = o.country; fhtml += '<h3 class="esg-month">' + esc(country) + "</h3>"; }
+        fhtml += rowF(o);
+      });
+      listEl.innerHTML = fhtml;
     } else {
       var html = "", month = "";
       dated.forEach(function (o) {
@@ -716,6 +1047,17 @@ body { background: var(--page); }
       listEl.innerHTML = html;
     }
     globe.setPins(events.filter(function (o) { return matches(o, true); }));
+  }
+  function rowF(o) {
+    var cc = o.country === "United Kingdom" ? "UK" : o.country === "USA" ? "USA" : o.country.slice(0, 3).toUpperCase();
+    var shown = o.tags.filter(function (t) { return t !== "Women owned" && t !== "Online only"; });
+    return '<article class="esg-ev" tabindex="0" data-id="' + o.id + '"><div class="esg-date esg-tba esg-cc"><b>' + esc(cc) + '</b><span>' + (o.online ? "Online" : "Label") + '</span></div>' +
+      '<div class="esg-body"><p class="esg-name">' + esc(o.name) + '</p>' +
+      '<p class="esg-meta">' + esc(o.city === o.country ? o.country : o.city + ", " + o.country) + (o.check ? " · check it's still trading" : "") + "</p>" +
+      (o.about ? '<p class="esg-about">' + esc(o.about) + "</p>" : "") +
+      '<div class="esg-tags">' + shown.map(function (t) { return '<span class="esg-tag">' + esc(t) + "</span>"; }).join("") +
+      (o.url ? '<a class="esg-link" href="' + esc(o.url) + '" target="_blank" rel="noopener nofollow">Shop website</a>' : "") + "</div></div>" +
+      '<div class="esg-count">' + (o.women ? '<span class="esg-badge">Women owned</span>' : "") + (o.online ? '<span class="esg-badge esg-badge-ink">Online only</span>' : "") + "</div></article>";
   }
   function row(o) {
     var soon = o.s && (o.live || o.days <= 30);
@@ -741,6 +1083,28 @@ body { background: var(--page); }
   listEl.addEventListener("keydown", function (ev) {
     if (ev.key !== "Enter" || ev.target.closest("a")) return;
     var r = ev.target.closest(".esg-ev"); if (r) r.click();
+  });
+  var TEXT = {
+    events: { eyebrow: "The fetish calendar", title: "Kink &amp; Fetish Events Around the World", q: "Search a city, country or event",
+      leg1: "In the next 30 days", leg2: "Later, or dates to come", st: "Hosting an event?", sx: "Send in the details. Each one is reviewed before it goes on the globe.",
+      cta: "Submit your event", foot: "Dates move. Check each event's own site before you book travel." },
+    fashion: { eyebrow: "The fetish wardrobe", title: "Latex &amp; Couture Fetish Fashion Around the World", q: "Search a city, country or label",
+      leg1: "Women owned", leg2: "Other labels", st: "Make latex or fetish couture?", sx: "Send in your label. Each one is reviewed before it goes on the globe.",
+      cta: "Submit your label", foot: "Makers change. Check each label's own site before you order." }
+  };
+  function setMode(m) {
+    if (m === mode) return;
+    mode = m; events = m === "fashion" ? faData : evData;
+    var t = TEXT[m];
+    $("esg-eyebrow").innerHTML = t.eyebrow; $("esg-title").innerHTML = t.title; qEl.placeholder = t.q; qEl.setAttribute("aria-label", t.q);
+    $("esg-leg1").textContent = t.leg1; $("esg-leg2").textContent = t.leg2; $("esg-submit-title").textContent = t.st; $("esg-submit-text").textContent = t.sx;
+    $("esg-submit").textContent = t.cta; $("esg-foot-text").textContent = t.foot; $("esg-submit-note").hidden = true;
+    $("esg-when").hidden = m === "fashion";
+    document.querySelectorAll("#esg .esg-mode button").forEach(function (x) { x.setAttribute("aria-pressed", String(x.getAttribute("data-mode") === m)); });
+    updateHeader(); buildChips(); resetAll();
+  }
+  document.querySelectorAll("#esg .esg-mode button").forEach(function (b) {
+    b.addEventListener("click", function () { setMode(b.getAttribute("data-mode")); });
   });
   function resetAll() {
     state.q = ""; state.place = null; state.cats.clear(); state.when = "all"; qEl.value = ""; qClear.hidden = true;
@@ -890,7 +1254,7 @@ body { background: var(--page); }
       pins.forEach(function (p) { if (!p.vis) return; var d = Math.hypot(p.x - x, p.y - y); if (d < Math.max(p.r + 6, 14) && d < bd) { bd = d; best = p; } });
       hover = best;
       if (best) {
-        tip.textContent = best.city + " · " + best.list.length + (best.list.length === 1 ? " event" : " events");
+        tip.textContent = best.city + " · " + best.list.length + (mode === "fashion" ? (best.list.length === 1 ? " label" : " labels") : (best.list.length === 1 ? " event" : " events"));
         tip.style.left = best.x + "px"; tip.style.top = best.y + "px"; tip.classList.add("esg-on");
         canvas.style.cursor = "pointer";
       } else { tip.classList.remove("esg-on"); canvas.style.cursor = ""; }
@@ -919,7 +1283,7 @@ body { background: var(--page); }
       list.forEach(function (o) {
         var k = o.city + "|" + o.lat + "|" + o.lng;
         (byCity[k] = byCity[k] || { city: o.city, lat: o.lat, lng: o.lng, list: [], soon: false }).list.push(o);
-        if (o.s && (o.live || o.days <= 30)) byCity[k].soon = true;
+        if (o.hot) byCity[k].soon = true;
       });
       pins = Object.keys(byCity).map(function (k) { return byCity[k]; }).sort(function (a, b) { return a.soon - b.soon; });
       hover = null; tip.classList.remove("esg-on");
