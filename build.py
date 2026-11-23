@@ -12,6 +12,7 @@ Photos go in src/images/<name>.jpg (or .webp/.png); a missing photo shows a plac
 Needs: pip install markdown
 """
 import datetime as dt
+import hashlib
 import html
 import json
 import re
@@ -409,6 +410,11 @@ def to_preview_links(doc):
     return re.sub(r'href="(/[^"]*)"', fix, doc)
 
 
+def asset_v(name):
+    """Short fingerprint of an asset, so browsers and the CDN fetch a changed file at once."""
+    return hashlib.sha1((SRC / "assets" / name).read_bytes()).hexdigest()[:8]
+
+
 PRIVATE = set()  # page paths with "private": true; left out of the live site for now
 
 
@@ -435,8 +441,8 @@ def page_doc(meta, body, posts, post=None, og_type="website", is_home=False):
         return to_preview_links(doc)
     return hide_private(f'<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
             f'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-            f'{head_tags(meta, posts, post, og_type)}\n<link rel="stylesheet" href="/assets/style.css">\n'
-            f'</head>\n<body>\n{main}\n<script src="/assets/site.js" defer></script>\n</body>\n</html>\n')
+            f'{head_tags(meta, posts, post, og_type)}\n<link rel="stylesheet" href="/assets/style.css?v={asset_v("style.css")}">\n'
+            f'</head>\n<body>\n{main}\n<script src="/assets/site.js?v={asset_v("site.js")}" defer></script>\n</body>\n</html>\n')
 
 
 def post_body(p, posts):
@@ -487,6 +493,8 @@ ROBOTS = f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n"
 
 HTACCESS = r"""# Hostinger / Apache
 Options -MultiViews
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .js .css .xml .txt
 RewriteEngine On
 
 # One canonical address: https, no www (only on the real domain, so a
