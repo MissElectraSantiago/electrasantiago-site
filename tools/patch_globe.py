@@ -21,6 +21,12 @@ LINK_FIXES = [                        # links M corrected, 23 Nov 2026
     ('"name": "Sapphic Riot", ', '"https://www.timeout.com/pt/rio-de-janeiro/noticias/quais-sao-os-melhores-espacos-queer-do-mundo-de-acordo-com-os-editores-da-time-out-072026"', '"https://www.timeout.com/chiang-mai/bars-and-pubs/sapphic-riot"'),
 ]
 
+ADD_AFTER = '{"name": "Provocation Club", '   # new pins M asked for, 23 Nov 2026
+ADD_ENTRIES = [
+    '{"name": "Dykotomy", "category": "Lesbian and queer women", "city": "Melbourne", "country": "Australia", "lat": -37.8, "lng": 144.98, "start": "", "end": "", "usually": "Every few months", "url": "https://www.eventbrite.com/e/dykotomys-d-valley-tickets-1998408413360", "about": "FLINTA dance parties and a FLINTA+ strip club night, often at New Guernica in Collingwood"},',
+    '{"name": "Queer Sauna Sounds", "category": "Mixed fetish party and ball", "city": "Melbourne", "country": "Australia", "lat": -37.82, "lng": 144.97, "start": "", "end": "", "usually": "Every few months", "url": "https://www.ravetemple.com/events", "about": "Rave Temple\'s queer party with DJs in a sauna setting"},',
+]
+
 src = Path(sys.argv[1]).read_text(encoding="utf-8")
 start = src.index("\n<style>\n") + 1   # the globe's own styles, not the host wrapper's
 end = src.rindex("</script>") + len("</script>")
@@ -31,6 +37,16 @@ assert n == 1, "title not found"
 
 for name in REMOVE_NAMES:
     html = re.sub(r'\n[ \t]*\{"name": "' + re.escape(name) + r'",[^\n]*', "", html)
+
+lines = html.split("\n")
+for i, line in enumerate(lines):
+    if ADD_AFTER in line:
+        indent = line[: len(line) - len(line.lstrip())]
+        lines[i + 1:i + 1] = [indent + e for e in ADD_ENTRIES]
+        break
+else:
+    sys.exit("ADD_AFTER entry not found")
+html = "\n".join(lines)
 
 for name_key, old, new in LINK_FIXES:
     lines = html.split("\n")
