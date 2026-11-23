@@ -85,7 +85,11 @@ html = html.replace('''"tags": ["Latex", "Couture", "Lingerie", "Accessories"], 
 for a, b in [('function setZoom(z) { zoom = Math.max(1, Math.min(4, z)); }',
               'function setZoom(z) { zoom = Math.max(1, Math.min(16, z)); }'),
              ('setZoom(zoom * 1.35); pauseSpin();', 'setZoom(zoom * 1.6); pauseSpin();'),
-             ('setZoom(zoom / 1.35);', 'setZoom(zoom / 1.6);')]:
+             ('setZoom(zoom / 1.35);', 'setZoom(zoom / 1.6);'),
+             # once zoomed in, the globe stays put instead of spinning away
+             ('idleTimer = setTimeout(function () { if (!state.place && !hover) spinning = true; }, 9000);',
+              'idleTimer = setTimeout(function () { if (!state.place && !hover && zoom < 1.5) spinning = true; }, 9000);'),
+             ('rot[0] += (time - t0) * 0.006;', 'rot[0] += (time - t0) * 0.006 / zoom;')]:
     if a in html:
         html = html.replace(a, b)
 

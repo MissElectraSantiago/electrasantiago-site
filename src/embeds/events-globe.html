@@ -1218,7 +1218,7 @@ body { background: var(--page); }
         rot = [flight.a[0] + flight.d[0] * e, flight.a[1] + flight.d[1] * e, 0];
         if (k >= 1) flight = null;
       } else if (spinning) {
-        rot[0] += (time - t0) * 0.006;
+        rot[0] += (time - t0) * 0.006 / zoom;
       }
       t0 = time;
       draw(time);
@@ -1227,7 +1227,7 @@ body { background: var(--page); }
 
     function pauseSpin() {
       spinning = false; clearTimeout(idleTimer);
-      if (!reduceMotion) idleTimer = setTimeout(function () { if (!state.place && !hover) spinning = true; }, 9000);
+      if (!reduceMotion) idleTimer = setTimeout(function () { if (!state.place && !hover && zoom < 1.5) spinning = true; }, 9000);
     }
 
     // dragging and pinching
