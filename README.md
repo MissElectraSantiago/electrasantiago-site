@@ -9,7 +9,7 @@ To build locally: `pip install markdown`, then `python3 build.py` (output in `pu
 - `src/site.json`: links, nav, footer, contact email, Telegram, form ids and form endpoints.
 - `src/pages/*.html`: one file per page; the `<!--meta {...} -->` block sets the URL, search title, description and structured data.
 - `src/posts/*.md`: blog posts, one per file (see `src/posts/README.md`).
-- `src/images/`: photos, named as the placeholders show (e.g. `gallery-01.jpg`, `about-portrait.jpg`, `og-cover.jpg`). A missing photo shows a placeholder.
+- `src/images/`: photos, named as the placeholders show (e.g. `gallery-01.jpg`, `about-portrait.jpg`, `og-share.jpg` for link previews). A missing photo shows a placeholder.
 - `src/assets/`: styles and the small script (menu, 18+ notice, copy buttons, forms).
 
 `python3 build.py --preview` builds a self-contained preview into `preview/`.
