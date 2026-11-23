@@ -1,0 +1,430 @@
+<style>
+/* Layout: editorial header, search and filters, then the directory in category sections, two columns of entries that stack on phones. Same tokens as the events globe. */
+.krd {
+  --paper: #ffffff;
+  --ink: #161414;
+  --ink-soft: #6a6363;
+  --line: #e8e3e3;
+  --wash: #f6f3f3;
+  --red: #ec1c24;
+  --red-ink: #ffffff;
+  --display: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .krd { --paper: #0f0e0e; --ink: #f4f0f0; --ink-soft: #a89f9f; --line: #2c2929; --wash: #1a1818;
+    --red: #ff3d44; --red-ink: #ffffff; color-scheme: dark; } }
+:root[data-theme="dark"] .krd { --paper: #0f0e0e; --ink: #f4f0f0; --ink-soft: #a89f9f; --line: #2c2929; --wash: #1a1818;
+    --red: #ff3d44; --red-ink: #ffffff; color-scheme: dark; }
+:root { --page: #ffffff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #0f0e0e; color-scheme: dark; } }
+:root[data-theme="dark"] { --page: #0f0e0e; color-scheme: dark; }
+body { background: var(--page); }
+.krd *, .krd *::before, .krd *::after { box-sizing: border-box; }
+.krd [hidden] { display: none !important; }
+.krd-wrap { max-width: 1200px; margin: 0 auto; padding-block: 48px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Header */
+.krd-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.krd-head-text { min-width: 0; max-width: 680px; }
+.krd-eyebrow { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.02em; color: var(--ink-soft); }
+.krd-title { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 54px); line-height: 1.06; letter-spacing: 0.005em; text-wrap: balance; }
+.krd-lede { margin: 12px 0 0; color: var(--ink-soft); max-width: 60ch; }
+.krd-lede strong { color: var(--ink); font-weight: 600; }
+.krd-stats { display: flex; gap: 28px; font-family: var(--display); }
+.krd-stats div { min-width: 0; }
+.krd-stats b { display: block; font-weight: 400; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.krd-stats span { display: block; margin-top: 6px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* Controls */
+.krd-controls { display: grid; gap: 14px; padding-block: 22px; }
+.krd-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+.krd-search { position: relative; flex: 1 1 280px; min-width: 0; max-width: 460px; }
+.krd-search input { width: 100%; height: 44px; padding: 0 40px 0 16px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; }
+.krd-search input::placeholder { color: var(--ink-soft); }
+.krd-search .krd-clear { position: absolute; right: 6px; top: 6px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-soft); font-size: 18px; cursor: pointer; }
+.krd-where { display: inline-flex; border: 1px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.krd-where button { height: 42px; padding: 0 16px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.krd-where button + button { border-left: 1px solid var(--line); }
+.krd-where button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.krd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.krd-chip { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+.krd-chip:hover { border-color: var(--ink); }
+.krd-chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.krd-chip.krd-workers { border-color: var(--red); }
+.krd-chip.krd-workers[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+.krd-chip .krd-n { opacity: .55; margin-left: 6px; font-variant-numeric: tabular-nums; }
+.krd button:focus-visible, .krd a:focus-visible, .krd input:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* Directory */
+.krd-status { margin: 0 0 4px; font-size: 14px; color: var(--ink-soft); }
+.krd-sec { padding-top: 34px; }
+.krd-sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 20px; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
+.krd-sec-title { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(24px, 3vw, 30px); line-height: 1.1; }
+.krd-sec-note { margin: 0; font-size: 14px; color: var(--ink-soft); max-width: 60ch; }
+.krd-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+.krd-item { min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.krd-name { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.krd-name a { color: var(--ink); text-decoration: none; }
+.krd-name a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.krd-name a::after { content: " \2197"; font-weight: 400; color: var(--ink-soft); }
+.krd-about { margin: 5px 0 0; font-size: 14px; color: var(--ink); max-width: 56ch; }
+.krd-tags { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--ink-soft); }
+.krd-tag { padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; }
+.krd-tag.krd-local { border-color: var(--red); color: var(--ink); }
+.krd-tag.krd-local::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); margin-right: 6px; vertical-align: 1px; }
+.krd-host { overflow-wrap: anywhere; }
+.krd-empty { padding: 32px 0; color: var(--ink-soft); }
+.krd-empty button { border: 0; background: none; padding: 0; color: var(--ink); text-decoration: underline; font: inherit; cursor: pointer; }
+
+.krd-band { margin-top: 48px; padding: 28px 0; border-top: 1px solid var(--ink); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 40px; }
+.krd-band h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: 20px; line-height: 1.15; }
+.krd-band p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+/* Suggestions box */
+.krd-suggest { margin-top: 8px; padding: 32px 0; border-top: 1px solid var(--ink); display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px 40px; align-items: start; }
+.krd-suggest h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.1; }
+.krd-suggest-text p { margin: 0; color: var(--ink-soft); max-width: 46ch; }
+.krd-form { display: grid; gap: 12px; min-width: 0; }
+.krd-form label { display: grid; gap: 6px; font-size: 13px; color: var(--ink-soft); }
+.krd-form textarea, .krd-form input { width: 100%; padding: 12px 14px; border: 1px solid var(--ink); border-radius: 14px; background: var(--paper); color: var(--ink); font: inherit; font-size: 15px; }
+.krd-form textarea { min-height: 120px; resize: vertical; }
+.krd-form input { height: 44px; border-radius: 999px; padding: 0 16px; }
+.krd-form-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.krd-send { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; background: var(--red); color: var(--red-ink); font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; border: 0; cursor: pointer; transition: filter .15s ease; }
+.krd-send:hover { filter: brightness(0.92); }
+.krd-send:focus-visible, .krd-form textarea:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.krd-form-note { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.krd-form-note.krd-ok { color: var(--ink); font-weight: 500; }
+.krd-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.krd-foot { padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .krd-grid { grid-template-columns: minmax(0, 1fr); }
+  .krd-band { grid-template-columns: minmax(0, 1fr); }
+  .krd-suggest { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .krd-wrap { padding-block: 32px 40px; }
+  .krd-where { width: 100%; }
+  .krd-where button { flex: 1; padding: 0 6px; font-size: 13px; }
+  .krd-stats { gap: 22px; }
+  .krd-stats b { font-size: 28px; }
+  .krd-send { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .krd * { transition: none !important; } }
+</style>
+<section class="krd" id="krd">
+  <div class="krd-wrap">
+    <header class="krd-head">
+      <div class="krd-head-text">
+        <p class="krd-eyebrow">The kink directory</p>
+        <h1 class="krd-title">Getting Started in Kink</h1>
+        <p class="krd-lede">Trusted places to learn, meet people and play safely, plus support for workers in the industry. <strong>Every link was checked by hand</strong> and only reputable sites made the list.</p>
+      </div>
+      <div class="krd-stats" id="krd-stats"></div>
+    </header>
+
+    <div class="krd-controls">
+      <div class="krd-row">
+        <label class="krd-search" for="krd-q">
+          <input id="krd-q" type="search" autocomplete="off" placeholder="Search a topic, place or name" aria-label="Search by topic, place or name">
+          <button class="krd-clear" id="krd-q-clear" type="button" aria-label="Clear search" hidden>&times;</button>
+        </label>
+        <div class="krd-where" role="group" aria-label="Where">
+          <button type="button" data-where="all" aria-pressed="true">Everywhere</button>
+          <button type="button" data-where="us">United States</button>
+          <button type="button" data-where="local">Australia &amp; NZ</button>
+        </div>
+      </div>
+      <div class="krd-chips" id="krd-chips" role="group" aria-label="Category"></div>
+    </div>
+
+    <p class="krd-status" id="krd-status" aria-live="polite"></p>
+    <div id="krd-list"></div>
+
+    <div class="krd-band">
+      <div><h2>Talk before you play</h2><p>Agree on what's in, what's out and how either of you stops the scene, before anything starts.</p></div>
+      <div><h2>Start small</h2><p>Learn one thing well from a good teacher before you add the next. Rope and impact both have real risks.</p></div>
+      <div><h2>Go to a munch</h2><p>A munch is a casual meet-up in a pub or cafe. It's the easiest way to meet your local scene with no pressure.</p></div>
+    </div>
+
+    <div class="krd-suggest" id="krd-suggest">
+      <div class="krd-suggest-text">
+        <h2>Send a note to Electra</h2>
+        <p>Know a great resource that's missing, or found a link that's broken or out of date? Your note goes straight to me, Electra, and I read every one before anything changes on the page.</p>
+      </div>
+      <form class="krd-form" id="krd-form" method="post" novalidate>
+        <label for="krd-msg">Your note to Electra
+          <textarea id="krd-msg" name="message" required maxlength="2000" placeholder="e.g. Add the Chicago munch, or the rope safety link is broken"></textarea>
+        </label>
+        <label for="krd-email">Email, if you'd like a reply (optional)
+          <input id="krd-email" name="email" type="email" autocomplete="email">
+        </label>
+        <div class="krd-hp" aria-hidden="true"><label for="krd-website">Leave this empty<input id="krd-website" name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <input type="hidden" name="page" value="Getting Started in Kink">
+        <div class="krd-form-row">
+          <button class="krd-send" id="krd-send" type="submit">Send to Electra</button>
+          <p class="krd-form-note" id="krd-form-note" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+
+    <footer class="krd-foot">
+      <span>Links checked <span id="krd-checked"></span>. Sites change, so read each one's own guidance.</span>
+    </footer>
+  </div>
+</section>
+<script>
+(function () {
+  /* =====================================================================
+     SETTINGS YOU CAN CHANGE
+     ===================================================================== */
+
+  // Where suggestions go. Paste your form's submit link between the quotes
+  // (a Formspree link, or your Jotform form's submit address). The box sends
+  // three fields: "message", "email" and "page". Leave it empty and the box
+  // shows a note instead of sending.
+  var SUGGEST_URL = "PASTE_YOUR_FORM_LINK_HERE";
+
+  // When the links were last checked.
+  var CHECKED = "November 2026";
+
+  // The resources. One line each. To add one, copy a line, change the
+  // details and keep the commas. "category" must match a name in SECTIONS.
+  var RESOURCES = [
+    {"name": "Submissive Guide: New to BDSM? Start Here", "url": "https://submissiveguide.com/articles/series/new-to-bdsm-start-here/", "category": "Start here", "region": "Worldwide", "about": "A free beginner series on roles, limits, finding partners and first steps, from a site running since 2006."},
+    {"name": "Burnett Foundation Aotearoa: Spilling the tea on kink", "url": "https://www.burnettfoundation.org.nz/articles/sex/spilling-the-tea-on-kink/", "category": "Start here", "region": "New Zealand", "about": "A friendly intro from an NZ sexual health charity: consent, risk awareness, hygiene, testing and aftercare."},
+    {"name": "Northwestern University: Kink & BDSM", "url": "https://northwestern.edu/care/get-info/sexual-health/pleasure/kink-bdsm.html", "category": "Start here", "region": "United States", "about": "A university health page explaining kink, negotiation, safewords and aftercare in plain terms."},
+    {"name": "NCSF Consent Counts", "url": "https://ncsfreedom.org/consent-counts/", "category": "Consent & negotiation", "region": "Worldwide", "about": "Free consent guides from the National Coalition for Sexual Freedom: negotiation, red flags, and kink versus abuse."},
+    {"name": "NCSF: Best Practices for Consent to Kink", "url": "https://ncsfreedom.org/best-practices-for-consent-to-kink/", "category": "Consent & negotiation", "region": "Worldwide", "about": "A ten-point checklist for getting clear, explicit consent before any kink activity."},
+    {"name": "NCSF Consent & Negotiation guide", "url": "https://ncsfreedom.org/wp-content/uploads/2019/12/NCSF_Consent_Negotiation.pdf", "category": "Consent & negotiation", "region": "Worldwide", "about": "A short printable guide to meeting new partners safely and stopping a scene. Opens as a PDF."},
+    {"name": "Go Ask Alice! (Columbia University): BDSM and consent", "url": "https://goaskalice.columbia.edu/answered-questions/bdsm-and-consent/", "category": "Consent & negotiation", "region": "United States", "about": "A clear Q&A on boundaries, safewords and traffic-light check-ins from Columbia's health team."},
+    {"name": "The Hotline: Healthy BDSM relationships are possible", "url": "https://www.thehotline.org/resources/healthy-bdsm-relationships-are-possible/", "category": "Consent & negotiation", "region": "United States", "about": "From a domestic violence hotline: how consensual power exchange differs from abuse, and the red flags."},
+    {"name": "Burnett Foundation Aotearoa: Guide to consensual non-consent", "url": "https://www.burnettfoundation.org.nz/articles/sex/our-ultimate-guide-to-engaging-in-consensual-non-consent-cnc/", "category": "Consent & negotiation", "region": "New Zealand", "about": "A careful guide to negotiating CNC scenes: limits, safewords, risk, aftercare and advice for survivors."},
+    {"name": "American Counseling Association: Kink culture brief", "url": "https://www.counseling.org/docs/default-source/practice-briefs/acapb-kink-culture-2020.pdf", "category": "Consent & negotiation", "region": "Worldwide", "about": "Written for counsellors but readable: layers of consent, SSC, RACK and the 4Cs. Opens as a PDF."},
+    {"name": "SexInfo Online (UC Santa Barbara): Safe BDSM practices", "url": "https://sexinfoonline.com/a-guide-to-safe-bdsm-practices/", "category": "Safety guides", "region": "Worldwide", "about": "A university-run overview of risk frameworks, limits, sub drop, and safety for rope, impact and wax."},
+    {"name": "Submissive Guide: Staying safe with SSC", "url": "https://submissiveguide.com/articles/safety/safe-sane-and-consensual-bdsm/", "category": "Safety guides", "region": "Worldwide", "about": "What Safe, Sane and Consensual means in practice, including the health talk before a scene."},
+    {"name": "Burnett Foundation Aotearoa: Breath play and risk", "url": "https://burnettfoundation.org.nz/articles/sex/breath-play-risk-what-you-need-to-know", "category": "Safety guides", "region": "New Zealand", "about": "Frank harm reduction on breath and neck play, which is never risk-free. Covers consent, health checks and CPR."},
+    {"name": "Burnett Foundation Aotearoa: Know your kinks", "url": "https://www.burnettfoundation.org.nz/articles/sex/know-your-kinks/", "category": "Safety guides", "region": "New Zealand", "about": "Quick safety and sexual health notes for many practices, from bondage and impact to electro and pup play."},
+    {"name": "Autostraddle: Ways to hit, spank and flog in bed", "url": "https://www.autostraddle.com/five-ways-to-hit-spank-flog-someone-in-bed228103/", "category": "Safety guides", "region": "Worldwide", "about": "A beginner impact guide: where it's safe to strike, what to avoid, warming up and checking in."},
+    {"name": "Go Ask Alice! (Columbia University): Erotic hypnosis", "url": "https://goaskalice.columbia.edu/answered-questions/what-erotic-hypnosis", "category": "Safety guides", "region": "United States", "about": "What erotic hypnosis is and how to explore it with consent, from Columbia's health team."},
+    {"name": "Crash Restraint: Basic safety", "url": "https://crash-restraint.com/ties/1", "category": "Rope & bondage", "region": "Worldwide", "about": "The first lesson of a free video rope course, covering safety before you tie anything."},
+    {"name": "Helsinki Shibari: Nerve safety for rope bondage", "url": "https://www.helsinkishibari.com/articles/nerve-safety-for-rope-bondage", "category": "Rope & bondage", "region": "Worldwide", "about": "How to prevent nerve damage, spot it early, tell it apart from circulation problems, and what to do."},
+    {"name": "Twisted Windows: Bondage safety", "url": "https://www.twistedwindows.com/bondagesafety", "category": "Rope & bondage", "region": "Worldwide", "about": "A free safety library for tops and bottoms: cutting tools, circulation, nerves, gags and common myths."},
+    {"name": "Burnett Foundation Aotearoa: Single wrist tie tutorial", "url": "https://burnettfoundation.org.nz/articles/sex/bondage-tutorial-single-wrist-restraint", "category": "Rope & bondage", "region": "New Zealand", "about": "A short video for your first wrist tie, plus three ground rules: circulation, safety scissors and a safeword."},
+    {"name": "Oz Kink Fest", "url": "https://ozkinkfest.com.au/", "category": "Events & festivals", "region": "Melbourne", "about": "Melbourne's ten-day kink festival every October, now in its 18th year, with workshops, a munch and social events."},
+    {"name": "Melbourne Community Rope", "url": "https://www.mcr.org.au/", "category": "Rope & bondage", "region": "Brunswick East, Melbourne", "about": "A not-for-profit rope group with weekly beginner classes. Consent-focused, body-positive and LGBTQIA+ friendly."},
+    {"name": "Northside Bizarre", "url": "https://www.thorneharbour.org/get-involved/northside-bizarre", "category": "Events & festivals", "region": "Melbourne", "about": "A yearly October kink street party with educator demos and a leather market, raising money for Thorne Harbour Health."},
+    {"name": "Thorne Harbour Health: Sexual health", "url": "https://www.thorneharbour.org/health-info/sexual-health", "category": "Kink-aware health & therapy", "region": "Victoria", "about": "Victoria's LGBTIQ+ health organisation: testing, PrEP and a kink and fetish guide for gay and bi men."},
+    {"name": "Melbourne Sexual Health Centre", "url": "https://www.mshc.org.au/clinics-services/our-services", "category": "Kink-aware health & therapy", "region": "Carlton, Melbourne", "about": "A specialist public sexual health clinic for STI testing, treatment and counselling. Appointments only."},
+    {"name": "ACON: Sexual health", "url": "https://www.acon.org.au/what-we-are-here-for/sexual-health/", "category": "Kink-aware health & therapy", "region": "New South Wales", "about": "NSW's LGBTQ+ health organisation, with free safer-play packs by post, queer-friendly clinics and workshops."},
+    {"name": "Society of Australian Sexologists: Find a sexologist", "url": "https://societyaustraliansexologists.org.au/directory", "category": "Kink-aware health & therapy", "region": "Australia-wide", "about": "The professional body's directory of accredited sexologists by state. Ask each one about their kink experience."},
+    {"name": "eSafety guide to FetLife", "url": "https://esafety.gov.au/key-topics/esafety-guide/fetlife", "category": "Safety guides", "region": "Australia-wide", "about": "The government's guide to FetLife's privacy settings, blocking and reporting, so you can join safely."},
+    {"name": "eSafety: Meeting for a date or hook-up", "url": "https://esafety.gov.au/lgbtiq/learning-lounge/meeting-online/meeting-for-date-or-hook-up", "category": "Safety guides", "region": "Australia-wide", "about": "A practical checklist for meeting someone from an app: meet in public first, tell a friend, know the warning signs."},
+    {"name": "Sexual Assault Crisis Line Victoria", "url": "https://sacl.com.au/", "category": "Support if something goes wrong", "region": "Victoria", "about": "Free 24/7 phone counselling for anyone harmed by sexual assault, recent or past, on 1800 806 292."},
+    {"name": "1800RESPECT", "url": "https://1800respect.org.au/", "category": "Support if something goes wrong", "region": "Australia-wide", "about": "National 24/7 counselling by phone, text or video for sexual, domestic or family violence, on 1800 737 732."},
+    {"name": "FetLife", "url": "https://fetlife.com", "category": "Community & organisations", "region": "Worldwide", "about": "The main social network for kinky adults. Its local groups and event listings are how most people find munches."},
+    {"name": "The Eulenspiegel Society (TES)", "url": "https://tes.org/", "category": "Community & organisations", "region": "New York City, USA", "about": "A volunteer-run education group since 1971, with a monthly munch, BDSM 101 classes and lower-cost access."},
+    {"name": "Society of Janus: Newcomers", "url": "https://www.soj.org/newcomers", "category": "Community & organisations", "region": "San Francisco, USA", "about": "One of the oldest kink education groups, with newcomer meetups, outings and mentoring."},
+    {"name": "Center for Sex Positive Culture", "url": "https://thecspc.org", "category": "Community & organisations", "region": "Seattle, USA", "about": "A volunteer-run nonprofit community centre since 1999, hosting kink events and education."},
+    {"name": "Black Rose", "url": "https://br.org/br/about-black-rose/", "category": "Community & organisations", "region": "Washington DC, USA", "about": "A not-for-profit social and education group for kink and power exchange, running since 1987."},
+    {"name": "BLX", "url": "https://blx.education/", "category": "Community & organisations", "region": "New York, USA", "about": "A Black-led group supporting Black and Brown LGBTQI+ leather and kink people through events and education."},
+    {"name": "Leather Archives & Museum", "url": "https://leatherarchives.org", "category": "Advocacy & history", "region": "Chicago, USA", "about": "The museum and archive of leather, kink and fetish history, with exhibitions and recorded talks online."},
+    {"name": "National Coalition for Sexual Freedom (NCSF)", "url": "https://ncsfreedom.org/", "category": "Advocacy & history", "region": "USA", "about": "The main advocacy group for kink rights, with consent resources, legal information and incident reporting."},
+    {"name": "Woodhull Freedom Foundation", "url": "https://www.woodhullfoundation.org/about-us/mission-vision-information/", "category": "Advocacy & history", "region": "USA", "about": "A sexual freedom nonprofit that challenges laws restricting consensual adult sexuality and runs a yearly summit."},
+    {"name": "Kink and Polyamory Aware Professionals (KAP)", "url": "https://kapprofessionals.org/", "category": "Kink-aware health & therapy", "region": "Worldwide", "about": "NCSF's free directory of therapists, doctors and lawyers who say they're kink-aware. Listings aren't vetted, so check credentials."},
+    {"name": "Pink Therapy", "url": "https://pinktherapy.com/about-pink-therapy", "category": "Kink-aware health & therapy", "region": "United Kingdom", "about": "The UK's largest directory of therapists for LGBTQ+ and gender, sex and relationship diverse clients."},
+    {"name": "Counselling Directory: Kink-aware therapy", "url": "https://counselling-directory.org.uk/kink-aware.html", "category": "Kink-aware health & therapy", "region": "United Kingdom", "about": "Explains kink-aware counselling and lets you search verified UK counsellors near you."},
+    {"name": "AASECT: Find a professional", "url": "https://www.aasect.org/find-professional-all/all", "category": "Kink-aware health & therapy", "region": "Worldwide", "about": "A directory of certified sex therapists and educators, including some in Australia and online."},
+    {"name": "It's Complicated: Kink and BDSM therapists", "url": "https://complicated.life/find-help-with/kink-and-bdsm", "category": "Kink-aware health & therapy", "region": "Europe and online", "about": "Therapists with kink knowledge across Europe, many offering online sessions. Free to search."},
+    {"name": "CARAS", "url": "https://caras-research.squarespace.com/about", "category": "Kink-aware health & therapy", "region": "Worldwide", "about": "A nonprofit linking researchers, clinicians and the kink community, with training for kink-aware professionals."},
+    {"name": "The New Topping Book (Dossie Easton & Janet W. Hardy)", "url": "https://hares-hyenas.com.au/p/bdsm-and-kink-new-topping-book-or-getting-good-at-bei", "category": "Books", "region": "Worldwide", "about": "A warm, practical classic on being a responsible and skilled top or Dominant."},
+    {"name": "The New Bottoming Book (Dossie Easton & Janet W. Hardy)", "url": "https://www.hares-hyenas.com.au/p/3255088", "category": "Books", "region": "Worldwide", "about": "The companion book: how to bottom or submit safely, honestly and with pleasure."},
+    {"name": "The Ultimate Guide to Kink (ed. Tristan Taormino)", "url": "https://simonandschuster.ca/books/Ultimate-Guide-to-Kink/Tristan-Taormino/9781573447799", "category": "Books", "region": "Worldwide", "about": "Chapters by well-known educators covering most kinds of play in depth. A great broad reference."},
+    {"name": "Playing Well with Others (Lee Harrington & Mollena Williams)", "url": "https://www.hares-hyenas.com.au/p/3255711", "category": "Books", "region": "Worldwide", "about": "How to find and join kink communities: munches, events, etiquette and staying safe."},
+    {"name": "The Mistress Manual (Mistress Lorelei)", "url": "https://hares-hyenas.com.au/p/bdsm-and-kink-the-mistress-manual-the-good-girl-s-guide-to-female-dominance", "category": "Books", "region": "Worldwide", "about": "A friendly beginner's guide to female dominance: mindset, scenes and play ideas."},
+    {"name": "The New and Improved Loving Dominant (John & Libby Warren)", "url": "https://books.turnaround-uk.com/the-loving-dominant", "category": "Books", "region": "Worldwide", "about": "A long-trusted guide for new Dominants on care, negotiation and building a scene."},
+    {"name": "Shibari You Can Use (Lee Harrington)", "url": "https://newsouthbooks.com.au/books/shibari-you-can-use", "category": "Books", "region": "Worldwide", "about": "An easy step-by-step introduction to Japanese-style rope bondage."},
+    {"name": "The Seductive Art of Japanese Bondage (Midori)", "url": "https://www.hares-hyenas.com.au/p/bdsm-and-kink-seductive-art-of-japanese-bondage", "category": "Books", "region": "Worldwide", "about": "An illustrated rope classic by a respected educator. A good second rope book."},
+    {"name": "The Toybag Guide to Playing with Taboo (Mollena Williams)", "url": "https://hares-hyenas.com.au/p/bdsm-and-kink-the-toybag-guide-to-playing-with-taboo", "category": "Books", "region": "Worldwide", "about": "A short, thoughtful guide to exploring edgy and taboo play with care."},
+    {"name": "Archer Magazine: Kink", "url": "https://archermagazine.com.au/tag/kink", "category": "Magazines", "region": "Melbourne", "about": "An Australian magazine on sexuality, gender and identity, with thoughtful queer kink features and history."},
+    {"name": "Submissive Guide", "url": "https://submissiveguide.com", "category": "Magazines", "region": "Worldwide", "about": "Years of free articles for submissives on identity, D/s communication, safety and skills."},
+    {"name": "Sex and Psychology: Kink & BDSM", "url": "https://www.sexandpsychology.com/blog/category/kink-and-bdsm/", "category": "Magazines", "region": "Worldwide", "about": "Research-based writing from a Kinsey Institute fellow on why people enjoy kink."},
+    {"name": "The Gay & Lesbian Review: The Kink Issue", "url": "https://glreview.org/article/winter-warmer-the-kink-issue/", "category": "Magazines", "region": "Worldwide", "about": "A respected LGBTQ review's 2026 kink issue, with essays on BDSM culture and history."},
+    {"name": "Xtra Magazine: Fetish & Kink", "url": "https://xtramagazine.com/topic/fetish-kink", "category": "Magazines", "region": "Worldwide", "about": "An LGBTQ2S+ outlet with beginner pieces, such as how to start with D/s."},
+    {"name": "Loving BDSM", "url": "https://podcasts.apple.com/us/podcast/loving-bdsm/id1034601476", "category": "Podcasts", "region": "Worldwide", "about": "A weekly, down-to-earth show on D/s and power exchange from a real couple, running since 2015."},
+    {"name": "Submissive Guide Podcast", "url": "https://www.buzzsprout.com/1258205/episodes", "category": "Podcasts", "region": "Worldwide", "about": "Audio versions of Submissive Guide articles on trust, communication and submission."},
+    {"name": "Sex and Psychology Podcast", "url": "https://sexandpsychology.com/podcast", "category": "Podcasts", "region": "Worldwide", "about": "A science-based sex podcast with frequent kink episodes, like how to be good at kink."},
+    {"name": "Ask a Sub", "url": "https://substack.com/@askasub", "category": "Podcasts", "region": "Worldwide", "about": "Funny, kind advice for the kink-curious from a long-time submissive. Some episodes are for subscribers."},
+    {"name": "A Cup of Kink", "url": "https://podcasts.apple.com/us/podcast/id1542166427", "category": "Podcasts", "region": "Melbourne", "about": "A Melbourne community podcast on safety, dynamics, femdom and local scene culture."},
+    {"name": "Why Are People Into That?!", "url": "https://podcasts.apple.com/us/podcast/why-are-people-into-that/id798960436", "category": "Podcasts", "region": "Worldwide", "about": "Deep-dive interviews on one fetish at a time. New episodes are rare now, but the archive is excellent."},
+    {"name": "Vixen", "url": "https://vixen.org.au", "category": "For workers", "subtype": "Peer organisations", "region": "Brunswick, Melbourne", "about": "Victoria's peer-only sex worker organisation: outreach, peer support, free safer sex supplies, Ugly Mugs, a crisis fund and legal help."},
+    {"name": "Sophie Ladder's site restrictions sheet", "url": "https://docs.google.com/spreadsheets/d/1vuwKN-yuOJDlLiOa8CyCVA8BMpXg7knCZxS8YgFE98Y/htmlview", "category": "For workers", "subtype": "Money & digital safety", "region": "Worldwide", "about": "A crowdsourced sheet comparing clip, fan and cam sites: banned content, payout rates, ID rules and terms. Some rows date from 2021 to 2023."},
+    {"name": "Scarlet Alliance", "url": "https://scarletalliance.org.au/", "category": "For workers", "subtype": "Peer organisations", "region": "Australia-wide", "about": "The national body run by sex workers: training, advocacy on digital rights and debanking, and a directory of peer groups."},
+    {"name": "Scarlet Alliance: Sex work laws", "url": "https://scarletalliance.org.au/laws/", "category": "For workers", "subtype": "Legal & rights", "region": "Australia-wide", "about": "Plain-language guides to sex work law in each state and territory, with local contacts."},
+    {"name": "Red Book (Scarlet Alliance): My Health Record", "url": "https://redbook.scarletalliance.org.au/my-health-record-update", "category": "For workers", "subtype": "Health & wellbeing", "region": "Australia-wide", "about": "Part of a sexual health guide written for sex workers. This page explains keeping STI results private in My Health Record."},
+    {"name": "Victorian Government: Decriminalising sex work", "url": "https://www.vic.gov.au/decriminalising-sex-work-victoria", "category": "For workers", "subtype": "Legal & rights", "region": "Victoria", "about": "The official summary of Victoria's decriminalisation laws, what changed at each stage and which regulators apply now."},
+    {"name": "WorkSafe Victoria: Health and safety in sex work", "url": "https://worksafe.vic.gov.au/health-and-safety-sex-work", "category": "For workers", "subtype": "Legal & rights", "region": "Victoria", "about": "Your right to a safe workplace under Victorian law, with guidance on risks, compensation and STI prevention."},
+    {"name": "SWOP NSW", "url": "https://swopnsw.org.au/", "category": "For workers", "subtype": "Peer organisations", "region": "New South Wales", "about": "Peer education and support for NSW workers: counselling, a free legal service, Ugly Mugs, workshops and supplies."},
+    {"name": "Respect Inc", "url": "https://respectqld.org.au/", "category": "For workers", "subtype": "Peer organisations", "region": "Queensland", "about": "A peer-run organisation with drop-in spaces in Brisbane, the Gold Coast and Cairns, plus workshops and outreach."},
+    {"name": "SIN (Sex Industry Network)", "url": "https://sin.org.au/", "category": "For workers", "subtype": "Peer organisations", "region": "South Australia", "about": "Run by sex workers: peer support, outreach, a safer sex shop and law reform information."},
+    {"name": "Magenta", "url": "https://magenta.org.au/", "category": "For workers", "subtype": "Health & wellbeing", "region": "Western Australia", "about": "A Perth peer-based project with free anonymous STI testing, counselling, low-cost supplies and Ugly Mug reports."},
+    {"name": "SWOP ACT", "url": "https://meridianact.org.au/swop", "category": "For workers", "subtype": "Peer organisations", "region": "Canberra, ACT", "about": "A Canberra program led by sex workers, with a free monthly anonymous clinic, outreach and referrals."},
+    {"name": "SWOP NT", "url": "https://www.ntahc.org.au/swopnt", "category": "For workers", "subtype": "Peer organisations", "region": "Northern Territory", "about": "Peer-based NT service with legal and safety information, supplies and referrals to sex-worker-friendly doctors and lawyers."},
+    {"name": "Pineapple Support", "url": "https://pineapplesupport.org/", "category": "For workers", "subtype": "Health & wellbeing", "region": "Worldwide", "about": "Free and funded mental health support for adult industry workers: therapy, support groups and a therapist directory."},
+    {"name": "Free Speech Coalition", "url": "https://freespeechcoalition.com/", "category": "For workers", "subtype": "Legal & rights", "region": "USA", "about": "The adult industry's nonprofit trade group, tracking age verification laws, fighting debanking and guiding creators."},
+    {"name": "National Ugly Mugs", "url": "https://nationaluglymugs.org/victim-support/", "category": "For workers", "subtype": "Safety & screening", "region": "United Kingdom", "about": "A UK charity sending alerts about dangerous clients, with casework, advocacy and a content removal guide."},
+    {"name": "English Collective of Prostitutes", "url": "https://prostitutescollective.net/about-us/", "category": "For workers", "subtype": "Legal & rights", "region": "United Kingdom", "about": "A long-running collective run by sex workers, with know-your-rights guides, legal support and campaigns."},
+    {"name": "Revenge Porn Helpline: Content creators and sex workers", "url": "https://revengepornhelpline.org.uk/how-can-we-help/who-can-we-help/commercial-content-creators-and-sex-workers/regional-and-national-services-in-the-uk/", "category": "For workers", "subtype": "Money & digital safety", "region": "United Kingdom", "about": "Helps remove intimate content shared without consent, including leaked paid content from creators and sex workers."},
+    {"name": "SWOP Los Angeles: Business resources", "url": "https://swoplosangeles.org/category/resource/business/", "category": "For workers", "subtype": "Money & digital safety", "region": "USA", "about": "Peer-written business guides for workers, including a model's guide to Clips4Sale. Newest guide dates from 2023."},
+    {"name": "Lesbian Sex Mafia", "url": "https://lesbiansexmafia.org/", "category": "Community & organisations", "region": "New York City, USA", "about": "A long-running kink group for queer women, with workshops, munches and POC meetups at NYC's LGBT Center."},
+    {"name": "Discipline Corps", "url": "https://disciplinecorps.wildapricot.org", "category": "Community & organisations", "region": "Dallas, Texas, USA", "about": "A nonprofit men's BDSM club since 1999, open to newcomers, with monthly bar nights and camp weekends."},
+    {"name": "Bound HTX", "url": "https://www.zeffy.com/organizations/bound-htx", "category": "Rope & bondage", "region": "Houston, Texas, USA", "about": "A Houston kink and shibari education group running consent-focused workshops and community rope events."},
+    {"name": "Studio Friction", "url": "https://studiofriction.com/", "category": "Rope & bondage", "region": "Denver, Colorado, USA", "about": "A Denver rope and aerial studio with beginner rope courses and open consent forums for newcomers."},
+    {"name": "CLAW (Leather Annual Weekend)", "url": "https://clawinfo.org/claw-26-registration-information", "category": "Events & festivals", "region": "Columbus, Ohio, USA", "about": "A big Midwest leather and kink weekend each spring, with classes included in registration."},
+    {"name": "International Mr. Leather: LeatherU", "url": "https://www.internationalmrleather.com/event", "category": "Events & festivals", "region": "Chicago, USA", "about": "Chicago's major leather weekend each May. Its LeatherU track has intro classes and a newcomer social."},
+    {"name": "Folsom Street Events", "url": "https://folsomstreet.org", "category": "Events & festivals", "region": "San Francisco, USA", "about": "The nonprofit behind Folsom Street Fair and Up Your Alley, giving proceeds to health and arts charities."},
+    {"name": "NCSF Incident Reporting & Response", "url": "https://ncsfreedom.org/incident-reporting-and-response-form/", "category": "Support if something goes wrong", "region": "USA", "about": "Report kink-related discrimination, legal trouble or consent incidents and ask NCSF for help."},
+    {"name": "RAINN National Sexual Assault Hotline", "url": "https://rainn.org/", "category": "Support if something goes wrong", "region": "USA", "about": "Free, confidential 24/7 support after sexual assault by phone, chat or text, in English and Spanish."},
+    {"name": "988 Suicide & Crisis Lifeline", "url": "https://988lifeline.org/about/", "category": "Support if something goes wrong", "region": "USA", "about": "Call, text or chat 988 any time for free, confidential crisis and emotional support."},
+    {"name": "The Network/La Red: 24-hour hotline", "url": "https://www.tnlr.org/en/24-hour-hotline/", "category": "Support if something goes wrong", "region": "Boston, USA", "about": "A survivor-led hotline for partner abuse in LGBTQ+, kink and polyamorous relationships."},
+    {"name": "San Francisco City Clinic", "url": "https://www.sf.gov/cityclinic", "category": "Kink-aware health & therapy", "region": "San Francisco, USA", "about": "A free city sexual health clinic for STI testing, PrEP and PEP, with no residency or insurance needed."},
+    {"name": "Adult Performance Artists Guild (APAG)", "url": "https://apagunion.com/2026/04/29/unionizing-the-adult-industry-apags-perspective-on-building-a-sustainable-future/", "category": "For workers", "subtype": "Peer organisations", "region": "USA", "about": "The union for adult performers, cam models, clip and content creators, and phone and sexting workers."},
+    {"name": "Sex Workers Project (Urban Justice Center)", "url": "https://swp.urbanjustice.org/legalservices", "category": "For workers", "subtype": "Legal & rights", "region": "New York City, USA", "about": "Free legal help and referrals for current and former sex workers, including immigration and record clearing."}
+  ];
+
+  // Sections, in the order they show, with a line under each heading.
+  var SECTIONS = [
+    ["Start here", "The best first reads if you're brand new."],
+    ["Consent & negotiation", "How to talk about wants, limits and safewords before a scene."],
+    ["Safety guides", "Risk-aware play, first aid and what to watch for."],
+    ["Rope & bondage", "Learning to tie well, and the nerve and circulation risks to know."],
+    ["Community & organisations", "Long-running groups, clubs and the platforms people use to find them."],
+    ["Events & festivals", "Established events with workshops for newcomers."],
+    ["Advocacy & history", "Groups defending kink rights, and the archives keeping its history."],
+    ["Kink-aware health & therapy", "Doctors, counsellors and sexologists who won't judge."],
+    ["Support if something goes wrong", "If a scene crossed a line or something wasn't consensual."],
+    ["Books", "Classic guides by educators with decades in the scene."],
+    ["Magazines", "Online publications still putting out new work."],
+    ["Podcasts", "Long-running shows by kink educators."],
+    ["For workers", "Peer-led support, safety, rights and health for sex workers, pro dommes and adult creators."]
+  ];
+
+  /* ===================================================================== */
+
+  var LOCAL = /australia|melbourne|victoria|brunswick|sydney|nsw|new south wales|queensland|brisbane|adelaide|south australia|perth|western australia|tasmania|hobart|northern territory|darwin|canberra|\bact\b|new zealand|aotearoa|auckland|wellington/i;
+  var US = /\busa\b|united states|\bus\b|america/i;
+  var state = { q: "", where: "all", cat: "all" };
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function host(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return ""; } }
+  function isLocal(r) { return LOCAL.test(r.region || ""); }
+  RESOURCES.forEach(function (r) { r._local = isLocal(r); r._us = !r._local && US.test(r.region || ""); r._hay = [r.name, r.about, r.region, r.subtype, r.category, host(r.url)].join(" ").toLowerCase(); });
+
+  function matches(r, ignoreCat) {
+    if (state.where === "local" && !r._local) return false;
+    if (state.where === "us" && !r._us) return false;
+    if (!ignoreCat && state.cat !== "all" && r.category !== state.cat) return false;
+    if (state.q) {
+      var words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+      for (var i = 0; i < words.length; i++) if (r._hay.indexOf(words[i]) < 0) return false;
+    }
+    return true;
+  }
+
+  function renderStats() {
+    var us = RESOURCES.filter(function (r) { return r._us; }).length;
+    var cats = SECTIONS.filter(function (s) { return RESOURCES.some(function (r) { return r.category === s[0]; }); }).length;
+    $("krd-stats").innerHTML = "<div><b>" + RESOURCES.length + "</b><span>Resources</span></div><div><b>" + cats + "</b><span>Categories</span></div><div><b>" + us + "</b><span>In the US</span></div>";
+  }
+
+  function renderChips() {
+    var pool = RESOURCES.filter(function (r) { return matches(r, true); });
+    var html = '<button type="button" class="krd-chip" data-cat="all" aria-pressed="' + (state.cat === "all") + '">All<span class="krd-n">' + pool.length + "</span></button>";
+    SECTIONS.forEach(function (s) {
+      var n = pool.filter(function (r) { return r.category === s[0]; }).length;
+      if (!RESOURCES.some(function (r) { return r.category === s[0]; })) return;
+      html += '<button type="button" class="krd-chip' + (s[0] === "For workers" ? " krd-workers" : "") + '" data-cat="' + esc(s[0]) + '" aria-pressed="' + (state.cat === s[0]) + '">' + esc(s[0]) + '<span class="krd-n">' + n + "</span></button>";
+    });
+    $("krd-chips").innerHTML = html;
+  }
+
+  // US entries first, then worldwide, then everywhere else.
+  function rank(r) { return r._us ? 0 : (/worldwide|online/i.test(r.region || "") ? 1 : 2); }
+
+  function item(r) {
+    var tags = "";
+    if (r.region) tags += '<span class="krd-tag">' + esc(r.region) + "</span>";
+    if (r.subtype) tags += '<span class="krd-tag">' + esc(r.subtype) + "</span>";
+    var h = host(r.url);
+    if (h) tags += '<span class="krd-host">' + esc(h) + "</span>";
+    return '<article class="krd-item"><h3 class="krd-name"><a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.name) + '</a></h3>' +
+      '<p class="krd-about">' + esc(r.about) + '</p><div class="krd-tags">' + tags + "</div></article>";
+  }
+
+  function renderList() {
+    var shown = RESOURCES.filter(function (r) { return matches(r, false); });
+    var html = "";
+    SECTIONS.forEach(function (s) {
+      var rows = shown.filter(function (r) { return r.category === s[0]; });
+      if (!rows.length) return;
+      rows.sort(function (a, b) { return rank(a) - rank(b); });
+      html += '<section class="krd-sec" aria-labelledby="krd-s-' + esc(s[0].replace(/\W+/g, "-")) + '"><div class="krd-sec-head"><h2 class="krd-sec-title" id="krd-s-' + esc(s[0].replace(/\W+/g, "-")) + '">' + esc(s[0]) + '</h2><p class="krd-sec-note">' + esc(s[1]) + "</p></div><div class=\"krd-grid\">" + rows.map(item).join("") + "</div></section>";
+    });
+    if (!shown.length) {
+      $("krd-list").innerHTML = '<p class="krd-empty">Nothing matches that yet. <button type="button" id="krd-reset">Show everything</button></p>';
+      $("krd-reset").addEventListener("click", function () { state.q = ""; state.where = "all"; state.cat = "all"; $("krd-q").value = ""; syncWhere(); render(); });
+    } else {
+      $("krd-list").innerHTML = html;
+    }
+    var bits = [shown.length + (shown.length === 1 ? " resource" : " resources")];
+    if (state.where === "local") bits.push("in Australia and New Zealand");
+    if (state.where === "us") bits.push("in the United States");
+    if (state.q) bits.push('matching "' + state.q + '"');
+    $("krd-status").textContent = "Showing " + bits.join(" ") + ".";
+  }
+
+  function syncWhere() {
+    Array.prototype.forEach.call(document.querySelectorAll(".krd-where button"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-where") === state.where)); });
+    $("krd-q-clear").hidden = !state.q;
+  }
+  function render() { renderChips(); renderList(); syncWhere(); }
+
+  $("krd-q").addEventListener("input", function (e) { state.q = e.target.value.trim(); render(); });
+  $("krd-q-clear").addEventListener("click", function () { state.q = ""; $("krd-q").value = ""; render(); $("krd-q").focus(); });
+  Array.prototype.forEach.call(document.querySelectorAll(".krd-where button"), function (b) {
+    b.addEventListener("click", function () { state.where = b.getAttribute("data-where"); render(); });
+  });
+  $("krd-chips").addEventListener("click", function (e) {
+    var b = e.target.closest(".krd-chip"); if (!b) return;
+    var c = b.getAttribute("data-cat");
+    state.cat = (state.cat === c && c !== "all") ? "all" : c;
+    render();
+  });
+  // Suggestions box
+  (function () {
+    var form = $("krd-form"), note = $("krd-form-note"), msg = $("krd-msg");
+    var ready = /^https:\/\//.test(SUGGEST_URL);
+    if (ready) { form.action = SUGGEST_URL; form.target = "_blank"; }
+    form.addEventListener("submit", function (e) {
+      note.classList.remove("krd-ok");
+      if (!msg.value.trim()) { e.preventDefault(); note.textContent = "Write a note first, then send it."; msg.focus(); return; }
+      if ($("krd-website").value) { e.preventDefault(); return; }
+      if (!ready) { e.preventDefault(); note.textContent = "The suggestions box goes live once its form link is added."; return; }
+      note.textContent = "Thanks, your note is on its way to Electra.";
+      note.classList.add("krd-ok");
+      setTimeout(function () { form.reset(); }, 400);
+    });
+  })();
+
+  $("krd-checked").textContent = CHECKED;
+  renderStats();
+  render();
+})();
+</script>

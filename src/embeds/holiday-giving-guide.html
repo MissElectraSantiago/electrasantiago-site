@@ -1,0 +1,650 @@
+<style>
+/* Layout: editorial header, a one-question-at-a-time quiz card that turns into matches, then the full list grouped by cause. Same tokens as the events globe. */
+.dnp {
+  --paper: #ffffff;
+  --ink: #161414;
+  --ink-soft: #6a6363;
+  --line: #e8e3e3;
+  --wash: #f6f3f3;
+  --red: #ec1c24;
+  --red-ink: #ffffff;
+  --shadow: rgba(22, 20, 20, 0.14);
+  --display: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dnp { --paper: #0f0e0e; --ink: #f4f0f0; --ink-soft: #a89f9f; --line: #2c2929; --wash: #1a1818;
+    --red: #ff3d44; --red-ink: #ffffff; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark; } }
+:root[data-theme="dark"] .dnp { --paper: #0f0e0e; --ink: #f4f0f0; --ink-soft: #a89f9f; --line: #2c2929; --wash: #1a1818;
+    --red: #ff3d44; --red-ink: #ffffff; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark; }
+:root { --page: #ffffff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #0f0e0e; color-scheme: dark; } }
+:root[data-theme="dark"] { --page: #0f0e0e; color-scheme: dark; }
+body { background: var(--page); margin: 0; }
+.dnp *, .dnp *::before, .dnp *::after { box-sizing: border-box; }
+.dnp [hidden] { display: none !important; }
+.dnp-wrap { max-width: 1200px; margin: 0 auto; padding-block: 48px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.dnp button:focus-visible, .dnp a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* Header */
+.dnp-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.dnp-eyebrow { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.02em; color: var(--ink-soft); }
+.dnp-title { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 54px); line-height: 1.06; letter-spacing: 0.005em; text-wrap: balance; max-width: 16ch; }
+.dnp-lede { margin: 12px 0 0; color: var(--ink-soft); max-width: 58ch; }
+.dnp-lede strong { color: var(--ink); font-weight: 600; }
+.dnp-stats { display: flex; gap: 28px; }
+.dnp-stat { font-family: var(--display); line-height: 1; }
+.dnp-stat b { display: block; font-weight: 400; font-size: 40px; font-variant-numeric: tabular-nums; }
+.dnp-stat span { display: block; margin-top: 6px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* Buttons */
+.dnp-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; background: var(--red); color: var(--red-ink); font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; border: 0; cursor: pointer; transition: filter .15s ease; }
+.dnp-cta:hover { filter: brightness(0.92); }
+.dnp-cta[disabled] { opacity: .35; cursor: not-allowed; filter: none; }
+.dnp-ghost { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; }
+.dnp-ghost:hover { background: var(--ink); color: var(--paper); }
+.dnp-text-btn { border: 0; background: none; padding: 0; color: var(--ink-soft); font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.dnp-text-btn:hover { color: var(--ink); }
+
+/* Quiz */
+.dnp-quiz { margin-top: 32px; border: 1px solid var(--ink); background: var(--paper); }
+.dnp-quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--wash); }
+.dnp-quiz-label { font-family: var(--display); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+.dnp-bar { flex: 0 1 220px; height: 4px; background: var(--line); }
+.dnp-bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .25s ease; }
+.dnp-quiz-body { padding: 32px 24px 28px; }
+.dnp-q { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.12; text-wrap: balance; }
+.dnp-hint { margin: 8px 0 0; color: var(--ink-soft); font-size: 14px; }
+.dnp-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
+.dnp-opt { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-align: left; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: 15px; line-height: 1.35; cursor: pointer; transition: border-color .12s ease; }
+.dnp-opt:hover { border-color: var(--ink); }
+.dnp-opt .dnp-box { flex: none; width: 18px; height: 18px; border: 1.5px solid var(--ink-soft); border-radius: 50%; }
+.dnp-opt.dnp-multi .dnp-box { border-radius: 3px; }
+.dnp-opt[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.dnp-opt[aria-pressed="true"] .dnp-box { border-color: var(--red); background: var(--red); box-shadow: inset 0 0 0 3px var(--ink); }
+.dnp-quiz-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 24px; }
+
+/* Results */
+.dnp-res-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.dnp-because { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.dnp-tag { padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); font-size: 13px; white-space: nowrap; }
+.dnp-matches { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; margin-top: 24px; }
+.dnp-card { display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid var(--line); background: var(--paper); }
+.dnp-card:first-child { border-color: var(--ink); }
+.dnp-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.dnp-rank { font-family: var(--display); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); }
+.dnp-where { font-size: 13px; color: var(--ink-soft); text-align: right; }
+.dnp-card h3 { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.25; }
+.dnp-card p { margin: 0; font-size: 14.5px; }
+.dnp-card .dnp-cta { margin-top: auto; align-self: flex-start; min-height: 44px; font-size: 14px; }
+.dnp-also { font-size: 13.5px !important; color: var(--ink-soft); margin: 6px 0 0; }
+.dnp-also a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
+.dnp-also a:hover { color: var(--ink); text-decoration-color: var(--ink); }
+.dnp-also::before { content: "Beyond money: "; font-weight: 600; color: var(--ink); }
+.dnp-ways { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 48px; border-top: 1px solid var(--ink); }
+.dnp-way { padding: 22px 20px 6px 0; }
+.dnp-way + .dnp-way { padding-left: 20px; border-left: 1px solid var(--line); }
+.dnp-way b { display: block; font-family: var(--display); font-weight: 400; font-size: 22px; line-height: 1.15; }
+.dnp-way p { margin: 6px 0 0; font-size: 14px; color: var(--ink-soft); }
+@media (max-width: 860px) { .dnp-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dnp-way:nth-child(3) { padding-left: 0; border-left: 0; } }
+@media (max-width: 520px) { .dnp-ways { grid-template-columns: minmax(0, 1fr); } .dnp-way + .dnp-way { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); } }
+.dnp-share { margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--ink); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 48px; }
+.dnp-share h2 { margin: 0; }
+.dnp-share p { margin: 6px 0 0; color: var(--ink-soft); max-width: 52ch; }
+.dnp-share-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.dnp-sbtn { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.dnp-sbtn:hover { background: var(--ink); color: var(--paper); }
+.dnp-sbtn.dnp-hot { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+.dnp-badges { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; padding: 20px; background: var(--wash); }
+.dnp-code { display: block; width: 100%; margin-top: 12px; min-height: 96px; padding: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize: vertical; }
+.dnp-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.dnp-res-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-soft); }
+.dnp-res-share strong { color: var(--ink); font-weight: 600; margin-right: 4px; }
+.dnp-res-share .dnp-sbtn { height: 34px; padding: 0 12px; font-size: 13px; }
+.dnp-toast { font-size: 13px; color: var(--ink-soft); }
+@media (max-width: 860px) { .dnp-share { grid-template-columns: minmax(0, 1fr); } }
+.dnp-res-foot { margin: 20px 0 0; font-size: 14px; color: var(--ink-soft); }
+
+/* Full list */
+.dnp-all { margin-top: 56px; }
+.dnp-all-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding-bottom: 18px; border-bottom: 1px solid var(--ink); }
+.dnp-h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.1; }
+.dnp-all-head p { margin: 4px 0 0; color: var(--ink-soft); }
+.dnp-controls { display: grid; gap: 12px; padding-block: 20px 8px; }
+.dnp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dnp-chip { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+.dnp-chip:hover { border-color: var(--ink); }
+.dnp-chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.dnp-chip .dnp-n { opacity: .55; margin-left: 6px; font-variant-numeric: tabular-nums; }
+.dnp-where-row { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--ink); border-radius: 999px; overflow: hidden; align-self: start; }
+.dnp-where-row button { height: 40px; padding: 0 14px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.dnp-where-row button + button { border-left: 1px solid var(--line); }
+.dnp-where-row button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.dnp-group { margin: 0; padding: 26px 0 8px; font-family: var(--display); font-weight: 400; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; }
+.dnp-section { margin: 48px 0 0; padding-bottom: 14px; border-bottom: 1px solid var(--ink); font-family: var(--display); font-weight: 400; font-size: clamp(22px, 2.6vw, 28px); line-height: 1.1; }
+.dnp-group span { color: var(--ink-soft); opacity: .7; }
+.dnp-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+.dnp-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.dnp-cc { font-family: var(--display); font-size: 22px; line-height: 1.1; letter-spacing: 0.04em; }
+.dnp-cc small { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.dnp-name { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.dnp-meta { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+.dnp-about { margin: 6px 0 0; font-size: 14px; max-width: 56ch; }
+.dnp-link { display: inline-block; margin-top: 8px; color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--red); }
+.dnp-link:hover { text-decoration-color: var(--ink); }
+.dnp-empty { padding: 32px 0; color: var(--ink-soft); }
+.dnp-foot { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .dnp-head { grid-template-columns: minmax(0, 1fr); }
+  .dnp-rows { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .dnp-wrap { padding-block: 32px 40px; }
+  .dnp-quiz-top, .dnp-quiz-body { padding-left: 16px; padding-right: 16px; }
+  .dnp-bar { flex-basis: 120px; }
+  .dnp-stats { gap: 20px; }
+  .dnp-stat b { font-size: 32px; }
+  .dnp-where-row { width: 100%; }
+  .dnp-where-row button { flex: 1; padding: 0 6px; font-size: 13px; }
+  .dnp-quiz-nav .dnp-cta { width: 100%; }
+}
+.dnp-suggest { margin-top: 56px; padding: 32px 0; border-top: 1px solid var(--ink); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 20px 40px; align-items: start; }
+.dnp-suggest-text p { margin: 6px 0 0; color: var(--ink-soft); max-width: 46ch; }
+.dnp-form { display: grid; gap: 12px; min-width: 0; }
+.dnp-form label { display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-soft); }
+.dnp-form textarea, .dnp-form input { width: 100%; padding: 12px 14px; border: 1px solid var(--ink); border-radius: 0; background: var(--paper); color: var(--ink); font: inherit; font-size: 15px; }
+.dnp-form textarea { min-height: 120px; resize: vertical; }
+.dnp-form textarea:focus-visible, .dnp-form input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.dnp-form-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.dnp-form-status { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.dnp-trap { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+@media (max-width: 860px) { .dnp-suggest { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .dnp * { transition: none !important; } }
+</style>
+<section class="dnp" id="dnp">
+  <div class="dnp-wrap">
+    <header class="dnp-head">
+      <div>
+        <p class="dnp-eyebrow">Holiday giving</p>
+        <h1 class="dnp-title">Give back to the community this holiday season</h1>
+        <p class="dnp-lede">The holidays are a hard time for a lot of people in our community, and a good time to show up for them. There are so many causes that choosing can stop you giving at all, so answer <strong>five quick questions</strong> and get a short list that fits what you care about, with a strong lean toward queer and trans communities.</p>
+      </div>
+      <div class="dnp-stats" aria-hidden="true">
+        <div class="dnp-stat"><b id="dnp-n-orgs">0</b><span>Organisations</span></div>
+        <div class="dnp-stat"><b id="dnp-n-causes">0</b><span>Causes</span></div>
+      </div>
+    </header>
+
+    <div class="dnp-quiz" id="dnp-quiz">
+      <div class="dnp-quiz-top">
+        <span class="dnp-quiz-label" id="dnp-step">Question 1 of 5</span>
+        <div class="dnp-bar" aria-hidden="true"><i id="dnp-bar"></i></div>
+      </div>
+      <div class="dnp-quiz-body" id="dnp-body" aria-live="polite"></div>
+    </div>
+
+    <section class="dnp-share" aria-label="Share this page">
+      <div>
+        <h2 class="dnp-h2">Pass it on</h2>
+        <p>The more people who find a cause, the more help reaches people this season. Share the page with one tap.</p>
+        <div class="dnp-share-btns" id="dnp-share-btns"></div>
+        <p class="dnp-toast" id="dnp-share-toast" role="status"></p>
+      </div>
+      <div>
+        <h2 class="dnp-h2">Put it on your site</h2>
+        <p>Add a giving button to your own website. Pick a style, copy the code and paste it into any HTML or embed block.</p>
+        <div class="dnp-pick" role="group" aria-label="Button style">
+          <button type="button" class="dnp-chip" data-b="red" aria-pressed="true">Red</button>
+          <button type="button" class="dnp-chip" data-b="ink" aria-pressed="false">Black</button>
+          <button type="button" class="dnp-chip" data-b="line" aria-pressed="false">Outline</button>
+        </div>
+        <div class="dnp-badges" id="dnp-badge-preview"></div>
+        <label for="dnp-badge-code" class="dnp-hint" style="display:block;margin-top:12px">Code for your site</label>
+        <textarea class="dnp-code" id="dnp-badge-code" readonly spellcheck="false"></textarea>
+        <div class="dnp-share-btns"><button type="button" class="dnp-sbtn dnp-hot" id="dnp-badge-copy">Copy code</button><span class="dnp-toast" id="dnp-badge-toast" role="status"></span></div>
+      </div>
+    </section>
+
+    <section class="dnp-ways" aria-label="Ways to give beyond money">
+      <div class="dnp-way"><b>Give your time</b><p>Many of these groups need volunteers over the holidays, when regular helpers are away.</p></div>
+      <div class="dnp-way"><b>Give things</b><p>Food, toiletries, binders, gift cards. Check what a group actually asks for before you drop anything off.</p></div>
+      <div class="dnp-way"><b>Give monthly</b><p>A small regular gift helps a group plan the year, not just December.</p></div>
+      <div class="dnp-way"><b>Give your voice</b><p>Share a fundraiser, or ask friends to donate in place of a gift.</p></div>
+    </section>
+
+    <section class="dnp-all" aria-labelledby="dnp-all-title">
+      <div class="dnp-all-head">
+        <div>
+          <h2 class="dnp-h2" id="dnp-all-title">Every organisation, by cause</h2>
+          <p>Prefer to browse? Here's the whole list.</p>
+        </div>
+      </div>
+      <div class="dnp-controls">
+        <div class="dnp-chips" id="dnp-chips" role="group" aria-label="Cause"></div>
+        <div class="dnp-where-row" id="dnp-where" role="group" aria-label="Where they work">
+          <button type="button" data-r="all" aria-pressed="true">Anywhere</button>
+          <button type="button" data-r="US">US</button>
+          <button type="button" data-r="INTL">Worldwide</button>
+          <button type="button" data-r="UK">UK</button>
+          <button type="button" data-r="AU">Australia</button>
+        </div>
+      </div>
+      <div id="dnp-list" aria-live="polite"></div>
+    </section>
+
+    <section class="dnp-suggest" aria-labelledby="dnp-sg-title">
+      <div class="dnp-suggest-text">
+        <h2 class="dnp-h2" id="dnp-sg-title">Send a note to Electra</h2>
+        <p>Know a group that should be here, or found a link that's broken? Your note comes straight to me, Electra, and I read every one before anything on this page changes.</p>
+      </div>
+      <form class="dnp-form" id="dnp-sg-form" novalidate>
+        <label for="dnp-sg-msg">Your note
+          <textarea id="dnp-sg-msg" name="message" maxlength="1500" required placeholder="An organisation to add, a broken link, anything else about this page"></textarea>
+        </label>
+        <label for="dnp-sg-email">Your email, if you'd like Electra to reply (optional)
+          <input id="dnp-sg-email" name="email" type="email" autocomplete="email">
+        </label>
+        <div class="dnp-trap" aria-hidden="true"><label for="dnp-sg-hp">Leave this empty<input id="dnp-sg-hp" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <div class="dnp-form-row">
+          <button type="submit" class="dnp-cta" id="dnp-sg-send">Send to Electra</button>
+          <p class="dnp-form-status" id="dnp-sg-status" role="status"></p>
+        </div>
+      </form>
+    </section>
+
+    <footer class="dnp-foot">
+      <span>Each organisation was checked on its own website in <span id="dnp-checked">November 2026</span>. Donate links go straight to their own pages.</span>
+      <span>Happy holidays. Give what feels right for you, every amount helps.</span>
+    </footer>
+  </div>
+</section>
+<script>
+(function () {
+  var ORGS = [
+    {"name": "Trans Lifeline", "country": "US", "what": "Trans-run peer support hotline plus microgrants helping trans people pay to update ID documents", "donate_url": "https://give.translifeline.org/donate", "causes": ["trans", "mental"], "kinds": ["crisis", "direct"], "also": "Takes volunteers; supporters can run their own fundraisers", "also_url": "https://translifeline.org/"},
+    {"name": "Transgender Law Center", "country": "US", "what": "Largest US trans-led legal group: impact lawsuits, legal help desk and policy work", "donate_url": "https://transgenderlawcenter.org/donate/", "causes": ["trans"], "kinds": ["legal", "advocacy"], "also": "Runs volunteer programs; supporters can host house parties or online fundraisers", "also_url": "https://transgenderlawcenter.org/ways-to-give/"},
+    {"name": "Sylvia Rivera Law Project", "country": "US", "city": "New York", "what": "Free legal services for low-income trans, intersex and gender non-conforming people, many of color or immigrants", "donate_url": "https://srlp.org/get-involved/donate", "causes": ["trans"], "kinds": ["legal", "direct"], "scale": "grassroots", "also": "Takes volunteers and members; hosts community events", "also_url": "https://srlp.org/about"},
+    {"name": "Marsha P. Johnson Institute", "country": "US", "city": "Columbus, OH", "what": "Supports Black trans people in the US through campaigns, leadership cohorts and community events", "donate_url": "https://marshap.org/donate/", "causes": ["trans", "lgbtq"], "kinds": ["advocacy", "community"], "scale": "grassroots"},
+    {"name": "Point of Pride", "country": "US", "what": "Funds gender-affirming care and sends free chest binders and shapewear, shipping worldwide", "donate_url": "https://www.pointofpride.org/donate", "causes": ["trans", "health"], "kinds": ["health", "direct", "global"], "scale": "grassroots", "also": "Takes volunteers; you can write handwritten notes for trans people", "also_url": "https://www.pointofpride.org/"},
+    {"name": "The Trevor Project", "country": "US", "what": "24/7 crisis counselling and suicide prevention for LGBTQ+ young people, plus research and advocacy.", "donate_url": "https://www.thetrevorproject.org/donate/", "causes": ["lgbtq", "mental"], "kinds": ["crisis", "youth", "advocacy"], "scale": "established"},
+    {"name": "The Ali Forney Center", "country": "US", "city": "New York", "what": "Shelter, meals, health care and support for homeless LGBTQ+ young people in New York City.", "donate_url": "https://www.aliforneycenter.org/donate", "causes": ["lgbtq", "health"], "kinds": ["housing", "youth", "direct"], "also": "Takes volunteers; groups can host drives collecting needed items", "also_url": "https://www.aliforneycenter.org/volunteer"},
+    {"name": "SWOP Behind Bars", "country": "US", "city": "Brandon, FL", "what": "Supports incarcerated sex workers and people leaving prison with reentry help, a support line and advocacy.", "donate_url": "https://www.swopbehindbars.org/donate", "causes": ["sexwork", "violence"], "kinds": ["direct", "legal", "advocacy"], "scale": "grassroots", "also": "Wish lists let you send paperback books to incarcerated sex workers", "also_url": "https://www.swopbehindbars.org/amazon-wishlists"},
+    {"name": "Decriminalize Sex Work", "country": "US", "city": "Austin, TX", "what": "National nonprofit working to end criminal penalties for consensual adult sex work through state policy change.", "donate_url": "https://decriminalizesex.work/donate/", "causes": ["sexwork"], "kinds": ["advocacy", "legal"], "scale": "grassroots"},
+    {"name": "RAINN", "country": "US", "what": "US national anti-sexual-violence organisation running survivor support programs and a hotline.", "donate_url": "https://www.rainn.org/donate", "causes": ["violence"], "kinds": ["crisis", "advocacy"], "scale": "established"},
+    {"name": "National Domestic Violence Hotline", "country": "US", "city": "Austin", "what": "Confidential phone, chat and text support and referrals for people facing domestic abuse.", "donate_url": "https://www.thehotline.org/donate/", "causes": ["violence"], "kinds": ["crisis"], "scale": "established", "also": "Takes volunteers, plus donated electronics and vehicles", "also_url": "https://www.thehotline.org/donate/more-ways-to-give/"},
+    {"name": "The Network/La Red", "country": "US", "city": "Boston", "what": "Survivor-led services for LGBTQ+ people facing partner abuse, including a hotline and safe housing.", "donate_url": "https://www.tnlr.org/en/donate/", "causes": ["violence", "lgbtq"], "kinds": ["crisis", "housing", "community"], "scale": "grassroots", "also": "Takes old mobile phones and donated cars", "also_url": "https://www.tnlr.org/en/donate/"},
+    {"name": "New York City Anti-Violence Project (AVP)", "country": "US", "city": "New York", "what": "Supports LGBTQ+ survivors of violence with a bilingual hotline, counselling and legal services.", "donate_url": "https://avp.org/donate/", "causes": ["violence", "lgbtq"], "kinds": ["crisis", "legal", "community"], "also": "Recruits volunteers, including for its hotline", "also_url": "https://avp.org/donate/"},
+    {"name": "Lavender Rights Project", "country": "US", "city": "Seattle, WA", "what": "Black trans-led Seattle group offering legal help, policy advocacy, organizing and supportive housing.", "donate_url": "https://www.lavenderrightsproject.org/donate-holiday", "causes": ["trans", "lgbtq"], "kinds": ["legal", "advocacy", "housing", "community"], "scale": "grassroots", "also": "Volunteer at outreach tables, on advocacy, or as a law student intern.", "also_url": "https://www.lavenderrightsproject.org/volunteer"},
+    {"name": "Trans Queer Pueblo", "country": "US", "city": "Phoenix, AZ", "what": "Phoenix group for LGBTQ+ migrants of color: a community clinic, deportation defence and detention support.", "donate_url": "https://secure.everyaction.com/Q-0y634IKkG5yesD9p3k7g2", "causes": ["lgbtq", "trans", "health"], "kinds": ["health", "legal", "direct", "community"], "scale": "grassroots"},
+    {"name": "House of GG", "country": "US", "city": "Little Rock, AR", "what": "Retreat and historical center founded by Miss Major, supporting trans women and men of color.", "donate_url": "https://secure.lglforms.com/form_engine/s/yDuRfkreUzA3FuEVCsp-Qw", "causes": ["trans"], "kinds": ["community"], "scale": "grassroots", "also": "Its Giving Tuesday 2026 appeal is running now; merch sales also help.", "also_url": "https://houseofgg.org/"},
+    {"name": "FORGE", "country": "US", "city": "Milwaukee, WI", "what": "Supports trans and nonbinary survivors of violence, mainly by training the people who serve them.", "donate_url": "https://givebutter.com/keep-the-forge-burning", "causes": ["trans", "violence"], "kinds": ["advocacy", "community"], "scale": "grassroots", "also": "Running a year-end 2026 campaign through December 31", "also_url": "https://forge-forward.org/keep-the-forge-burning-our-year-end-campaign/"},
+    {"name": "Lambda Legal", "country": "US", "city": "New York, NY", "what": "National legal group that takes court cases defending LGBTQ+ people and people with HIV.", "donate_url": "https://support.lambdalegal.org/site/Donation2?mfc_pref=T&df_id=6680&6680.donation=form1", "causes": ["lgbtq"], "kinds": ["legal", "advocacy"], "scale": "established", "also": "Volunteer, fundraise, or join its cooperating attorneys network if you are a lawyer.", "also_url": "https://lambdalegal.org/ways-to-give/"},
+    {"name": "Glisten (formerly GLSEN)", "country": "US", "city": "New York, NY", "what": "Works to make K-12 schools safe for LGBTQ+ students through research, chapters and educator resources.", "donate_url": "https://act.glsen.org/a/glisten-donate", "causes": ["lgbtq"], "kinds": ["youth", "advocacy"], "scale": "established"},
+    {"name": "PFLAG National", "country": "US", "city": "Washington, DC", "what": "Network of local chapters supporting LGBTQ+ people and their parents, families and allies.", "donate_url": "https://give.pflag.org/page/91960/donate/1", "causes": ["lgbtq"], "kinds": ["community", "advocacy"], "scale": "established"},
+    {"name": "SAGE", "country": "US", "what": "Services and advocacy for LGBTQ+ older adults across the US.", "donate_url": "https://www.sageusa.org/donate", "causes": ["lgbtq"], "kinds": ["community", "advocacy"], "scale": "established"},
+    {"name": "Los Angeles LGBT Center", "country": "US", "city": "Los Angeles, CA", "what": "Large LA center offering health care, trans wellness services, youth programs, legal clinics and senior support.", "donate_url": "https://donate.lalgbtcenter.org/donate/", "causes": ["lgbtq", "trans", "health"], "kinds": ["health", "youth", "legal", "community"], "scale": "established", "also": "Volunteer in programs, at events, or as a mentor to LGBTQ youth.", "also_url": "https://volunteer.lalgbtcenter.org/"},
+    {"name": "Ruth Ellis Center", "country": "US", "city": "Highland Park (Detroit), MI", "what": "Detroit-area nonprofit center supporting LGBTQ+ young people.", "donate_url": "https://ruthelliscenter.networkforgood.com/projects/227340-donate-today", "causes": ["lgbtq"], "kinds": ["youth", "community"], "scale": "established", "also": "Volunteer, run your own fundraiser, or buy from its shop.", "also_url": "https://ruthelliscenter.org/"},
+    {"name": "True Colors United", "country": "US", "city": "New York, NY", "what": "National group working to end youth homelessness, focused on LGBTQ+ and BIPOC young people.", "donate_url": "https://my.truecolorsunited.org/give/107399/#!/donation/checkout", "causes": ["lgbtq"], "kinds": ["housing", "youth", "advocacy"], "scale": "established"},
+    {"name": "It Gets Better Project", "country": "US", "what": "Shares stories and funds programs and grants supporting LGBTQ+ youth in the US and abroad.", "donate_url": "https://give.itgetsbetter.org/campaign/709768/donate", "causes": ["lgbtq", "mental"], "kinds": ["youth", "global"], "scale": "established", "also": "Take the pledge, contribute a story, or run a community fundraiser.", "also_url": "https://itgetsbetter.org/"},
+    {"name": "HIPS", "country": "US", "city": "Washington, DC", "what": "Sex worker and drug user-led harm reduction: health care, supplies, drop-in support across DC.", "donate_url": "https://www.hips.org/donate.html", "causes": ["sexwork", "health"], "kinds": ["health", "direct", "community"], "scale": "grassroots", "also": "Volunteer nights assembling kits, or donate items from their wish list and clothing.", "also_url": "https://www.hips.org/get-involved.html"},
+    {"name": "Woodhull Freedom Foundation", "country": "US", "city": "Washington, DC", "what": "Human rights group defending sexual freedom and sex workers, including a court challenge to FOSTA.", "donate_url": "https://www.woodhullfoundation.org/donate", "causes": ["sexwork"], "kinds": ["advocacy", "legal"], "scale": "grassroots"},
+    {"name": "Sex Workers Project at the Urban Justice Center", "country": "US", "city": "New York, NY", "what": "Free immigration legal services for current and former sex workers and trafficking survivors.", "donate_url": "https://swp.urbanjustice.org/donate/", "causes": ["sexwork"], "kinds": ["legal"], "scale": "established"},
+    {"name": "San Francisco AIDS Foundation", "country": "US", "city": "San Francisco, CA", "what": "HIV and PrEP services, substance use treatment, trans health care and trans support groups.", "donate_url": "https://donate.sfaf.org/campaign/773029/donate", "causes": ["health", "lgbtq", "trans"], "kinds": ["health", "community"], "scale": "established", "also": "Volunteer at events like the holiday Santa Skivvies Run or kit-packing days.", "also_url": "https://www.sfaf.org/get-involved/volunteer/"},
+    {"name": "Whitman-Walker", "country": "US", "city": "Washington, DC", "what": "LGBTQ+ inclusive health center offering HIV care, transgender health care and free legal services.", "donate_url": "https://www.whitman-walker.org/give/", "causes": ["health", "lgbtq", "trans"], "kinds": ["health", "legal"], "scale": "established"},
+    {"name": "Callen-Lorde Community Health Center", "country": "US", "city": "New York, NY", "what": "Community health center providing care to LGBTQ+ people in New York City.", "donate_url": "https://callen-lorde.org/give/", "causes": ["health", "lgbtq"], "kinds": ["health", "community"], "scale": "established", "also": "Volunteer as a patient companion for medical visits and appointments.", "also_url": "https://callen-lorde.org/volunteer-opportunities/"},
+    {"name": "SisterLove", "country": "US", "city": "Atlanta, GA", "what": "Southeast reproductive justice group offering HIV, STI and pregnancy testing, outreach and policy work.", "donate_url": "https://www.sisterlove.org/donate", "causes": ["health"], "kinds": ["health", "advocacy", "community"], "scale": "established"},
+    {"name": "National Network of Abortion Funds", "country": "US", "what": "Network supporting local funds that help people pay for and reach abortion care.", "donate_url": "https://abortionfunds.org/donate/", "causes": ["health"], "kinds": ["direct", "advocacy"], "scale": "established", "also": "Volunteer with a local abortion fund near you; many are volunteer-run.", "also_url": "https://abortionfunds.org/?p=21176"},
+    {"name": "Futures Without Violence", "country": "US", "city": "San Francisco, CA", "what": "National group working to prevent domestic and gender-based violence through policy, health and training.", "donate_url": "https://futureswithoutviolence.org/support-us", "causes": ["violence"], "kinds": ["advocacy"], "scale": "established"},
+    {"name": "NAMI (National Alliance on Mental Illness)", "country": "US", "what": "National mental health organization running a HelpLine, education, support groups and advocacy.", "donate_url": "https://www.nami.org/get-involved/donate-to-nami/ways-of-giving/", "causes": ["mental"], "kinds": ["community", "advocacy"], "scale": "established"},
+    {"name": "Crisis Text Line", "country": "US", "city": "New York, NY", "what": "Free, 24/7 text-based support from trained volunteer crisis counselors.", "donate_url": "https://www.crisistextline.org/donate/", "causes": ["mental"], "kinds": ["crisis"], "scale": "established", "also": "Train online as a volunteer crisis counselor", "also_url": "https://www.crisistextline.org/become-a-volunteer"},
+    {"name": "The Steve Fund", "country": "US", "what": "Supports the mental health and emotional well-being of young people of color.", "donate_url": "https://stevefund.org/give", "causes": ["mental"], "kinds": ["youth", "community"], "scale": "established"},
+    {"name": "Feeding America", "country": "US", "city": "Chicago", "what": "National network of about 200 food banks supplying food pantries and meal programs across the US.", "donate_url": "https://give.feedingamerica.org/a/donate", "causes": ["broad"], "kinds": ["direct", "community"], "scale": "established", "topic": "food", "also": "Volunteer sorting, packing or delivering food at your local food bank.", "also_url": "https://www.feedingamerica.org/take-action/volunteer"},
+    {"name": "Covenant House", "country": "US", "city": "New York", "what": "Runs shelters and support programs for young people facing homelessness and trafficking.", "donate_url": "https://www.covenanthouse.org/get-involved/ways-to-give/donate-now", "causes": ["broad"], "kinds": ["housing", "youth", "direct"], "scale": "established", "topic": "housing", "also": "Volunteer at a Covenant House site near you, solo, with family or a company.", "also_url": "https://www.covenanthouse.org/get-involved/take-action/volunteer"},
+    {"name": "ACLU Foundation", "country": "US", "city": "New York", "what": "Litigation and public education arm of the ACLU defending civil rights and liberties in court.", "donate_url": "https://action.aclu.org/give/make-tax-deductible-gift-aclu-foundation", "causes": ["broad"], "kinds": ["legal", "advocacy"], "scale": "established", "topic": "justice"},
+    {"name": "Best Friends Animal Society", "country": "US", "city": "Kanab, UT", "what": "Runs a large animal sanctuary and works with shelters nationwide to end killing of shelter pets.", "donate_url": "https://bestfriends.org/donate", "causes": ["broad"], "kinds": ["direct", "community", "advocacy"], "scale": "established", "topic": "animals", "also": "Send toys, treats or blankets from its Amazon, Chewy or Walmart wish lists.", "also_url": "https://bestfriends.org/donate/other-ways-give/wish-list"},
+    {"name": "Marine Toys for Tots Foundation", "country": "US", "city": "Triangle, VA", "what": "Supports the Marine Corps Reserve program that collects and gives holiday toys to children in need.", "donate_url": "https://secure.toysfortots.org/a/donatetoday", "causes": ["broad"], "kinds": ["youth", "direct", "community"], "scale": "established", "topic": "kids", "also": "Buy a toy for its Virtual Toy Box or give to your local campaign.", "also_url": "https://www.toysfortots.org/support-us"},
+    {"name": "The Bail Project", "country": "US", "what": "Pays bail for people who cannot afford it and helps them get to court dates.", "donate_url": "https://bailproject.org/donate/", "causes": ["broad"], "kinds": ["legal", "direct", "advocacy"], "scale": "established", "topic": "justice"},
+    {"name": "Rainbow Railroad", "country": "INTL", "city": "Toronto", "what": "Helps LGBTQI+ people facing state-sponsored persecution get to safety, including emergency relocation.", "donate_url": "https://www.rainbowrailroad.org/give", "causes": ["lgbtq", "violence"], "kinds": ["global", "direct", "legal"], "scale": "established", "also": "Takes volunteers to support LGBTQI+ newcomers and operations", "also_url": "https://rainbowrailroad.org/take-action/other-ways-to-give"},
+    {"name": "Outright International", "country": "INTL", "city": "New York", "what": "Works with partners worldwide on LGBTIQ human rights, emergency aid, research and UN advocacy.", "donate_url": "https://outrightinternational.org/take-action/give", "causes": ["lgbtq", "violence"], "kinds": ["global", "advocacy", "direct"], "scale": "established"},
+    {"name": "Kaleidoscope Trust", "country": "INTL", "city": "London", "what": "UK-based charity funding advocacy and local projects for LGBTI+ rights in other countries.", "donate_url": "https://kaleidoscopetrust.com/donate/", "causes": ["lgbtq"], "kinds": ["global", "advocacy"]},
+    {"name": "Red Umbrella Fund", "country": "INTL", "what": "Sex worker-led participatory fund giving flexible core grants to sex worker groups worldwide.", "donate_url": "https://www.redumbrellafund.org?form=FUNSJHTEBFV", "causes": ["sexwork"], "kinds": ["global", "advocacy"], "scale": "grassroots"},
+    {"name": "Elton John AIDS Foundation", "country": "INTL", "what": "Funds HIV prevention, testing and care programs for marginalised groups in many countries.", "donate_url": "https://www.eltonjohnaidsfoundation.org/support-us/", "causes": ["health"], "kinds": ["global", "health"], "scale": "established"},
+    {"name": "Médecins Sans Frontières Australia (Doctors Without Borders)", "country": "INTL", "what": "Sends medical teams to war zones, epidemics and disasters worldwide.", "donate_url": "https://msf.org.au/donate/", "causes": ["broad"], "kinds": ["health", "crisis", "global"], "scale": "established", "topic": "medical aid"},
+    {"name": "World Central Kitchen", "country": "INTL", "city": "Washington, DC", "what": "Sends chefs and kitchens to cook fresh meals after disasters and in conflict zones worldwide.", "donate_url": "https://donate.wck.org/campaign/749360/donate", "causes": ["broad"], "kinds": ["crisis", "direct", "global"], "scale": "established", "topic": "food", "also": "Join its Volunteer Corps to prep, cook or deliver meals at responses.", "also_url": "https://wck.org/volunteer/"},
+    {"name": "Direct Relief", "country": "INTL", "city": "Santa Barbara, CA", "what": "Ships donated medicines and medical supplies to clinics and disaster zones in the US and abroad.", "donate_url": "https://donate.directrelief.org/campaign/594374/donate", "causes": ["broad"], "kinds": ["crisis", "health", "global"], "scale": "established", "topic": "medical aid"},
+    {"name": "Doctors Without Borders USA", "country": "INTL", "city": "New York", "what": "US section of MSF, providing emergency medical care in conflicts, epidemics and disasters worldwide.", "donate_url": "https://give.doctorswithoutborders.org/campaign/675296/donate", "causes": ["broad"], "kinds": ["crisis", "health", "global"], "scale": "established", "topic": "medical aid"},
+    {"name": "International Rescue Committee", "country": "INTL", "city": "New York", "what": "Gives emergency aid to people fleeing crisis and helps refugees resettle in US cities.", "donate_url": "https://help.rescue.org/donate", "causes": ["broad"], "kinds": ["crisis", "direct", "global"], "scale": "established", "topic": "refugees", "also": "Volunteer with a US resettlement office, in person or remotely", "also_url": "https://www.rescue.org/volunteer"},
+    {"name": "Mermaids", "country": "UK", "what": "Supports gender-diverse children, young people and their families with a helpline, groups and resources", "donate_url": "https://mermaidsuk.org.uk/donate/", "causes": ["trans"], "kinds": ["youth", "community"], "also": "Takes volunteers; supporters can run their own fundraisers", "also_url": "https://mermaidsuk.org.uk/"},
+    {"name": "Gendered Intelligence", "country": "UK", "what": "Services for trans, non-binary and questioning people and their families, plus trans-inclusion training", "donate_url": "https://genderedintelligence.co.uk/donations", "causes": ["trans"], "kinds": ["youth", "community"], "scale": "grassroots", "also": "Takes volunteers", "also_url": "https://genderedintelligence.co.uk/support-us"},
+    {"name": "akt (Albert Kennedy Trust)", "country": "UK", "city": "London", "what": "Supports LGBTQ+ young people facing or experiencing homelessness with emergency housing, supplies and caseworkers.", "donate_url": "https://www.akt.org.uk/donate/", "causes": ["lgbtq", "trans"], "kinds": ["housing", "youth", "direct"], "also": "Runs a winter appeal for young people; also takes volunteers", "also_url": "https://www.akt.org.uk/other-ways-to-give/"},
+    {"name": "Terrence Higgins Trust", "country": "UK", "what": "UK HIV and sexual health charity providing support, testing information and campaigns to end new HIV cases.", "donate_url": "https://www.tht.org.uk/take-action/donate", "causes": ["health", "lgbtq"], "kinds": ["health", "advocacy", "community"], "scale": "established", "also": "Takes volunteers across the UK; runs a World AIDS Day campaign", "also_url": "https://tht.org.uk/support-us"},
+    {"name": "Refuge", "country": "UK", "what": "Runs refuges, a 24/7 helpline and advocacy for women and children escaping domestic abuse.", "donate_url": "https://refuge.org.uk/i-want-to-support-refuge/donate/", "causes": ["violence"], "kinds": ["crisis", "housing", "advocacy"], "scale": "established", "also": "Running a Christmas appeal; trains volunteers for its helpline", "also_url": "https://refuge.org.uk/i-want-to-support-refuge/"},
+    {"name": "Galop", "country": "UK", "city": "London", "what": "UK charity supporting LGBT+ people who have experienced abuse, violence or hate.", "donate_url": "https://galop.org.uk/support-us/ways-to-give", "causes": ["violence", "lgbtq"], "kinds": ["crisis", "advocacy"]},
+    {"name": "Mind", "country": "UK", "what": "Mental health charity providing information, helplines, local services and campaigning in England and Wales.", "donate_url": "https://www.mind.org.uk/donate/", "causes": ["mental"], "kinds": ["health", "advocacy"], "scale": "established"},
+    {"name": "Transcend Australia", "country": "AU", "what": "Peer support, resources and advocacy for families of trans and gender diverse children and teens", "donate_url": "https://transcend.org.au/donate/single-donation/", "causes": ["trans"], "kinds": ["youth", "community", "advocacy"], "scale": "grassroots", "also": "Takes volunteers; supporters can run their own fundraisers", "also_url": "https://transcend.org.au/"},
+    {"name": "Transgender Victoria", "country": "AU", "what": "Victoria's trans and gender diverse advocacy body, running peer navigation, social groups and training", "donate_url": "https://www.tgv.org.au/donate", "causes": ["trans", "lgbtq"], "kinds": ["community", "advocacy", "direct"], "scale": "grassroots", "also": "Takes volunteers and runs community events through the year", "also_url": "https://www.tgv.org.au/"},
+    {"name": "Zoe Belle Gender Collective", "country": "AU", "what": "Trans and gender diverse led advocacy group in Victoria offering resources, referrals and practice guides", "donate_url": "https://www.givenow.com.au/zbgcgeneral", "causes": ["trans"], "kinds": ["advocacy", "community"], "scale": "grassroots"},
+    {"name": "Minus18", "country": "AU", "city": "Melbourne", "what": "Runs social events, school and workplace inclusion training, and resources for LGBTQIA+ young Australians.", "donate_url": "https://www.minus18.org.au/donate/", "causes": ["lgbtq", "mental"], "kinds": ["youth", "community", "advocacy"]},
+    {"name": "Switchboard Victoria", "country": "AU", "city": "Melbourne", "what": "Peer-run phone and web support, suicide prevention, family violence help and older-person visiting for LGBTIQA+ Victorians.", "donate_url": "https://www.switchboard.org.au/donate", "causes": ["lgbtq", "mental", "violence"], "kinds": ["crisis", "community"], "scale": "grassroots", "also": "Takes LGBTIQA+ volunteers for peer support, visiting older people and events", "also_url": "https://www.switchboard.org.au/volunteer"},
+    {"name": "Twenty10", "country": "AU", "city": "Sydney", "what": "Housing, counselling, mental health and social support for young LGBTIQA+ people in NSW.", "donate_url": "https://twenty10.org.au/donate/", "causes": ["lgbtq", "mental"], "kinds": ["youth", "housing", "health", "community"]},
+    {"name": "ACON", "country": "AU", "city": "Sydney", "what": "NSW community health organisation covering HIV, sexual health, mental health and support for LGBTQ+ people, including the TransHub resource.", "donate_url": "https://www.fundraisewithacon.org.au/acon-donation", "causes": ["lgbtq", "trans", "health", "mental"], "kinds": ["health", "community", "advocacy"], "scale": "established", "also": "Takes volunteers, from one-off help to weekly roles", "also_url": "https://www.acon.org.au/get-involved/volunteer/"},
+    {"name": "LGBTIQ+ Health Australia (QLife)", "country": "AU", "what": "National peak body for LGBTIQ+ health that runs QLife, a free peer support phone and webchat line.", "donate_url": "https://www.lgbtihealth.org.au/qlife_donation", "causes": ["lgbtq", "health", "mental"], "kinds": ["crisis", "health", "advocacy"]},
+    {"name": "Scarlet Alliance", "country": "AU", "what": "National peer-led body for sex workers: policy advocacy, law reform and sector support across Australia.", "donate_url": "https://scarletalliance.org.au/donate/", "causes": ["sexwork", "health"], "kinds": ["advocacy", "community"], "scale": "grassroots"},
+    {"name": "Vixen Collective", "country": "AU", "city": "Melbourne", "what": "Victoria's peer-only sex worker group; runs a crisis fund and community support for local sex workers.", "donate_url": "https://vixen.org.au/donate", "causes": ["sexwork"], "kinds": ["crisis", "community", "advocacy"], "scale": "grassroots", "also": "Lists volunteering and community events on its site", "also_url": "https://www.vixen.org.au"},
+    {"name": "Thorne Harbour Health", "country": "AU", "city": "Melbourne", "what": "Community health organisation (formerly Victorian AIDS Council) serving LGBTIQ+ communities and people living with HIV.", "donate_url": "https://thorneharbour.org/get-involved/donate/", "causes": ["health", "lgbtq", "trans"], "kinds": ["health", "community"], "scale": "established", "also": "Takes volunteers in many roles, from outreach to visiting older LGBTIQA+ people", "also_url": "https://www.thorneharbour.org/get-involved/volunteer"},
+    {"name": "Living Positive Victoria", "country": "AU", "city": "Melbourne", "what": "Peer-led organisation since 1988 offering support, peer navigation and advocacy for people living with HIV.", "donate_url": "https://forms.lpv.org.au/civicrm/contribute/transact?reset=1&id=1", "causes": ["health", "lgbtq"], "kinds": ["community", "direct", "advocacy"], "scale": "grassroots", "also": "Takes volunteers for community gatherings and peer workshops", "also_url": "https://lpv.org.au/get-involved/become-a-volunteer/"},
+    {"name": "Positive Women Victoria", "country": "AU", "city": "Melbourne", "what": "Peer support, information and advocacy for women living with HIV in Victoria, including small personal grants.", "donate_url": "https://www.givenow.com.au/positivewomen", "causes": ["health"], "kinds": ["community", "advocacy", "direct"], "scale": "grassroots"},
+    {"name": "Safe Steps", "country": "AU", "city": "Melbourne", "what": "Victoria's statewide 24/7 family violence crisis service, with safety planning and emergency accommodation.", "donate_url": "https://safesteps.org.au/donate/", "causes": ["violence"], "kinds": ["crisis", "housing", "direct"], "also": "Accepts donations of essential items for people in crisis accommodation", "also_url": "https://safesteps.org.au/donate/"},
+    {"name": "Full Stop Australia", "country": "AU", "city": "Sydney", "what": "Counselling, helplines and advocacy for people affected by sexual, domestic and family violence.", "donate_url": "https://fullstop.org.au/get-involved/donate", "causes": ["violence"], "kinds": ["crisis", "advocacy"]},
+    {"name": "Our Watch", "country": "AU", "what": "National organisation working to prevent violence against women and children before it starts.", "donate_url": "https://ourwatch.org.au/donate", "causes": ["violence"], "kinds": ["advocacy"]},
+    {"name": "Lifeline Australia", "country": "AU", "what": "24/7 crisis support and suicide prevention by phone, text and chat across Australia.", "donate_url": "https://lifeline.org.au/get-involved/donate", "causes": ["mental"], "kinds": ["crisis"], "scale": "established", "also": "Trains volunteer crisis supporters; local centres accept donated goods", "also_url": "https://lifeline.org.au/get-involved/donate"},
+    {"name": "Beyond Blue", "country": "AU", "what": "Support service and programs for anxiety, depression and suicide prevention in Australia.", "donate_url": "https://www.beyondblue.org.au/get-involved/donate", "causes": ["mental"], "kinds": ["crisis", "health"], "scale": "established"},
+    {"name": "Black Dog Institute", "country": "AU", "city": "Sydney", "what": "Mental health research institute developing and sharing treatments, programs and education.", "donate_url": "https://blackdoginstitute.org.au/donate", "causes": ["mental", "health"], "kinds": ["health"], "scale": "established"},
+    {"name": "headspace", "country": "AU", "what": "Youth mental health foundation with centres and online support for young Australians.", "donate_url": "https://headspace.org.au/get-involved/donations/", "causes": ["mental"], "kinds": ["youth", "health"], "scale": "established", "also": "Offers volunteering and youth participation roles", "also_url": "https://headspace.org.au/get-involved/donations/"},
+    {"name": "Asylum Seeker Resource Centre", "country": "AU", "city": "Melbourne", "what": "Gives people seeking asylum food, legal help, health care, casework and advocacy.", "donate_url": "https://asrc.org.au/donate", "causes": ["broad"], "kinds": ["crisis", "legal", "health", "direct", "advocacy"], "scale": "established", "topic": "refugees", "also": "Takes supermarket gift cards so families can buy nappies", "also_url": "https://asrc.org.au/donate-material-aid/"},
+    {"name": "Launch Housing", "country": "AU", "city": "Melbourne", "what": "Provides crisis accommodation, long-term housing and support for people facing homelessness.", "donate_url": "https://donations.launchhousing.org.au/festive-appeal/donate", "causes": ["broad"], "kinds": ["housing", "crisis", "direct"], "scale": "established", "topic": "housing", "also": "Runs a yearly festive toy drive for kids facing homelessness", "also_url": "https://www.launchhousing.org.au/how-you-can-help/donate-goods/"},
+    {"name": "OzHarvest", "country": "AU", "what": "Rescues surplus food from businesses and delivers it free to charities feeding people.", "donate_url": "https://events.ozharvest.org/donate", "causes": ["broad"], "kinds": ["direct", "community"], "scale": "established", "topic": "food", "also": "Takes volunteers, food donations and community fundraisers", "also_url": "https://www.ozharvest.org/?p=37"},
+    {"name": "Foodbank Victoria", "country": "AU", "city": "Melbourne", "what": "Sources and distributes food to hundreds of Victorian charities, schools and community groups.", "donate_url": "https://donate.foodbank.org.au/vic/", "causes": ["broad"], "kinds": ["direct", "community"], "scale": "established", "topic": "food", "also": "Running a Christmas 2026 appeal to fund holiday meals", "also_url": "https://support.foodbankvictoria.org.au/christmas-2026"},
+    {"name": "Australian Conservation Foundation", "country": "AU", "city": "Melbourne", "what": "National environment group campaigning on climate, nature protection and fossil fuel expansion.", "donate_url": "https://www.acf.org.au/donate/donate-once", "causes": ["broad"], "kinds": ["advocacy", "community"], "scale": "established", "topic": "environment"},
+    {"name": "Edgar's Mission", "country": "AU", "city": "Lancefield, Victoria", "what": "Farm animal sanctuary that rescues and rehomes animals and promotes kindness to them.", "donate_url": "https://edgarsmission.org.au/donations/", "causes": ["broad"], "kinds": ["direct"], "scale": "grassroots", "topic": "animals", "also": "Takes volunteers on sanctuary days and supplies from its wish list", "also_url": "https://edgarsmission.org.au/help-the-animals/"},
+    {"name": "RSPCA Victoria", "country": "AU", "city": "Melbourne", "what": "Shelters, treats and rehomes animals and investigates animal cruelty across Victoria.", "donate_url": "https://rspcavic.org/donate-to-rspca-victoria/", "causes": ["broad"], "kinds": ["direct", "community"], "scale": "established", "topic": "animals", "also": "Shelters take blankets, towels and sealed pet food; also takes volunteers", "also_url": "https://rspcavic.org/ways-to-donate/donate-goods-to-shelters"},
+    {"name": "Indigenous Literacy Foundation", "country": "AU", "what": "Supplies books chosen by remote First Nations communities and supports early literacy there.", "donate_url": "https://donate.ilf.org.au/", "causes": ["broad"], "kinds": ["youth", "community"], "topic": "First Nations", "also": "Running a Festive Season 2026 appeal to fund books for remote communities", "also_url": "https://festive.ilf.org.au/"},
+    {"name": "Children's Ground", "country": "AU", "city": "Northern Territory", "what": "First Nations-led learning, health and community development for families in Central Australia and Top End.", "donate_url": "https://childrensground.org.au/donate-today/", "causes": ["broad"], "kinds": ["youth", "community", "health"], "topic": "First Nations"},
+    {"name": "Sisters Inside", "country": "AU", "city": "Brisbane", "what": "Supports and advocates for women and girls in prison and their children.", "donate_url": "https://sistersinside.com.au/make-a-donation/", "causes": ["broad"], "kinds": ["legal", "advocacy", "direct"], "scale": "grassroots", "topic": "justice"}
+  ];
+
+  var CAUSES = [
+    { id: "trans", label: "Trans aid" },
+    { id: "lgbtq", label: "LGBTQ+" },
+    { id: "sexwork", label: "Sex worker rights" },
+    { id: "health", label: "Sexual health & HIV" },
+    { id: "violence", label: "Violence & abuse" },
+    { id: "mental", label: "Mental health" },
+    { id: "broad", label: "The wider world" }
+  ];
+  var CAUSE_LABEL = {}; CAUSES.forEach(function (c) { CAUSE_LABEL[c.id] = c.label; });
+  var COUNTRY = { AU: "Australia", US: "United States", UK: "United Kingdom", INTL: "Worldwide" };
+
+  var CAUSE_OPTS = [
+    { t: "Queer people living safely and openly", w: { lgbtq: 4, trans: 1.5 } },
+    { t: "Trans people getting care, housing and legal help", w: { trans: 4.5, lgbtq: 1 } },
+    { t: "Sex workers' rights and safety", w: { sexwork: 4.5 } },
+    { t: "Sexual health and HIV care, without shame", w: { health: 4.5 } },
+    { t: "People getting out of violence and abuse", w: { violence: 4.5 } },
+    { t: "Mental health and getting through hard nights", w: { mental: 4.5 } },
+    { t: "The bigger picture: refugees, food, housing, animals, the planet", w: { broad: 4.5 } }
+  ];
+
+  var QUIZ = [
+    { q: "What pulls at your heart most?", hint: "Pick the one that feels strongest.", opts: CAUSE_OPTS },
+    { q: "Anything else you care about?", hint: "Pick as many as you like, or skip.", multi: true, skippable: true,
+      opts: CAUSE_OPTS.map(function (o) { var w = {}; for (var k in o.w) w[k] = o.w[k] * 0.4; return { t: o.t, w: w }; }) },
+    { q: "What kind of help feels right to you?", hint: "Pick one.", opts: [
+      { t: "Someone in crisis, right now", k: ["crisis"] },
+      { t: "A safe place to live", k: ["housing"] },
+      { t: "Healthcare and real support", k: ["health"] },
+      { t: "Legal help and changing unfair laws", k: ["legal", "advocacy"] },
+      { t: "Money straight into people's hands", k: ["direct"] },
+      { t: "Young people finding their way", k: ["youth"] },
+      { t: "Community: peer groups and belonging", k: ["community"] }
+    ] },
+    { q: "Where would you like your money to land?", hint: "Pick one.", opts: [
+      { t: "Here in the United States", r: "US" },
+      { t: "Wherever it's needed, worldwide", r: "INTL" },
+      { t: "The UK", r: "UK" },
+      { t: "Australia", r: "AU" },
+      { t: "I don't mind", r: "" }
+    ] },
+    { q: "Who do you like backing?", hint: "Pick one.", opts: [
+      { t: "Small, community-run groups where every dollar shows", s: "grassroots" },
+      { t: "Big, established charities with a long track record", s: "established" },
+      { t: "Either is fine", s: "" }
+    ] }
+  ];
+
+  var root = document.getElementById("dnp");
+  var $ = function (id) { return document.getElementById(id); };
+  var answers = QUIZ.map(function () { return []; });
+  var step = 0;
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function where(o) { return (o.city ? o.city + ", " : "") + COUNTRY[o.country]; }
+
+  $("dnp-n-orgs").textContent = ORGS.length;
+  $("dnp-n-causes").textContent = CAUSES.filter(function (c) { return ORGS.some(function (o) { return o.causes[0] === c.id; }); }).length;
+
+  /* ---------- Quiz ---------- */
+  function renderStep() {
+    var Q = QUIZ[step];
+    $("dnp-step").textContent = "Question " + (step + 1) + " of " + QUIZ.length;
+    $("dnp-bar").style.width = (step / QUIZ.length * 100) + "%";
+    var sel = answers[step];
+    var h = '<h2 class="dnp-q" id="dnp-qt">' + esc(Q.q) + '</h2><p class="dnp-hint">' + esc(Q.hint) + '</p>';
+    h += '<ul class="dnp-opts" role="group" aria-labelledby="dnp-qt">';
+    Q.opts.forEach(function (o, i) {
+      h += '<li><button type="button" class="dnp-opt' + (Q.multi ? ' dnp-multi' : '') + '" data-i="' + i + '" aria-pressed="' + (sel.indexOf(i) > -1) + '"><i class="dnp-box" aria-hidden="true"></i><span>' + esc(o.t) + '</span></button></li>';
+    });
+    h += '</ul><div class="dnp-quiz-nav">';
+    h += step > 0 ? '<button type="button" class="dnp-text-btn" id="dnp-back">Back</button>' : '<span></span>';
+    if (Q.multi) h += '<button type="button" class="dnp-cta" id="dnp-next">' + (sel.length ? 'Next' : 'Skip') + '</button>';
+    h += '</div>';
+    $("dnp-body").innerHTML = h;
+    var back = $("dnp-back"); if (back) back.onclick = function () { step--; renderStep(); };
+    var next = $("dnp-next"); if (next) next.onclick = advance;
+  }
+  function advance() { step++; if (step >= QUIZ.length) renderResults(); else renderStep(); }
+
+  $("dnp-body").addEventListener("click", function (e) {
+    var b = e.target.closest(".dnp-opt"); if (!b) return;
+    var i = +b.getAttribute("data-i"), Q = QUIZ[step], sel = answers[step];
+    if (Q.multi) {
+      var at = sel.indexOf(i); if (at > -1) sel.splice(at, 1); else sel.push(i);
+      b.setAttribute("aria-pressed", at === -1);
+      $("dnp-next").textContent = sel.length ? "Next" : "Skip";
+    } else {
+      answers[step] = [i];
+      [].forEach.call($("dnp-body").querySelectorAll(".dnp-opt"), function (x) { x.setAttribute("aria-pressed", x === b); });
+      setTimeout(advance, 160);
+    }
+  });
+
+  function score() {
+    var cw = {}, kinds = [], region = "", scale = "";
+    [0, 1].forEach(function (qi) { answers[qi].forEach(function (i) { var w = QUIZ[qi].opts[i].w; for (var k in w) cw[k] = (cw[k] || 0) + w[k]; }); });
+    answers[2].forEach(function (i) { kinds = kinds.concat(QUIZ[2].opts[i].k); });
+    answers[3].forEach(function (i) { region = QUIZ[3].opts[i].r; });
+    answers[4].forEach(function (i) { scale = QUIZ[4].opts[i].s; });
+    var list = ORGS.map(function (o, idx) {
+      var c = 0;
+      o.causes.forEach(function (id, j) { if (cw[id]) c += cw[id] * (j === 0 ? 1 : 0.6); });
+      if (!c) return null;
+      var s = c;
+      if (kinds.some(function (k) { return o.kinds.indexOf(k) > -1; })) s += 2.2;
+      if (region) {
+        if (o.country === region) s += 2.6;
+        else if (region === "INTL" && o.kinds.indexOf("global") > -1) s += 2;
+        else if (o.country === "INTL") s += 1;
+        else s -= 1;
+      }
+      if (scale && o.scale === scale) s += 1;
+      return { o: o, s: s, idx: idx };
+    }).filter(Boolean).sort(function (a, b) { return b.s - a.s || a.idx - b.idx; });
+    /* Keep the list varied: no more than 3 from one cause unless that's all there is. */
+    var out = [], per = {}, cap = Object.keys(cw).filter(function (k) { return cw[k] >= 1; }).length > 1 ? 3 : 5;
+    list.forEach(function (x) { var p = x.o.causes[0]; if (out.length < 5 && (per[p] || 0) < cap) { out.push(x); per[p] = (per[p] || 0) + 1; } });
+    list.forEach(function (x) { if (out.length < 3 && out.indexOf(x) === -1) out.push(x); });
+    var because = [];
+    answers[0].concat(answers[1]).forEach(function (i) { var t = CAUSE_OPTS[i].t; if (because.indexOf(t) === -1) because.push(t); });
+    var picked = [];
+    [2, 3].forEach(function (qi) { answers[qi].forEach(function (i) { if (QUIZ[qi].opts[i].r !== "") picked.push(QUIZ[qi].opts[i].t); }); });
+    return { list: out.map(function (x) { return x.o; }), because: because.map(shortCause).concat(picked) };
+  }
+  function shortCause(t) {
+    var i = CAUSE_OPTS.findIndex(function (o) { return o.t === t; });
+    return ["Queer safety", "Trans aid", "Sex worker rights", "Sexual health & HIV", "Leaving violence", "Mental health", "The bigger picture"][i] || t;
+  }
+
+  function renderResults() {
+    var r = score();
+    $("dnp-step").textContent = "Your matches";
+    $("dnp-bar").style.width = "100%";
+    var h = '<div class="dnp-res-head"><div><h2 class="dnp-q">Here’s where your giving could go</h2>';
+    h += '<div class="dnp-because">' + r.because.map(function (b) { return '<span class="dnp-tag">' + esc(b) + '</span>'; }).join("") + '</div></div>';
+    h += '<button type="button" class="dnp-ghost" id="dnp-redo">Take it again</button></div>';
+    h += '<div class="dnp-matches">';
+    r.list.forEach(function (o, i) {
+      h += '<article class="dnp-card"><div class="dnp-card-top"><span class="dnp-rank">' + (i === 0 ? 'Best match' : CAUSE_LABEL[o.causes[0]]) + '</span><span class="dnp-where">' + esc(where(o)) + '</span></div>';
+      h += '<h3>' + esc(o.name) + '</h3><p>' + esc(o.what) + '</p>';
+      if (o.also) h += '<p class="dnp-also">' + (o.also_url ? '<a href="' + esc(o.also_url) + '" target="_blank" rel="noopener">' + esc(o.also) + '</a>' : esc(o.also)) + '</p>';
+      h += '<a class="dnp-cta" href="' + esc(o.donate_url) + '" target="_blank" rel="noopener">Donate</a></article>';
+    });
+    h += '</div>';
+    if (r.list[0]) h += '<div class="dnp-res-share"><strong>Share your match</strong>' + shareLinks("My holiday giving match is " + r.list[0].name + ". Find the cause that fits you in five quick questions:", true) + '<span class="dnp-toast" id="dnp-res-toast" role="status"></span></div>';
+    h += '<p class="dnp-res-foot">Want more choice? <button type="button" class="dnp-text-btn" id="dnp-browse">Browse the full list</button> below.</p>';
+    $("dnp-body").innerHTML = h;
+    $("dnp-redo").onclick = function () { answers = QUIZ.map(function () { return []; }); step = 0; renderStep(); $("dnp-quiz").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    $("dnp-browse").onclick = function () {
+      var top = r.list[0] ? r.list[0].causes[0] : "all"; fCause = top; renderChips(); renderList();
+      $("dnp-all-title").scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+  }
+
+  /* ---------- Full list ---------- */
+  var fCause = "all", fRegion = "all";
+  function passRegion(o) { return fRegion === "all" || o.country === fRegion; }
+  function renderChips() {
+    var h = '<button type="button" class="dnp-chip" data-c="all" aria-pressed="' + (fCause === "all") + '">All<span class="dnp-n">' + ORGS.filter(passRegion).length + '</span></button>';
+    CAUSES.forEach(function (c) {
+      var n = ORGS.filter(function (o) { return o.causes[0] === c.id && passRegion(o); }).length;
+      if (!ORGS.some(function (o) { return o.causes[0] === c.id; })) return;
+      h += '<button type="button" class="dnp-chip" data-c="' + c.id + '" aria-pressed="' + (fCause === c.id) + '">' + esc(c.label) + '<span class="dnp-n">' + n + '</span></button>';
+    });
+    $("dnp-chips").innerHTML = h;
+  }
+  function renderList() {
+    var h = listPart(function (o) { return o.country !== "AU"; }), au = listPart(function (o) { return o.country === "AU"; });
+    if (au) h += '<h3 class="dnp-section">In Australia</h3>' + au;
+    $("dnp-list").innerHTML = h || '<p class="dnp-empty">Nothing here for that place yet. Try “Anywhere”.</p>';
+  }
+  function listPart(keepIt) {
+    var h = "";
+    CAUSES.forEach(function (c) {
+      if (fCause !== "all" && fCause !== c.id) return;
+      var rows = ORGS.filter(function (o) { return o.causes[0] === c.id && passRegion(o) && keepIt(o); });
+      if (!rows.length) return;
+      h += '<h3 class="dnp-group">' + esc(c.label) + '<span>' + rows.length + '</span></h3><div class="dnp-rows">';
+      rows.forEach(function (o) {
+        h += '<div class="dnp-row"><div class="dnp-cc">' + (o.country === "INTL" ? "World" : o.country) + (o.city ? '<small>' + esc(o.city) + '</small>' : '') + '</div><div>';
+        h += '<p class="dnp-name">' + esc(o.name) + '</p>';
+        if (o.topic) h += '<p class="dnp-meta">' + esc(o.topic) + '</p>';
+        h += '<p class="dnp-about">' + esc(o.what) + '</p>';
+        if (o.also) h += '<p class="dnp-also">' + (o.also_url ? '<a href="' + esc(o.also_url) + '" target="_blank" rel="noopener">' + esc(o.also) + '</a>' : esc(o.also)) + '</p>';
+        h += '<a class="dnp-link" href="' + esc(o.donate_url) + '" target="_blank" rel="noopener">Donate to ' + esc(o.name) + '</a></div></div>';
+      });
+      h += '</div>';
+    });
+    return h;
+  }
+  $("dnp-chips").addEventListener("click", function (e) { var b = e.target.closest(".dnp-chip"); if (!b) return; fCause = b.getAttribute("data-c"); renderChips(); renderList(); });
+  $("dnp-where").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return; fRegion = b.getAttribute("data-r");
+    [].forEach.call($("dnp-where").querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b); });
+    renderChips(); renderList();
+  });
+
+  /* ---------- Suggestions box ----------
+     Paste ONE of these in, then rebuild:
+     SUGGEST_ENDPOINT: a form endpoint that accepts posts (for example a Formspree form URL). Notes send from this page.
+     SUGGEST_LINK: a form page link (for example a Jotform link). The button opens that form in a new tab instead. */
+  var SUGGEST_ENDPOINT = "PASTE_FORM_ENDPOINT_HERE";
+  var SUGGEST_LINK = "PASTE_YOUR_JOTFORM_LINK_HERE";
+  (function () {
+    var form = $("dnp-sg-form"), status = $("dnp-sg-status"), send = $("dnp-sg-send");
+    var hasEndpoint = /^https:\/\//.test(SUGGEST_ENDPOINT), hasLink = /^https:\/\//.test(SUGGEST_LINK);
+    if (!hasEndpoint && hasLink) {
+      [].forEach.call(form.querySelectorAll("label, .dnp-trap"), function (x) { x.hidden = true; });
+      var a = document.createElement("a"); a.className = "dnp-cta"; a.href = SUGGEST_LINK; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Send a note to Electra";
+      send.replaceWith(a); return;
+    }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = $("dnp-sg-msg").value.trim();
+      if (!msg) { status.textContent = "Write a note first."; $("dnp-sg-msg").focus(); return; }
+      if ($("dnp-sg-hp").value) return;
+      if (!hasEndpoint) { status.textContent = "The suggestions box isn't connected yet, so this note wasn't sent."; return; }
+      send.disabled = true; status.textContent = "Sending…";
+      var body = new FormData(); body.append("message", msg); body.append("email", $("dnp-sg-email").value.trim()); body.append("page", "Holiday giving");
+      fetch(SUGGEST_ENDPOINT, { method: "POST", body: body, headers: { "Accept": "application/json" } })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); status.textContent = "Thanks, Electra has your note."; })
+        .catch(function () { status.textContent = "That didn't send. Check your connection and try again."; })
+        .then(function () { send.disabled = false; });
+    });
+  })();
+
+  /* ---------- Sharing ----------
+     PAGE_URL: the page's final address. Placeholder until the new site is live. */
+  var PAGE_URL = "https://electrasantiago.com/holiday-giving-guide";
+  var SHARE_TEXT = "Give back to the community this holiday season. Five quick questions match you with trans, queer and community groups to support.";
+  function enc(x) { return encodeURIComponent(x); }
+  function shareLinks(text, small) {
+    var u = PAGE_URL, t = text, both = t + " " + u;
+    var L = [
+      ["X", "https://x.com/intent/post?text=" + enc(t) + "&url=" + enc(u)],
+      ["Bluesky", "https://bsky.app/intent/compose?text=" + enc(both)],
+      ["Threads", "https://www.threads.net/intent/post?text=" + enc(both)],
+      ["Facebook", "https://www.facebook.com/sharer/sharer.php?u=" + enc(u)],
+      ["Reddit", "https://www.reddit.com/submit?url=" + enc(u) + "&title=" + enc(t)]
+    ];
+    if (small) L = L.slice(0, 3);
+    return L.map(function (l) { return '<a class="dnp-sbtn" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + l[0] + '</a>'; }).join("") +
+      '<button type="button" class="dnp-sbtn" data-copy="' + esc(both) + '">Copy link</button>';
+  }
+  function copyText(txt, toastEl, done) {
+    function ok() { if (toastEl) toastEl.textContent = done || "Copied."; }
+    function fail() { if (toastEl) toastEl.textContent = "Couldn't copy. Select the text and copy it yourself."; }
+    try { navigator.clipboard.writeText(txt).then(ok, fail); } catch (e) { fail(); }
+  }
+  $("dnp-share-btns").innerHTML = shareLinks(SHARE_TEXT, false) + (navigator.share ? '<button type="button" class="dnp-sbtn dnp-hot" id="dnp-native">Share…</button>' : "");
+  root.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-copy]"); if (!b) return;
+    var toast = b.parentNode.querySelector(".dnp-toast") || $("dnp-share-toast");
+    copyText(b.getAttribute("data-copy"), toast, "Link copied.");
+  });
+  var nat = $("dnp-native");
+  if (nat) nat.onclick = function () { navigator.share({ title: "Holiday giving", text: SHARE_TEXT, url: PAGE_URL }).catch(function () {}); };
+
+  var BADGES = {
+    red: "background:#ec1c24;color:#ffffff;border:2px solid #ec1c24;",
+    ink: "background:#161414;color:#ffffff;border:2px solid #161414;",
+    line: "background:#ffffff;color:#161414;border:2px solid #161414;"
+  };
+  var badgeStyle = "red";
+  function badgeCode(k) {
+    return '<a href="' + PAGE_URL + '" target="_blank" rel="noopener" title="Holiday giving guide by Electra Santiago" style="display:inline-flex;align-items:center;gap:10px;padding:10px 18px;' + BADGES[k] + 'font:600 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border-radius:0;">' +
+      '<span aria-hidden="true" style="font-size:16px;line-height:1;">&#9829;</span>Give back this holiday<span style="opacity:0.75;font-weight:400;text-transform:none;letter-spacing:0;">Find your cause</span></a>';
+  }
+  function renderBadge() {
+    var code = badgeCode(badgeStyle);
+    $("dnp-badge-preview").innerHTML = code; $("dnp-badge-code").value = code; $("dnp-badge-toast").textContent = "";
+  }
+  root.querySelector(".dnp-pick").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-b]"); if (!b) return; badgeStyle = b.getAttribute("data-b");
+    [].forEach.call(root.querySelectorAll(".dnp-pick .dnp-chip"), function (x) { x.setAttribute("aria-pressed", x === b); });
+    renderBadge();
+  });
+  $("dnp-badge-copy").onclick = function () {
+    var ta = $("dnp-badge-code"); copyText(ta.value, $("dnp-badge-toast"), "Code copied. Paste it into your site.");
+    try { ta.focus(); ta.select(); } catch (e) {}
+  };
+  renderBadge();
+
+  renderStep(); renderChips(); renderList();
+})();
+</script>
