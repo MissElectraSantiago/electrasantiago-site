@@ -31,6 +31,31 @@
     }
   }
 
+  // Community Resources: a $5 coffee ask after 30 seconds on the page.
+  // "Maybe later" hides it for a week; "Send $5" hides it for 60 days.
+  var tip = document.getElementById("tip-pop");
+  if (tip) {
+    var TIP = "es-tip-until", until = 0;
+    try { until = Number(localStorage.getItem(TIP)) || 0; } catch (e) {}
+    var hideFor = function (days) {
+      try { localStorage.setItem(TIP, String(Date.now() + days * 864e5)); } catch (e) {}
+      tip.hidden = true;
+    };
+    if (Date.now() > until) {
+      var showTip = function () {
+        if (gate && !gate.hidden) { setTimeout(showTip, 1000); return; }
+        tip.hidden = false;
+        var give = document.getElementById("tip-give");
+        if (give) give.focus();
+      };
+      setTimeout(showTip, 30000);
+      document.getElementById("tip-later").addEventListener("click", function () { hideFor(7); });
+      document.getElementById("tip-give").addEventListener("click", function () { hideFor(60); });
+      tip.addEventListener("click", function (e) { if (e.target === tip) hideFor(7); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !tip.hidden) hideFor(7); });
+    }
+  }
+
   // Time-limited sale: shows only until the date in data-sale-until, then the
   // page falls back to the regular prices on its own.
   var saleOn = false;

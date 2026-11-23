@@ -61,3 +61,15 @@
 body:not(#_) { background: var(--ink); }
 .events-globe .esg-wrap { padding-top: 0; }
 </style>
+
+<div class="gate tip-pop" id="tip-pop" hidden role="dialog" aria-modal="true" aria-labelledby="tip-title">
+  <div class="gate-box">
+    <p class="age" aria-hidden="true">$5</p>
+    <h2 id="tip-title" style="font-size:1.6rem;">Buy me a coffee?</h2>
+    <p class="muted">I built this to be a community resource people actually use. If it’s helped you, a $5 coffee keeps the site running.</p>
+    <div class="btn-row">
+      <a class="btn btn-red" id="tip-give" href="https://cash.app/$electrasantiago" rel="noopener" target="_blank">Send $5 on Cash App</a>
+      <button class="btn btn-ghost" type="button" id="tip-later">Maybe later</button>
+    </div>
+  </div>
+</div>
