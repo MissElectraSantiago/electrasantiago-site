@@ -43,6 +43,20 @@ assert n == 1, "title not found"
 for name in REMOVE_NAMES:
     html = re.sub(r'\n[ \t]*\{"name": "' + re.escape(name) + r'",[^\n]*', "", html)
 
+# M, 24 Nov 2026: "Don't add anything from Israel". Drop any event or fashion entry there.
+ISRAEL = re.compile(r'"country": "Israel"|"city": "(?:Tel[ -]Aviv|Jerusalem|Haifa|Eilat|Jaffa|Herzliya|Ramat Gan|Netanya|Be.?er Sheva|Rishon LeZion|Holon|Ashdod)[^"]*"', re.I)
+kept = []
+for line in html.split("\n"):
+    if line.lstrip().startswith('{"name": ') and ISRAEL.search(line):
+        print("dropped (Israel):", re.search(r'"name": "([^"]*)"', line).group(1))
+        continue
+    kept.append(line)
+html = "\n".join(kept)
+for m in re.finditer(r'\{"name": "([^"]*)"[^\n]*?"lat": (-?[\d.]+), "lng": (-?[\d.]+)', html):
+    lat, lng = float(m.group(2)), float(m.group(3))
+    if 29.4 <= lat <= 33.4 and 34.2 <= lng <= 35.7:
+        print("CHECK BY HAND, pin inside Israel's area:", m.group(1))
+
 lines = html.split("\n")
 for i, line in enumerate(lines):
     if ADD_AFTER in line:
