@@ -118,6 +118,16 @@ for old, new in SWITCH:
     assert old in html, 'switch changed upstream; patch by hand'
     html = html.replace(old, new)
 
+# M, 25 Nov 2026: "Add 100 more big kink events in the United States", "With a focus on mixed gender".
+# Each was checked on its official page on 25 Nov 2026 (see website/embeds/us100/).
+import json as _json
+_us = _json.load(open(Path(__file__).resolve().parent / "globe_us_events_2026-11-25.json", encoding="utf-8"))
+_have = set(re.findall(r'\{"name": "([^"]*)"', html))
+_s = html.index("var EVENTS = [")
+_e = html.index("\n  ];", _s)
+_lines = ["    " + _json.dumps(x, ensure_ascii=False) for x in _us if x["name"] not in _have]
+html = html[:_e] + ",\n" + ",\n".join(_lines) + html[_e:]
+
 # 23 Nov 2026: the Submit button opens a form that sends through send-note.php
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import globe_submit_form
