@@ -31,7 +31,7 @@
     }
   }
 
-  // Community Resources: a $5 coffee ask after 20 seconds of looking at the page.
+  // Community Resources: a $5 coffee ask after 40 seconds of looking at the page.
   // "Maybe later" hides it for a week; Cash App or Throne hides it for 60 days.
   var tip = document.getElementById("tip-pop");
   if (tip) {
@@ -45,7 +45,7 @@
       // Counts only time spent looking: the tab is open in front of them and the age gate is gone.
       var seen = 0, tick = setInterval(function () {
         if (document.hidden || (gate && !gate.hidden)) return;
-        if (++seen < 20) return;
+        if (++seen < 40) return;
         clearInterval(tick);
         tip.hidden = false;
         var give = document.getElementById("tip-give");
