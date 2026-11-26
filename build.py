@@ -509,11 +509,8 @@ RewriteCond %{HTTP_HOST} ^electrasantiago\.com$ [NC]
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://electrasantiago.com%{REQUEST_URI} [L,R=301]
 
-# Keep any copy on another address (like a temporary test address) out of search results
-SetEnvIfNoCase Host "^(www\.)?electrasantiago\.com$" ES_LIVE
-<IfModule mod_headers.c>
-  Header set X-Robots-Tag "noindex, nofollow" env=!ES_LIVE
-</IfModule>
+# No X-Robots-Tag header here: a host check could mark the real pages noindex on Hostinger.
+# Copies on other addresses are covered by each page's canonical link to electrasantiago.com.
 
 # Pages that were merged into others
 RewriteRule ^custom-femdom-video/?$ /online-fetish-domination#custom [NE,R=301,L]
