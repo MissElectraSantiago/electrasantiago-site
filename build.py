@@ -214,6 +214,8 @@ def person():
     return {"@type": "Person", "@id": f"{BASE}/#person", "name": "Electra Santiago",
             "alternateName": "Miss Electra Santiago", "url": f"{BASE}/",
             "jobTitle": "Online Dominatrix and femdom content creator",
+            "description": "Miss Electra Santiago is an online Dominatrix and femdom content creator offering video calls, custom videos and mentorship for adult content creators.",
+            "image": BASE + SITE["og_image"],
             "homeLocation": {"@type": "Place", "name": "Melbourne, Australia"},
             "sameAs": SITE["same_as"]}
 
@@ -239,13 +241,13 @@ def schema_for(meta, posts, post=None):
         elif kind.startswith("service:"):
             name, path, offers = SERVICES[kind.split(":", 1)[1]]
             s = {"@type": "Service", "name": name, "url": BASE + path, "areaServed": "Worldwide (online)",
-                 "provider": {"@type": "Person", "name": "Electra Santiago", "url": f"{BASE}/"}}
+                 "provider": {"@type": "Person", "@id": f"{BASE}/#person", "name": "Electra Santiago", "url": f"{BASE}/"}}
             if offers:
                 s["offers"] = [{"@type": "Offer", "name": n, "price": p, "priceCurrency": "USD"} for n, p in offers]
             graph.append(s)
         elif kind == "blog":
             graph.append({"@type": "Blog", "name": "The Femdom Authority Blog", "url": url,
-                          "author": {"@type": "Person", "name": "Electra Santiago", "url": f"{BASE}/"},
+                          "author": {"@type": "Person", "@id": f"{BASE}/#person", "name": "Electra Santiago", "url": f"{BASE}/"},
                           "blogPost": [{"@type": "BlogPosting", "headline": p["title"], "url": f"{BASE}/{p['slug']}",
                                         "datePublished": p["date"]} for p in posts]})
         elif kind == "breadcrumb":
@@ -259,8 +261,8 @@ def schema_for(meta, posts, post=None):
             bp = {"@type": "BlogPosting", "headline": post["title"], "description": post["description"],
                   "datePublished": post["date"], "dateModified": post.get("updated") or post["date"],
                   "mainEntityOfPage": url, "url": url, "inLanguage": "en",
-                  "author": {"@type": "Person", "name": "Electra Santiago", "url": f"{BASE}/professional-online-dominatrix"},
-                  "publisher": {"@type": "Person", "name": "Electra Santiago", "url": f"{BASE}/"},
+                  "author": {"@type": "Person", "@id": f"{BASE}/#person", "name": "Electra Santiago", "url": f"{BASE}/"},
+                  "publisher": {"@type": "Person", "@id": f"{BASE}/#person", "name": "Electra Santiago", "url": f"{BASE}/"},
                   "image": BASE + (post.get("image") or SITE["og_image"])}
             graph.append(bp)
     if not graph:
