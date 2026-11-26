@@ -1,0 +1,25 @@
+name: Check noindex
+# Read-only check of the live site's robots headers and tags (26 Nov 2026). Delete when done.
+on:
+  push:
+    branches: [check-noindex]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Headers and robots tags
+        run: |
+          UA="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+          for p in / /professional-online-dominatrix /online-fetish-domination /mentorship-for-creators /community-resources /getting-started-in-kink /fetish-shopping-guide /holiday-giving-guide /blog-list /press /gallery /sitemap.xml /robots.txt /nope-404-test /index.html; do
+            for h in https://electrasantiago.com https://www.electrasantiago.com http://electrasantiago.com; do
+              echo "=== $h$p"
+              curl -s -o /tmp/body -D - -A "$UA" --max-time 20 "$h$p" | grep -i -E '^(HTTP/|location|x-robots-tag|server|content-type)' || true
+              grep -o -i '<meta name="robots"[^>]*>' /tmp/body | head -2 || true
+            done
+          done
+          echo "=== blog posts from sitemap"
+          for u in $(curl -s https://electrasantiago.com/sitemap.xml | grep -o '<loc>[^<]*' | sed 's/<loc>//'); do
+            r=$(curl -s -o /tmp/b -D - -A "$UA" --max-time 20 "$u" | grep -i -E '^(HTTP/|x-robots-tag)' | tr -d '\r' | tr '\n' ' ')
+            m=$(grep -o -i '<meta name="robots"[^>]*>' /tmp/b | head -1)
+            echo "$u | $r | $m"
+          done
