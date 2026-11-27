@@ -1,0 +1,42 @@
+# Hostinger / Apache
+Options -MultiViews
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .js .css .xml .txt
+RewriteEngine On
+
+# One canonical address: https, no www (only on the real domain, so a
+# test copy on a temporary address isn't sent to the live site)
+RewriteCond %{HTTP_HOST} ^www\.electrasantiago\.com$ [NC]
+RewriteRule ^ https://electrasantiago.com%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTP_HOST} ^electrasantiago\.com$ [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://electrasantiago.com%{REQUEST_URI} [L,R=301]
+
+# No X-Robots-Tag header here: a host check could mark the real pages noindex on Hostinger.
+# Copies on other addresses are covered by each page's canonical link to electrasantiago.com.
+
+# Pages that were merged into others
+RewriteRule ^custom-femdom-video/?$ /online-fetish-domination#custom [NE,R=301,L]
+
+# /page.html -> /page
+RewriteCond %{THE_REQUEST} \s/+([^\s?]+?)\.html[\s?]
+RewriteRule ^ /%1 [R=301,L]
+
+# Serve /page from /page.html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/xml image/svg+xml
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
