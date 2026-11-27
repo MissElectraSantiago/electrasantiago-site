@@ -45,7 +45,8 @@
   background-position: 10px 0, 40px 30px, 120px 60px;
   animation: dnp-snow 18s linear infinite;
 }
-.embed-page #dnp .dnp-eyebrow::before { content: "\2744\FE0E"; color: var(--red); margin-right: 6px; }
+/* M, 27 Nov 2026: no "Holiday giving" label at the top. */
+.embed-page #dnp .dnp-eyebrow { display: none; }
 @keyframes dnp-twinkle { from { opacity: 0.55; } to { opacity: 1; } }
 @keyframes dnp-snow { to { background-position: 10px 140px, 40px 120px, 120px 270px; } }
 @media (prefers-reduced-motion: reduce) {
