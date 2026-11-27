@@ -23,6 +23,34 @@
 }
 /* Titles in the site red, as on Kink Education. */
 .embed-page #dnp h1, .embed-page #dnp h2, .embed-page #dnp h3, .embed-page #dnp .dnp-name { color: var(--red); }
+/* A little festive (M, 27 Nov 2026): fairy lights, light snow and a snowflake, header only. */
+.embed-page #dnp .dnp-head { position: relative; overflow: hidden; padding-top: 34px; }
+.embed-page #dnp .dnp-head > * { position: relative; z-index: 1; }
+.embed-page #dnp .dnp-head::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 6px; height: 12px; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(circle 4px at 12px 6px, var(--red) 92%, transparent) 0 0 / 72px 12px repeat-x,
+    radial-gradient(circle 3px at 36px 6px, #fff4d6 90%, transparent) 0 0 / 72px 12px repeat-x,
+    radial-gradient(circle 4px at 60px 6px, var(--red) 92%, transparent) 0 0 / 72px 12px repeat-x;
+  filter: drop-shadow(0 0 4px rgba(227, 20, 28, 0.7));
+  animation: dnp-twinkle 2.6s ease-in-out infinite alternate;
+}
+.embed-page #dnp .dnp-head::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.35;
+  background-image:
+    radial-gradient(circle 1.5px, #fff 98%, transparent),
+    radial-gradient(circle 1px, #fff 98%, transparent),
+    radial-gradient(circle 2px, #fff 98%, transparent);
+  background-size: 140px 140px, 90px 90px, 210px 210px;
+  background-position: 10px 0, 40px 30px, 120px 60px;
+  animation: dnp-snow 18s linear infinite;
+}
+.embed-page #dnp .dnp-eyebrow::before { content: "\2744\FE0E"; color: var(--red); margin-right: 6px; }
+@keyframes dnp-twinkle { from { opacity: 0.55; } to { opacity: 1; } }
+@keyframes dnp-snow { to { background-position: 10px 140px, 40px 120px, 120px 270px; } }
+@media (prefers-reduced-motion: reduce) {
+  .embed-page #dnp .dnp-head::before, .embed-page #dnp .dnp-head::after { animation: none; }
+}
 /* The page sets its own background; keep the site's. */
 body:not(#_) { background: var(--ink); }
 </style>
